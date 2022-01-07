@@ -6,8 +6,8 @@ import javax.persistence.*;
 import java.util.Set;
 
 @Entity
-@Table(name = "customers")
-public class Customer {
+@Table(name = "clients")
+public class Client {
     @Id
     @GeneratedValue
     private long id;

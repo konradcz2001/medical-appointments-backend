@@ -1,6 +1,6 @@
 package com.github.konradcz2001.medicalvisits.visit;
 
-import com.github.konradcz2001.medicalvisits.customer.Customer;
+import com.github.konradcz2001.medicalvisits.customer.Client;
 import com.github.konradcz2001.medicalvisits.doctor.Doctor;
 
 import javax.persistence.*;
@@ -18,7 +18,7 @@ public class Visit {
     @ManyToOne
     private Doctor doctor;
     @ManyToOne
-    private Customer customer;
+    private Client client;
 
 
     public long getId() {
