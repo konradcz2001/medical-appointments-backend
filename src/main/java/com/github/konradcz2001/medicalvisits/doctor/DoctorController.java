@@ -45,6 +45,15 @@ class DoctorController {
         return ResponseEntity.ok(doctors);
     }
 
+    @GetMapping(params = "specialization")
+    ResponseEntity<List<Doctor>> findAllBySpecialization(@RequestParam String specialization){
+        List<Doctor> doctors = repository.findAllBySpecialization(specialization);
+        if(doctors.isEmpty())
+            return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(doctors);
+    }
+
     @PostMapping
     ResponseEntity<Doctor> addDoctor(@RequestBody Doctor doctor){
         Doctor result = repository.save(doctor);
