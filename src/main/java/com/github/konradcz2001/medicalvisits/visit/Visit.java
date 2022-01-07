@@ -1,6 +1,6 @@
 package com.github.konradcz2001.medicalvisits.visit;
 
-import com.github.konradcz2001.medicalvisits.customer.Client;
+import com.github.konradcz2001.medicalvisits.client.Client;
 import com.github.konradcz2001.medicalvisits.doctor.Doctor;
 
 import javax.persistence.*;

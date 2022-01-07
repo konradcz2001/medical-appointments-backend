@@ -1,4 +1,4 @@
-package com.github.konradcz2001.medicalvisits.customer;
+package com.github.konradcz2001.medicalvisits.client;
 
 import com.github.konradcz2001.medicalvisits.visit.Visit;
 
