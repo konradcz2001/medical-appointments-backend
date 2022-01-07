@@ -2,29 +2,54 @@ package com.github.konradcz2001.medicalvisits.visit;
 
 import com.github.konradcz2001.medicalvisits.customer.Customer;
 import com.github.konradcz2001.medicalvisits.doctor.Doctor;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
-import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "visits")
-@Getter
-@Setter(AccessLevel.PACKAGE)
-@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Visit {
     @Id
     @GeneratedValue
-    long id;
-    LocalDateTime deadline;
-    String type;
-    String notes;
+    private long id;
+    private LocalDateTime deadline;
+    private String type;
+    private String notes;
     @ManyToOne
-    Doctor doctor;
+    private Doctor doctor;
     @ManyToOne
-    Customer customer;
+    private Customer customer;
 
+
+    public long getId() {
+        return id;
+    }
+
+    void setId(final long id) {
+        this.id = id;
+    }
+
+    public LocalDateTime getDeadline() {
+        return deadline;
+    }
+
+    void setDeadline(final LocalDateTime deadline) {
+        this.deadline = deadline;
+    }
+
+    public String getType() {
+        return type;
+    }
+
+    void setType(final String typeOfVisit) {
+        this.type = typeOfVisit;
+    }
+
+    public String getNotes() {
+        return notes;
+    }
+
+    void setNotes(final String notes) {
+        this.notes = notes;
+    }
 }
