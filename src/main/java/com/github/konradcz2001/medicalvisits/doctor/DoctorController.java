@@ -9,7 +9,7 @@ import java.util.List;
 @RestController
 @RequestMapping("/doctors")
 class DoctorController {
-    DoctorRepository repository;
+    private final DoctorRepository repository;
 
     DoctorController(final DoctorRepository customerRepository) {
         this.repository = customerRepository;
