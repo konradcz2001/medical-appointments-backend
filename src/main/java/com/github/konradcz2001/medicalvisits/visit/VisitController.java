@@ -17,7 +17,7 @@ class VisitController {
     }
 
     @GetMapping
-    ResponseEntity<List<Visit>> findAll(){
+    ResponseEntity<List<Visit>> readAll(){
         return ResponseEntity.ok(repository.findAll());
     }
 
@@ -29,7 +29,7 @@ class VisitController {
     }
 
     @GetMapping(params = "type")
-    ResponseEntity<List<Visit>> findAllByTypeOfVisit(@RequestParam String type){
+    ResponseEntity<List<Visit>> readAllByTypeOfVisit(@RequestParam String type){
         List<Visit> visits = repository.findAllByType(type);
         if(visits.isEmpty())
             return ResponseEntity.notFound().build();
@@ -38,7 +38,7 @@ class VisitController {
     }
 
     @GetMapping(params = "deadline")
-    ResponseEntity<List<Visit>> findAllByDeadline(@RequestParam LocalDateTime deadline){
+    ResponseEntity<List<Visit>> readAllByDeadline(@RequestParam LocalDateTime deadline){
         List<Visit> visits = repository.findAllByDeadline(deadline);
         if(visits.isEmpty())
             return ResponseEntity.notFound().build();

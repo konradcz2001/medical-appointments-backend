@@ -14,6 +14,7 @@ public class Doctor {
     private String name;
     private String surname;
     private String specialization;
+    private boolean available;
     @OneToMany
     private Set<Visit> visits;
 
@@ -48,4 +49,13 @@ public class Doctor {
     void setSpecialization(final String specialization) {
         this.specialization = specialization;
     }
+
+    boolean isAvailable() {
+        return available;
+    }
+
+    void setAvailable(final boolean available) {
+        this.available = available;
+    }
+
 }

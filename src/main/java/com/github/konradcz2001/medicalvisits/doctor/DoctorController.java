@@ -16,19 +16,19 @@ class DoctorController {
     }
 
     @GetMapping
-    ResponseEntity<List<Doctor>> findAll(){
+    ResponseEntity<List<Doctor>> readAll(){
         return ResponseEntity.ok(repository.findAll());
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Doctor> findById(@PathVariable long id){
+    ResponseEntity<Doctor> readById(@PathVariable long id){
         return repository.findById(id)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping(params = "name")
-    ResponseEntity<List<Doctor>> findAllByName(@RequestParam String name){
+    ResponseEntity<List<Doctor>> readAllByName(@RequestParam String name){
         List<Doctor> doctors = repository.findAllByName(name);
         if(doctors.isEmpty())
             return ResponseEntity.notFound().build();
@@ -37,7 +37,7 @@ class DoctorController {
     }
 
     @GetMapping(params = "surname")
-    ResponseEntity<List<Doctor>> findAllBySurname(@RequestParam String surname){
+    ResponseEntity<List<Doctor>> readAllBySurname(@RequestParam String surname){
         List<Doctor> doctors = repository.findAllBySurname(surname);
         if(doctors.isEmpty())
             return ResponseEntity.notFound().build();
@@ -46,8 +46,17 @@ class DoctorController {
     }
 
     @GetMapping(params = "specialization")
-    ResponseEntity<List<Doctor>> findAllBySpecialization(@RequestParam String specialization){
+    ResponseEntity<List<Doctor>> readAllBySpecialization(@RequestParam String specialization){
         List<Doctor> doctors = repository.findAllBySpecialization(specialization);
+        if(doctors.isEmpty())
+            return ResponseEntity.notFound().build();
+
+        return ResponseEntity.ok(doctors);
+    }
+
+    @GetMapping(params = "available")
+    ResponseEntity<List<Doctor>> readAllByAvailable(@RequestParam boolean available){
+        List<Doctor> doctors = repository.findAllByAvailable(available);
         if(doctors.isEmpty())
             return ResponseEntity.notFound().build();
 
