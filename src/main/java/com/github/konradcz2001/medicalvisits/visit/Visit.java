@@ -10,7 +10,7 @@ import java.time.LocalDateTime;
 @Table(name = "visits")
 public class Visit {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private LocalDateTime deadline;
     private String type;
@@ -51,5 +51,21 @@ public class Visit {
 
     void setNotes(final String notes) {
         this.notes = notes;
+    }
+
+    public Doctor getDoctor() {
+        return doctor;
+    }
+
+    void setDoctor(final Doctor doctor) {
+        this.doctor = doctor;
+    }
+
+    public Client getClient() {
+        return client;
+    }
+
+    void setClient(final Client client) {
+        this.client = client;
     }
 }

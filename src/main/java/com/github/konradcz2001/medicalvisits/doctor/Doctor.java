@@ -3,13 +3,14 @@ package com.github.konradcz2001.medicalvisits.doctor;
 import com.github.konradcz2001.medicalvisits.visit.Visit;
 
 import javax.persistence.*;
+import java.util.Objects;
 import java.util.Set;
 
 @Entity
 @Table(name = "doctors")
 public class Doctor {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
     private String name;
     private String surname;

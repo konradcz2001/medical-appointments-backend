@@ -8,11 +8,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/doctors")
+@CrossOrigin
 class DoctorController {
     private final DoctorRepository repository;
 
-    DoctorController(final DoctorRepository customerRepository) {
-        this.repository = customerRepository;
+    DoctorController(final DoctorRepository repository) {
+        this.repository = repository;
     }
 
     @GetMapping
