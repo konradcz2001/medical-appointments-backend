@@ -64,6 +64,7 @@ class DoctorController {
         return ResponseEntity.ok(doctors);
     }
 
+
     @PostMapping
     ResponseEntity<Doctor> addDoctor(@RequestBody Doctor doctor){
         Doctor result = repository.save(doctor);

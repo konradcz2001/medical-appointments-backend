@@ -30,7 +30,7 @@ class ClientController {
 
     @GetMapping(params = "name")
     ResponseEntity<List<Client>> readAllByName(@RequestParam String name){
-        List<Client> clients = repository.findAllBySurname(name);
+        List<Client> clients = repository.findAllByName(name);
         if(clients.isEmpty())
             return ResponseEntity.notFound().build();
 

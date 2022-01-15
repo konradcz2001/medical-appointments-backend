@@ -23,9 +23,13 @@ class VisitService {
         doctorFacade.findById(doctorId)
                 .ifPresentOrElse(
                         doctor -> {
+                            visit.setDoctor(doctor);
                             clientFacade.findById(clientId)
                                     .ifPresentOrElse(
-                                            client -> visitRepository.save(visit),
+                                            client -> {
+                                                visit.setClient(client);
+                                                visitRepository.save(visit);
+                                            },
                                             () -> {
                                                 throw new IllegalArgumentException("There is no client with such id");
                                             }
