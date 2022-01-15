@@ -1,9 +1,6 @@
 package com.github.konradcz2001.medicalvisits.client;
 
-import com.github.konradcz2001.medicalvisits.visit.Visit;
-
 import javax.persistence.*;
-import java.util.Set;
 
 @Entity
 @Table(name = "clients")
@@ -13,8 +10,6 @@ public class Client {
     private long id;
     private String name;
     private String surname;
-    @OneToMany
-    private Set<Visit> visits;
 
     public long getId() {
         return id;
@@ -39,4 +34,5 @@ public class Client {
     void setSurname(final String surname) {
         this.surname = surname;
     }
+
 }

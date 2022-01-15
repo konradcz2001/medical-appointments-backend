@@ -1,10 +1,6 @@
 package com.github.konradcz2001.medicalvisits.doctor;
 
-import com.github.konradcz2001.medicalvisits.visit.Visit;
-
 import javax.persistence.*;
-import java.util.Objects;
-import java.util.Set;
 
 @Entity
 @Table(name = "doctors")
@@ -16,8 +12,6 @@ public class Doctor {
     private String surname;
     private String specialization;
     private boolean available;
-    @OneToMany
-    private Set<Visit> visits;
 
     public long getId() {
         return id;
