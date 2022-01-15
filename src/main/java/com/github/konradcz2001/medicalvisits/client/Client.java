@@ -1,9 +1,15 @@
 package com.github.konradcz2001.medicalvisits.client;
 
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.Setter;
+
 import javax.persistence.*;
 
 @Entity
 @Table(name = "clients")
+@Getter
+@Setter(AccessLevel.PACKAGE)
 public class Client {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -11,28 +17,5 @@ public class Client {
     private String name;
     private String surname;
 
-    public long getId() {
-        return id;
-    }
-
-    void setId(final long id) {
-        this.id = id;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    void setName(final String name) {
-        this.name = name;
-    }
-
-    public String getSurname() {
-        return surname;
-    }
-
-    void setSurname(final String surname) {
-        this.surname = surname;
-    }
 
 }

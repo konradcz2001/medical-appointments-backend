@@ -8,7 +8,7 @@ import java.time.LocalDateTime;
 import java.util.List;
 
 interface VisitRepository extends JpaRepository<Visit, Long> {
-    List<Visit> findAllByDeadline(LocalDateTime deadline);
+    List<Visit> findAllByDateOfVisit(LocalDateTime date);
     List<Visit> findAllByType(String type);
     List<Visit> findAllByDoctor(Doctor doctor);
     List<Visit> findAllByClient(Client client);

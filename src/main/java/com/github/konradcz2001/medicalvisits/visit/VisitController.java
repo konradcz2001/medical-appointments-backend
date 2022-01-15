@@ -43,9 +43,9 @@ class VisitController {
         return ResponseEntity.ok(visits);
     }
 
-    @GetMapping(params = "deadline")
-    ResponseEntity<List<Visit>> readAllByDeadline(@RequestParam LocalDateTime deadline){
-        List<Visit> visits = repository.findAllByDeadline(deadline);
+    @GetMapping(params = "date")
+    ResponseEntity<List<Visit>> readAllByDeadline(@RequestParam LocalDateTime date){
+        List<Visit> visits = repository.findAllByDateOfVisit(date);
         if(visits.isEmpty())
             return ResponseEntity.notFound().build();
 
