@@ -25,15 +25,11 @@ public class Doctor{
     @OneToMany(cascade = CascadeType.ALL)
     Set<Leave> leaves;
 
-    void addLeave(Leave leave) throws IllegalArgumentException{
-        if(leaves.contains(leave))
-            throw new IllegalArgumentException("Such leave already exist");
+    void addLeave(Leave leave){
         leaves.add(leave);
     }
 
-    void removeLeave(Leave leave) throws IllegalArgumentException{
-        if(!leaves.contains(leave))
-            throw new IllegalArgumentException("Such leave does not exist");
+    void removeLeave(Leave leave){
         leaves.remove(leave);
     }
 

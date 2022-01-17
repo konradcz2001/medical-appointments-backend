@@ -5,15 +5,18 @@ import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
 import java.util.List;
+import java.util.Set;
 
 @RestController
 @RequestMapping("/doctors")
 @CrossOrigin
 class DoctorController {
     private final DoctorRepository repository;
+    private final DoctorFacade facade;
 
-    DoctorController(final DoctorRepository repository) {
+    DoctorController(final DoctorRepository repository, final DoctorFacade facade) {
         this.repository = repository;
+        this.facade = facade;
     }
 
     @GetMapping
@@ -88,4 +91,27 @@ class DoctorController {
         }
         return ResponseEntity.notFound().build();
     }
+
+    @PatchMapping("/{id}/add-leave")
+    ResponseEntity<?> addLeave(@PathVariable long id, @RequestBody Leave leave){
+        return repository.findById(id)
+                .map(doctor -> facade.addLeave(leave, doctor))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}/remove-leave")
+    ResponseEntity<?> removeLeave(@PathVariable long id, @RequestBody Leave leave){
+        return repository.findById(id)
+                .map(doctor -> facade.removeLeave(leave, doctor))
+                .orElse(ResponseEntity.notFound().build());
+    }
+    
+    @GetMapping("/{id}/leaves")
+    ResponseEntity<Set<Leave>> readAllLeaves(@PathVariable long id){
+        return repository.findById(id)
+                .map(Doctor::getLeaves)
+                .map(ResponseEntity::ok)
+                .orElse(ResponseEntity.notFound().build());
+    }
+
 }
