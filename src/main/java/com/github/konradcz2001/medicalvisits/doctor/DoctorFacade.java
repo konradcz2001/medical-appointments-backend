@@ -3,7 +3,10 @@ package com.github.konradcz2001.medicalvisits.doctor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 @Service
 public class DoctorFacade {
@@ -35,6 +38,19 @@ public class DoctorFacade {
         doctor.removeLeave(leave);
         leaveRepository.delete(leave);
         return ResponseEntity.noContent().build();
+    }
+
+    ResponseEntity<List<Doctor>> readAllAvailableByDate(LocalDateTime date){
+        List<Doctor> doctors = repository.findAll().stream()
+                .filter(doctor -> doctor.getLeaves().stream()
+                        .filter(leave -> (date.isAfter(leave.getSinceWhen()) && date.isBefore(leave.getTillWhen())))
+                        .findFirst()
+                        .isEmpty())
+                .collect(Collectors.toList());
+
+        if(doctors.isEmpty())
+            return ResponseEntity.notFound().build();
+        return ResponseEntity.ok(doctors);
     }
 
 }

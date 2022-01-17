@@ -4,6 +4,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
 
@@ -105,13 +106,19 @@ class DoctorController {
                 .map(doctor -> facade.removeLeave(leave, doctor))
                 .orElse(ResponseEntity.notFound().build());
     }
-    
+
     @GetMapping("/{id}/leaves")
     ResponseEntity<Set<Leave>> readAllLeaves(@PathVariable long id){
         return repository.findById(id)
                 .map(Doctor::getLeaves)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping(path = "/available", params = "date")
+    ResponseEntity<List<Doctor>> readAllAvailableByDate(@RequestParam String date){
+        LocalDateTime d = LocalDateTime.parse(date);
+        return facade.readAllAvailableByDate(d);
     }
 
 }
