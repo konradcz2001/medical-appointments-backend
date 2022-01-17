@@ -2,7 +2,6 @@ package com.github.konradcz2001.medicalvisits.visit;
 
 import com.github.konradcz2001.medicalvisits.client.Client;
 import com.github.konradcz2001.medicalvisits.doctor.Doctor;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -44,7 +43,7 @@ class VisitController {
     }
 
     @GetMapping(params = "date")
-    ResponseEntity<List<Visit>> readAllByDeadline(@RequestParam LocalDateTime date){
+    ResponseEntity<List<Visit>> readAllByDateOfVisit(@RequestParam LocalDateTime date){
         List<Visit> visits = repository.findAllByDateOfVisit(date);
         if(visits.isEmpty())
             return ResponseEntity.notFound().build();

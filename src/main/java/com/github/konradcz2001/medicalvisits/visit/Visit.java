@@ -5,6 +5,7 @@ import com.github.konradcz2001.medicalvisits.doctor.Doctor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
 import java.time.LocalDateTime;
@@ -13,16 +14,17 @@ import java.time.LocalDateTime;
 @Table(name = "visits")
 @Getter
 @Setter(AccessLevel.PACKAGE)
+@FieldDefaults(level = AccessLevel.PRIVATE)
 public class Visit {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private long id;
-    private LocalDateTime dateOfVisit;
-    private String type;
-    private String notes;
+    long id;
+    LocalDateTime dateOfVisit;
+    String type;
+    String notes;
     @ManyToOne
-    private Doctor doctor;
+    Doctor doctor;
     @ManyToOne
-    private Client client;
+    Client client;
 
 }

@@ -1,6 +1,5 @@
 package com.github.konradcz2001.medicalvisits.client;
 
-import com.github.konradcz2001.medicalvisits.doctor.Doctor;
 import org.springframework.stereotype.Service;
 
 import java.util.Optional;
