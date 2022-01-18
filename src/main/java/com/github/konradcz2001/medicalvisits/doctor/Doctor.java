@@ -20,7 +20,6 @@ public class Doctor{
     String name;
     String surname;
     String specialization;
-    boolean available;
 
     @OneToMany(cascade = CascadeType.ALL)
     Set<Leave> leaves;

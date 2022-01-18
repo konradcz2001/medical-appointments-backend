@@ -42,15 +42,19 @@ public class DoctorFacade {
 
     ResponseEntity<List<Doctor>> readAllAvailableByDate(LocalDateTime date){
         List<Doctor> doctors = repository.findAll().stream()
-                .filter(doctor -> doctor.getLeaves().stream()
-                        .filter(leave -> (date.isAfter(leave.getSinceWhen()) && date.isBefore(leave.getTillWhen())))
-                        .findFirst()
-                        .isEmpty())
+                .filter(doctor -> isAvailableByDate(date, doctor))
                 .collect(Collectors.toList());
 
         if(doctors.isEmpty())
             return ResponseEntity.notFound().build();
         return ResponseEntity.ok(doctors);
+    }
+
+    boolean isAvailableByDate(LocalDateTime date, Doctor doctor){
+        return doctor.getLeaves().stream()
+                .filter(leave -> (date.isAfter(leave.getSinceWhen()) && date.isBefore(leave.getTillWhen())))
+                .findFirst()
+                .isEmpty();
     }
 
 }

@@ -59,16 +59,6 @@ class DoctorController {
         return ResponseEntity.ok(doctors);
     }
 
-    @GetMapping(params = "available")
-    ResponseEntity<List<Doctor>> readAllByAvailable(@RequestParam boolean available){
-        List<Doctor> doctors = repository.findAllByAvailable(available);
-        if(doctors.isEmpty())
-            return ResponseEntity.notFound().build();
-
-        return ResponseEntity.ok(doctors);
-    }
-
-
     @PostMapping
     ResponseEntity<Doctor> addDoctor(@RequestBody Doctor doctor){
         Doctor result = repository.save(doctor);
