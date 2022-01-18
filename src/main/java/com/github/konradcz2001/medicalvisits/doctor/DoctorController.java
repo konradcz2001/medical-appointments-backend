@@ -1,5 +1,7 @@
 package com.github.konradcz2001.medicalvisits.doctor;
 
+import com.github.konradcz2001.medicalvisits.doctor.leave.Leave;
+import com.github.konradcz2001.medicalvisits.doctor.specialization.Specialization;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -51,7 +53,7 @@ class DoctorController {
     }
 
     @GetMapping(params = "specialization")
-    ResponseEntity<List<Doctor>> readAllBySpecialization(@RequestParam String specialization){
+    ResponseEntity<List<Doctor>> readAllBySpecialization(@RequestParam Specialization specialization){
         List<Doctor> doctors = repository.findAllBySpecialization(specialization);
         if(doctors.isEmpty())
             return ResponseEntity.notFound().build();

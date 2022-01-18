@@ -1,5 +1,7 @@
 package com.github.konradcz2001.medicalvisits.doctor;
 
+import com.github.konradcz2001.medicalvisits.doctor.leave.Leave;
+import com.github.konradcz2001.medicalvisits.doctor.leave.LeaveRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 

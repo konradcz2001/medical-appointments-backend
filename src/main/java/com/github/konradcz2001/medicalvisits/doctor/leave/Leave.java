@@ -1,4 +1,4 @@
-package com.github.konradcz2001.medicalvisits.doctor;
+package com.github.konradcz2001.medicalvisits.doctor.leave;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -12,7 +12,7 @@ import java.util.Objects;
 @Entity
 @Table(name = "leaves")
 @Getter
-@Setter(AccessLevel.PACKAGE)
+@Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Leave {
     @Id

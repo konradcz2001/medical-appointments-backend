@@ -1,5 +1,7 @@
 package com.github.konradcz2001.medicalvisits.doctor;
 
+import com.github.konradcz2001.medicalvisits.doctor.leave.Leave;
+import com.github.konradcz2001.medicalvisits.doctor.specialization.Specialization;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -19,7 +21,9 @@ public class Doctor{
     long id;
     String name;
     String surname;
-    String specialization;
+
+    @ManyToOne
+    Specialization specialization;
 
     @OneToMany(cascade = CascadeType.ALL)
     Set<Leave> leaves;
