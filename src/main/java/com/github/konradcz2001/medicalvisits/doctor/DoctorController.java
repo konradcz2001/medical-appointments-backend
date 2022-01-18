@@ -67,9 +67,10 @@ class DoctorController {
         return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
     }
 
-    @PutMapping
-    ResponseEntity<?> updateDoctor(@RequestBody Doctor doctor){
-        if(repository.existsById(doctor.getId())){
+    @PutMapping("/{id}")
+    ResponseEntity<?> updateDoctor(@PathVariable long id, @RequestBody Doctor doctor){
+        if(repository.existsById(id)){
+            doctor.setId(id);
             repository.save(doctor);
             return ResponseEntity.noContent().build();
         }

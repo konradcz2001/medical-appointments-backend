@@ -81,9 +81,10 @@ class VisitController {
         return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
     }
 
-    @PutMapping
-    ResponseEntity<?> updateVisit(@RequestBody Visit visit){
-        if(repository.existsById(visit.getId())){
+    @PutMapping("/{id}")
+    ResponseEntity<?> updateVisit(@PathVariable long id, @RequestBody Visit visit){
+        if(repository.existsById(id)){
+            visit.setId(id);
             repository.save(visit);
             return ResponseEntity.noContent().build();
         }

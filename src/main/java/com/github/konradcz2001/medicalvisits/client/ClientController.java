@@ -47,15 +47,16 @@ class ClientController {
     }
 
     @PostMapping
-    ResponseEntity<?> addCustomer(@RequestBody Client clients){
-        Client result = repository.save(clients);
+    ResponseEntity<?> addCustomer(@RequestBody Client client){
+        Client result = repository.save(client);
         return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
     }
 
-    @PutMapping
-    ResponseEntity<?> updateCustomer(@RequestBody Client clients){
-        if(repository.existsById(clients.getId())){
-            repository.save(clients);
+    @PutMapping("/{id}")
+    ResponseEntity<?> updateCustomer(@PathVariable long id, @RequestBody Client client){
+        if(repository.existsById(id)){
+            client.setId(id);
+            repository.save(client);
             return ResponseEntity.noContent().build();
         }
         return ResponseEntity.notFound().build();
