@@ -1,13 +1,13 @@
-package com.github.konradcz2001.medicalvisits;
+package com.github.konradcz2001.medicalappointments;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class MedicalVisitsApplication {
+public class MedicalAppointmentsApplication {
 
     public static void main(String[] args) {
-        SpringApplication.run(MedicalVisitsApplication.class, args);
+        SpringApplication.run(MedicalAppointmentsApplication.class, args);
     }
 
 }

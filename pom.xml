@@ -9,10 +9,10 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.github.konradcz2001</groupId>
-    <artifactId>Medical-Visits</artifactId>
+    <artifactId>medical-appointments-backend</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>Medical-Visits</name>
-    <description>Medical-Visits</description>
+    <name>medical-appointments-backend</name>
+    <description>medical-appointments-backend</description>
     <properties>
         <java.version>11</java.version>
     </properties>

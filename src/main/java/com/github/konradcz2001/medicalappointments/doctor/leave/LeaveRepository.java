@@ -1,4 +1,4 @@
-package com.github.konradcz2001.medicalvisits.doctor.leave;
+package com.github.konradcz2001.medicalappointments.doctor.leave;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

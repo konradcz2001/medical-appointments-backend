@@ -1,7 +1,7 @@
-package com.github.konradcz2001.medicalvisits.visit;
+package com.github.konradcz2001.medicalappointments.visit;
 
-import com.github.konradcz2001.medicalvisits.client.Client;
-import com.github.konradcz2001.medicalvisits.doctor.Doctor;
+import com.github.konradcz2001.medicalappointments.client.Client;
+import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 

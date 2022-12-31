@@ -1,7 +1,7 @@
-package com.github.konradcz2001.medicalvisits.doctor;
+package com.github.konradcz2001.medicalappointments.doctor;
 
-import com.github.konradcz2001.medicalvisits.doctor.leave.Leave;
-import com.github.konradcz2001.medicalvisits.doctor.specialization.Specialization;
+import com.github.konradcz2001.medicalappointments.doctor.leave.Leave;
+import com.github.konradcz2001.medicalappointments.doctor.specialization.Specialization;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;

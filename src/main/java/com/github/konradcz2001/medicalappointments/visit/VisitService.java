@@ -1,7 +1,7 @@
-package com.github.konradcz2001.medicalvisits.visit;
+package com.github.konradcz2001.medicalappointments.visit;
 
-import com.github.konradcz2001.medicalvisits.client.ClientFacade;
-import com.github.konradcz2001.medicalvisits.doctor.DoctorFacade;
+import com.github.konradcz2001.medicalappointments.client.ClientFacade;
+import com.github.konradcz2001.medicalappointments.doctor.DoctorFacade;
 import org.springframework.stereotype.Service;
 
 @Service

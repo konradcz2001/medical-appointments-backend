@@ -1,11 +1,12 @@
-package com.github.konradcz2001.medicalvisits.doctor;
+package com.github.konradcz2001.medicalappointments.doctor;
 
-import com.github.konradcz2001.medicalvisits.doctor.leave.Leave;
-import com.github.konradcz2001.medicalvisits.doctor.specialization.Specialization;
+import com.github.konradcz2001.medicalappointments.doctor.leave.Leave;
+import com.github.konradcz2001.medicalappointments.doctor.specialization.Specialization;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
+
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -23,8 +24,8 @@ class DoctorController {
     }
 
     @GetMapping
-    ResponseEntity<List<Doctor>> readAll(){
-        return ResponseEntity.ok(repository.findAll());
+    ResponseEntity<?> readAll(Pageable page){
+        return ResponseEntity.ok(repository.findAll(page));
     }
 
     @GetMapping("/{id}")
@@ -62,9 +63,8 @@ class DoctorController {
     }
 
     @PostMapping
-    ResponseEntity<Doctor> addDoctor(@RequestBody Doctor doctor){
-        Doctor result = repository.save(doctor);
-        return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
+    ResponseEntity<Doctor> addDoctor(@RequestBody DoctorDTO doctor){
+        return facade.addDoctor(doctor);
     }
 
     @PutMapping("/{id}")

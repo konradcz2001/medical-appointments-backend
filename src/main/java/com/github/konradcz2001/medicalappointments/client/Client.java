@@ -1,4 +1,4 @@
-package com.github.konradcz2001.medicalvisits.client;
+package com.github.konradcz2001.medicalappointments.client;
 
 import lombok.AccessLevel;
 import lombok.Getter;

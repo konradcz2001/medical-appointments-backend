@@ -1,10 +1,10 @@
-package com.github.konradcz2001.medicalvisits;
+package com.github.konradcz2001.medicalappointments;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;
 
 @SpringBootTest
-class MedicalVisitsApplicationTests {
+class MedicalAppointmentsApplicationTests {
 
     @Test
     void contextLoads() {

@@ -1,10 +1,13 @@
-package com.github.konradcz2001.medicalvisits.doctor;
+package com.github.konradcz2001.medicalappointments.doctor;
 
-import com.github.konradcz2001.medicalvisits.doctor.leave.Leave;
-import com.github.konradcz2001.medicalvisits.doctor.leave.LeaveRepository;
+import com.github.konradcz2001.medicalappointments.doctor.leave.Leave;
+import com.github.konradcz2001.medicalappointments.doctor.leave.LeaveRepository;
+import com.github.konradcz2001.medicalappointments.doctor.specialization.Specialization;
+import com.github.konradcz2001.medicalappointments.doctor.specialization.SpecializationRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
+import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
@@ -14,10 +17,12 @@ import java.util.stream.Collectors;
 public class DoctorFacade {
     private final DoctorRepository repository;
     private final LeaveRepository leaveRepository;
+    private final SpecializationRepository specializationRepository;
 
-    DoctorFacade(final DoctorRepository repository, final LeaveRepository leaveRepository) {
+    DoctorFacade(final DoctorRepository repository, final LeaveRepository leaveRepository, final SpecializationRepository specializationRepository) {
         this.repository = repository;
         this.leaveRepository = leaveRepository;
+        this.specializationRepository = specializationRepository;
     }
 
     public Optional<Doctor> findById(final long id) {
@@ -57,6 +62,20 @@ public class DoctorFacade {
                 .filter(leave -> (date.isAfter(leave.getSinceWhen()) && date.isBefore(leave.getTillWhen())))
                 .findFirst()
                 .isEmpty();
+    }
+
+    ResponseEntity<Doctor> addDoctor(DoctorDTO doctorDTO){
+        if(!specializationRepository.existsBySpecialization(doctorDTO.getSpecialization())){
+            return ResponseEntity.badRequest().build();
+        }
+        Specialization specialization = specializationRepository.findFirstBySpecialization(doctorDTO.getSpecialization());
+        Doctor doctor = new Doctor();
+        doctor.setName(doctorDTO.getName());
+        doctor.setSurname(doctorDTO.getSurname());
+        doctor.setSpecialization(specialization);
+
+        Doctor result = repository.save(doctor);
+        return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
     }
 
 }

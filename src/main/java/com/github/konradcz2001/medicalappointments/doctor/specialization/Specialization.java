@@ -1,4 +1,4 @@
-package com.github.konradcz2001.medicalvisits.doctor.specialization;
+package com.github.konradcz2001.medicalappointments.doctor.specialization;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -6,7 +6,6 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
-import java.util.Objects;
 
 @Entity
 @Table(name = "specializations")
@@ -19,7 +18,7 @@ public class Specialization {
     int id;
     String specialization;
 
-    @Override
+    /*@Override
     public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
@@ -30,5 +29,5 @@ public class Specialization {
     @Override
     public int hashCode() {
         return Objects.hash(specialization);
-    }
+    }*/
 }

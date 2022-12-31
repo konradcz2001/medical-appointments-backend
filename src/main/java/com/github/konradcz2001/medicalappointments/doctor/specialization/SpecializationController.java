@@ -1,4 +1,4 @@
-package com.github.konradcz2001.medicalvisits.doctor.specialization;
+package com.github.konradcz2001.medicalappointments.doctor.specialization;
 
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
