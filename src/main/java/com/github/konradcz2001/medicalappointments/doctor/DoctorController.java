@@ -2,6 +2,7 @@ package com.github.konradcz2001.medicalappointments.doctor;
 
 import com.github.konradcz2001.medicalappointments.doctor.leave.Leave;
 import com.github.konradcz2001.medicalappointments.doctor.specialization.Specialization;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -24,8 +25,8 @@ class DoctorController {
     }
 
     @GetMapping
-    ResponseEntity<?> readAll(Pageable page){
-        return ResponseEntity.ok(repository.findAll(page));
+    ResponseEntity<Page<Doctor>> readAll(Pageable pageable){
+        return ResponseEntity.ok(repository.findAll(pageable));
     }
 
     @GetMapping("/{id}")
@@ -35,18 +36,18 @@ class DoctorController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping(params = "name")
-    ResponseEntity<List<Doctor>> readAllByName(@RequestParam String name){
-        List<Doctor> doctors = repository.findAllByName(name);
+    @GetMapping(params = "first-name")
+    ResponseEntity<Page<Doctor>> readAllByName(@RequestParam String name, Pageable pageable){
+        Page<Doctor> doctors = repository.findAllByFirstName(name, pageable);
         if(doctors.isEmpty())
             return ResponseEntity.notFound().build();
 
         return ResponseEntity.ok(doctors);
     }
 
-    @GetMapping(params = "surname")
-    ResponseEntity<List<Doctor>> readAllBySurname(@RequestParam String surname){
-        List<Doctor> doctors = repository.findAllBySurname(surname);
+    @GetMapping(params = "last-name")
+    ResponseEntity<Page<Doctor>> readAllBySurname(@RequestParam String lastName, Pageable pageable){
+        Page<Doctor> doctors = repository.findAllByLastName(lastName, pageable);
         if(doctors.isEmpty())
             return ResponseEntity.notFound().build();
 
@@ -54,8 +55,8 @@ class DoctorController {
     }
 
     @GetMapping(params = "specialization")
-    ResponseEntity<List<Doctor>> readAllBySpecialization(@RequestParam Specialization specialization){
-        List<Doctor> doctors = repository.findAllBySpecialization(specialization);
+    ResponseEntity<Page<Doctor>> readAllBySpecialization(@RequestParam String specialization, Pageable pageable){
+        Page<Doctor> doctors = repository.findAllBySpecializations_Specialization(specialization, pageable);
         if(doctors.isEmpty())
             return ResponseEntity.notFound().build();
 
@@ -63,7 +64,7 @@ class DoctorController {
     }
 
     @PostMapping
-    ResponseEntity<Doctor> addDoctor(@RequestBody DoctorDTO doctor){
+    ResponseEntity<Doctor> addDoctor(@RequestBody Doctor doctor){
         return facade.addDoctor(doctor);
     }
 

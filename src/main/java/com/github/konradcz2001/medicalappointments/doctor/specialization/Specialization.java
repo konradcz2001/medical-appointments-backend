@@ -1,11 +1,14 @@
 package com.github.konradcz2001.medicalappointments.doctor.specialization;
 
+import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import javax.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "specializations")
@@ -17,6 +20,8 @@ public class Specialization {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     int id;
     String specialization;
+//    @ManyToMany
+//    Set<Doctor> doctors = new HashSet<>();
 
     /*@Override
     public boolean equals(final Object o) {

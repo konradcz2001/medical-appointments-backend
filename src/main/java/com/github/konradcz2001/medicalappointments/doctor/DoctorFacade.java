@@ -64,15 +64,15 @@ public class DoctorFacade {
                 .isEmpty();
     }
 
-    ResponseEntity<Doctor> addDoctor(DoctorDTO doctorDTO){
-        if(!specializationRepository.existsBySpecialization(doctorDTO.getSpecialization())){
-            return ResponseEntity.badRequest().build();
+    ResponseEntity<Doctor> addDoctor(Doctor doctor){
+
+        if(!doctor.getSpecializations().isEmpty()) {
+            boolean someSpecializationIsIncorrect = doctor.getSpecializations().stream().anyMatch(spec ->
+                    !specializationRepository.existsBySpecialization(spec.getSpecialization()));
+
+            if (someSpecializationIsIncorrect)
+                return ResponseEntity.badRequest().build();
         }
-        Specialization specialization = specializationRepository.findFirstBySpecialization(doctorDTO.getSpecialization());
-        Doctor doctor = new Doctor();
-        doctor.setName(doctorDTO.getName());
-        doctor.setSurname(doctorDTO.getSurname());
-        doctor.setSpecialization(specialization);
 
         Doctor result = repository.save(doctor);
         return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
