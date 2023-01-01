@@ -2,7 +2,6 @@ package com.github.konradcz2001.medicalappointments.doctor;
 
 import com.github.konradcz2001.medicalappointments.doctor.leave.Leave;
 import com.github.konradcz2001.medicalappointments.doctor.leave.LeaveRepository;
-import com.github.konradcz2001.medicalappointments.doctor.specialization.Specialization;
 import com.github.konradcz2001.medicalappointments.doctor.specialization.SpecializationRepository;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

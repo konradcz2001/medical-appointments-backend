@@ -12,7 +12,7 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import com.github.konradcz2001.medicalappointments.Address;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -36,7 +36,7 @@ public class Doctor extends UserData{
     boolean isVerified;
     byte[] avatar;
     String profileDescription;
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany(mappedBy = "doctors")
     Set<Specialization> specializations = new HashSet<>();
     @OneToMany(cascade = CascadeType.ALL)
     Set<Leave> leaves = new HashSet<>();
