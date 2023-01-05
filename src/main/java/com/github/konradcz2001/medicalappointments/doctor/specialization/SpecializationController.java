@@ -1,10 +1,11 @@
 package com.github.konradcz2001.medicalappointments.doctor.specialization;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/doctors/specializations")
@@ -17,8 +18,8 @@ class SpecializationController {
     }
 
     @GetMapping
-    ResponseEntity<List<Specialization>> readAll(){
-        List<Specialization> all = repository.findAll();
+    ResponseEntity<Page<Specialization>> readAll(Pageable pageable){
+        Page<Specialization> all = repository.findAll(pageable);
         if(all.isEmpty())
             return ResponseEntity.notFound().build();
         return ResponseEntity.ok(all);
@@ -27,22 +28,18 @@ class SpecializationController {
     @GetMapping("/{id}")
     ResponseEntity<Specialization> readById(@PathVariable int id){
         return repository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping(params = "specialization")
     ResponseEntity<Specialization> readBySpecialization(@RequestParam String specialization){
-        Specialization s = repository.findFirstBySpecialization(specialization);
-        if(s == null)
-            return ResponseEntity.notFound().build();
-        return  ResponseEntity.ok(s);
+        return repository.findFirstBySpecialization(specialization)
+                .map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
 
     @PostMapping
     ResponseEntity<?> addSpecialization(@RequestBody Specialization specialization){
-        List<Specialization> specializations = repository.findAll();
-        if(specializations.contains(specialization))
+        if(repository.existsBySpecialization(specialization.getSpecialization()))
             return ResponseEntity.badRequest().body("Such specialization already exist");
 
         Specialization result = repository.save(specialization);
