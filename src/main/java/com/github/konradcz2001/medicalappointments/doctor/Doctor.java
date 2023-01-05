@@ -1,18 +1,16 @@
 package com.github.konradcz2001.medicalappointments.doctor;
 
+import com.github.konradcz2001.medicalappointments.Address;
 import com.github.konradcz2001.medicalappointments.UserData;
 import com.github.konradcz2001.medicalappointments.doctor.leave.Leave;
-import com.github.konradcz2001.medicalappointments.doctor.leave.LeaveRepository;
 import com.github.konradcz2001.medicalappointments.doctor.specialization.Specialization;
-import com.github.konradcz2001.medicalappointments.doctor.specialization.SpecializationRepository;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
-import com.github.konradcz2001.medicalappointments.Address;
 
-import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -23,46 +21,43 @@ import java.util.Set;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 public class Doctor extends UserData{
-    @Transient
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    SpecializationRepository specializationRepo;
-    @Transient
-    @Getter(AccessLevel.NONE)
-    @Setter(AccessLevel.NONE)
-    LeaveRepository leaveRepo;
     @Embedded
     Address address;
     boolean isVerified;
     byte[] avatar;
     String profileDescription;
-    @ManyToMany(mappedBy = "doctors")
+
+
+    @ManyToMany(cascade = CascadeType.ALL)
+    @JoinTable(
+            name = "doctor_specialization",
+            joinColumns = { @JoinColumn(name = "doctor_id") },
+            inverseJoinColumns = { @JoinColumn(name = "specialization_id") }
+    )
     Set<Specialization> specializations = new HashSet<>();
     @OneToMany(cascade = CascadeType.ALL)
     Set<Leave> leaves = new HashSet<>();
 
-    Doctor(final SpecializationRepository sr, final LeaveRepository lr) {
-        this.specializationRepo = sr;
-        this.leaveRepo = lr;
-    }
-    void addSpecialization(Specialization specialization) {
-        if(!specializationRepo.existsBySpecialization(specialization.getSpecialization()))
-            throw new IllegalArgumentException("There is no such specialization");
-        specializations.add(specialization);
+    Doctor(final String firstName, final String lastName, final String email, final String phoneNumber, final Address address, final boolean isVerified, final byte[] avatar, final String profileDescription, final Set<Specialization> specializations, final Set<Leave> leaves) {
+        super(firstName, lastName, email, phoneNumber);
+        this.address = address;
+        this.isVerified = isVerified;
+        this.avatar = avatar;
+        this.profileDescription = profileDescription;
+        this.specializations = specializations;
+        this.leaves = leaves;
     }
 
-    void removeSpecialization(Specialization specialization) {
-        if(!specializationRepo.existsBySpecialization(specialization.getSpecialization()))
-            throw new IllegalArgumentException("There is no such specialization");
-        specializations.remove(specialization);
+    void addSpecialization(final Specialization spec) {
+        specializations.add(spec);
     }
-    void addLeave(Leave leave){
+    void removeSpecialization(Specialization spec) {
+        specializations.remove(spec);
+    }
+    void addLeave(final Leave leave) {
         leaves.add(leave);
     }
-
     void removeLeave(Leave leave){
-        if(!leaveRepo.existsById(leave.getId()))
-            throw new IllegalArgumentException("There is no such leave");
         leaves.remove(leave);
     }
 

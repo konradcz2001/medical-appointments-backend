@@ -1,8 +1,6 @@
 package com.github.konradcz2001.medicalappointments;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import jakarta.persistence.*;
@@ -11,12 +9,13 @@ import jakarta.persistence.*;
 @Getter
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@NoArgsConstructor
+@AllArgsConstructor
 public class Address {
     String country;
-    String state;
+    String state;   // voivodeship, ...
     String city;
     String street;
-    String number;
+    String number;  // house/apartment number
     String zipCode;
-
 }

@@ -1,5 +1,6 @@
 package com.github.konradcz2001.medicalappointments.doctor.specialization;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,17 +21,17 @@ import java.util.Set;
 public class Specialization {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    Integer id;
+    @Column(unique = true)
     String specialization;
-    @ManyToMany(cascade = CascadeType.ALL)
-    @JoinTable(
-            name = "specialization_doctor",
-            joinColumns = { @JoinColumn(name = "specialization_id") },
-            inverseJoinColumns = { @JoinColumn(name = "doctor_id") }
-    )
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "specializations")
     Set<Doctor> doctors = new HashSet<>();
 
-    Specialization(final String specialization) {
+    public Specialization(final String specialization) {
         this.specialization = specialization;
     }
+
+
 }
