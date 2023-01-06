@@ -1,5 +1,6 @@
 package com.github.konradcz2001.medicalappointments.doctor.leave;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -22,6 +23,9 @@ public class Leave {
     Long id;
     LocalDateTime sinceWhen;
     LocalDateTime tillWhen;
+    @JsonIgnore
+    @ManyToOne
+    Doctor doctor;
 
     public Leave(final LocalDateTime sinceWhen, final LocalDateTime tillWhen) {
         this.sinceWhen = sinceWhen;

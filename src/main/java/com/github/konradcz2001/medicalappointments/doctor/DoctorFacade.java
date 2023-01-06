@@ -10,18 +10,19 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
 public class DoctorFacade {
     private final DoctorRepository repository;
-    private final LeaveRepository leaveRepository;
-    private final SpecializationRepository specializationRepository;
+    private final LeaveRepository leaveRepo;
+    private final SpecializationRepository specializationRepo;
 
-    DoctorFacade(final DoctorRepository repository, final LeaveRepository leaveRepository, final SpecializationRepository specializationRepository) {
+    DoctorFacade(final DoctorRepository repository, final LeaveRepository leaveRepo, final SpecializationRepository specializationRepo) {
         this.repository = repository;
-        this.leaveRepository = leaveRepository;
-        this.specializationRepository = specializationRepository;
+        this.leaveRepo = leaveRepo;
+        this.specializationRepo = specializationRepo;
     }
 
     public Optional<Doctor> findById(final long id) {
@@ -33,7 +34,7 @@ public class DoctorFacade {
             return ResponseEntity.badRequest().body("Such leave already exist");
 
         doctor.addLeave(leave);
-        leaveRepository.save(leave);
+        leaveRepo.save(leave);
         return ResponseEntity.noContent().build();
     }
 
@@ -42,7 +43,7 @@ public class DoctorFacade {
             return ResponseEntity.badRequest().body("Such leave does not exist");
 
         doctor.removeLeave(leave);
-        leaveRepository.delete(leave);
+        leaveRepo.delete(leave);
         return ResponseEntity.noContent().build();
     }
 
@@ -67,7 +68,7 @@ public class DoctorFacade {
 
         if(!doctor.getSpecializations().isEmpty()) {
             boolean someSpecializationIsIncorrect = doctor.getSpecializations().stream().anyMatch(spec ->
-                    !specializationRepository.existsBySpecialization(spec.getSpecialization()));
+                    !specializationRepo.existsBySpecialization(spec.getSpecialization()));
 
             if (someSpecializationIsIncorrect)
                 return ResponseEntity.badRequest().build();
@@ -75,6 +76,16 @@ public class DoctorFacade {
 
         Doctor result = repository.save(doctor);
         return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
+    }
+
+    void addSpecializations(final Doctor doctor, final Set<Integer> specializationIds) {
+        specializationIds.forEach(id -> {
+            var spec = specializationRepo.findById(id);
+            if(spec.isEmpty())
+                throw new IllegalArgumentException("There is no such specialization");
+            doctor.addSpecialization(spec.get());
+            repository.save(doctor);
+        });
     }
 
 }

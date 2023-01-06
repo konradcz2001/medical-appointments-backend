@@ -6,7 +6,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -37,7 +36,7 @@ class DoctorController {
 
     @GetMapping(params = "first-name")
     ResponseEntity<Page<Doctor>> readAllByName(@RequestParam String name, Pageable pageable){
-        Page<Doctor> doctors = repository.findAllByFirstName(name, pageable);
+        Page<Doctor> doctors = repository.findAllByFirstNameContainingIgnoreCase(name, pageable);
         if(doctors.isEmpty())
             return ResponseEntity.notFound().build();
 
@@ -46,7 +45,7 @@ class DoctorController {
 
     @GetMapping(params = "last-name")
     ResponseEntity<Page<Doctor>> readAllBySurname(@RequestParam String lastName, Pageable pageable){
-        Page<Doctor> doctors = repository.findAllByLastName(lastName, pageable);
+        Page<Doctor> doctors = repository.findAllByLastNameContainingIgnoreCase(lastName, pageable);
         if(doctors.isEmpty())
             return ResponseEntity.notFound().build();
 
@@ -55,7 +54,7 @@ class DoctorController {
 
     @GetMapping(params = "specialization")
     ResponseEntity<Page<Doctor>> readAllBySpecialization(@RequestParam String specialization, Pageable pageable){
-        Page<Doctor> doctors = repository.findAllBySpecializations_Specialization(specialization, pageable);
+        Page<Doctor> doctors = repository.findAllByAnySpecializationContainingIgnoreCase(specialization, pageable);
         if(doctors.isEmpty())
             return ResponseEntity.notFound().build();
 
@@ -90,6 +89,16 @@ class DoctorController {
     ResponseEntity<?> addLeave(@PathVariable long id, @RequestBody Leave leave){
         return repository.findById(id)
                 .map(doctor -> facade.addLeave(leave, doctor))
+                .orElse(ResponseEntity.notFound().build());
+    }
+
+    @PatchMapping("/{id}/add-specializations")
+    ResponseEntity<?> addSpecializations(@PathVariable long id, @RequestBody Set<Integer> specializationIds){
+        return repository.findById(id)
+                .map(doctor -> {
+                    facade.addSpecializations(doctor, specializationIds);
+                    return ResponseEntity.noContent().build();
+                })
                 .orElse(ResponseEntity.notFound().build());
     }
 
