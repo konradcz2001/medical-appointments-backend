@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Optional;
 import java.util.Set;
@@ -33,7 +34,7 @@ public class DoctorFacade {
         if(doctor.getLeaves().contains(leave))
             return ResponseEntity.badRequest().body("Such leave already exist");
 
-        doctor.addLeave(leave);
+        leave.setDoctor(doctor);
         leaveRepo.save(leave);
         return ResponseEntity.noContent().build();
     }
@@ -84,8 +85,8 @@ public class DoctorFacade {
             if(spec.isEmpty())
                 throw new IllegalArgumentException("There is no such specialization");
             doctor.addSpecialization(spec.get());
-            repository.save(doctor);
         });
+        repository.save(doctor);
     }
 
 }

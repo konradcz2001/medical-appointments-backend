@@ -9,7 +9,10 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import jakarta.persistence.*;
+import org.springframework.data.jpa.convert.threeten.Jsr310JpaConverters;
+
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Entity
 @Table(name = "leaves")
@@ -25,10 +28,16 @@ public class Leave {
     LocalDateTime tillWhen;
     @JsonIgnore
     @ManyToOne
+    @JoinColumn(name="doctor_id", nullable=false)
     Doctor doctor;
 
     public Leave(final LocalDateTime sinceWhen, final LocalDateTime tillWhen) {
         this.sinceWhen = sinceWhen;
         this.tillWhen = tillWhen;
+    }
+
+    public void setDoctor(final Doctor doctor) {
+        doctor.addLeave(this);
+        this.doctor = doctor;
     }
 }

@@ -35,26 +35,26 @@ public class Doctor extends UserData{
             inverseJoinColumns = { @JoinColumn(name = "specialization_id") }
     )
     Set<Specialization> specializations = new HashSet<>();
-    @OneToMany(cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
     Set<Leave> leaves = new HashSet<>();
 
-    Doctor(final String firstName, final String lastName, final String email, final String phoneNumber, final Address address, final boolean isVerified, final byte[] avatar, final String profileDescription, final Set<Specialization> specializations, final Set<Leave> leaves) {
+    Doctor(final String firstName, final String lastName, final String email, final String phoneNumber,
+           final Address address, final boolean isVerified, final byte[] avatar, final String profileDescription) {
         super(firstName, lastName, email, phoneNumber);
         this.address = address;
         this.isVerified = isVerified;
         this.avatar = avatar;
         this.profileDescription = profileDescription;
-        this.specializations = specializations;
-        this.leaves = leaves;
     }
 
     void addSpecialization(final Specialization spec) {
+        spec.addDoctor(this);
         specializations.add(spec);
     }
     void removeSpecialization(Specialization spec) {
         specializations.remove(spec);
     }
-    void addLeave(final Leave leave) {
+    public void addLeave(final Leave leave) {
         leaves.add(leave);
     }
     void removeLeave(Leave leave){

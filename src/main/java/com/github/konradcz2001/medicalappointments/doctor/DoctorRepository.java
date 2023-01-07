@@ -5,7 +5,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 
-import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 
 interface DoctorRepository extends JpaRepository<Doctor, Long> {
@@ -14,8 +14,8 @@ interface DoctorRepository extends JpaRepository<Doctor, Long> {
      */
     Page<Doctor> findAllByFirstNameContainingIgnoreCase(String firstName, Pageable pageable);
     Page<Doctor> findAllByLastNameContainingIgnoreCase(String lastName, Pageable pageable);
-    Page<Doctor> findFirstByEmailContainingIgnoreCase(String email, Pageable pageable);
-    Page<Doctor> findFirstByPhoneNumberContainingIgnoreCase(String phoneNumber, Pageable pageable);
+    Page<Doctor> findAllByEmailContainingIgnoreCase(String email, Pageable pageable);
+    Page<Doctor> findAllByPhoneNumberContainingIgnoreCase(String phoneNumber, Pageable pageable);
     /*
         Address
      */
@@ -28,18 +28,18 @@ interface DoctorRepository extends JpaRepository<Doctor, Long> {
     /*
         Leaves
      */
-    @Query(value = " SELECT doctors.id, first_name, last_name, email, phone_number, country, state, city, " +
+    @Query(value = " SELECT DISTINCT doctors.id, first_name, last_name, email, phone_number, country, state, city, " +
             "street, number, zip_code, avatar, is_verified, profile_description FROM doctors " +
             "JOIN leaves ON doctor_id = doctors.id " +
-            "WHERE since_when AFTER ?1 AND till_when BEFORE ?2 " +
+            "WHERE since_when > ?1 AND till_when < ?2 " +
             "ORDER BY doctors.id ",
             countQuery = " SELECT count(*) FROM doctors ",
             nativeQuery = true)
-    Page<Doctor> findAllByAnyLeaveIsBetween(LocalDateTime after, LocalDateTime before, Pageable pageable);
+    Page<Doctor> findAllByAnyLeaveIsBetween(Timestamp after, Timestamp before, Pageable pageable);
     /*
         Other
      */
-    @Query(value = " SELECT doctors.id, first_name, last_name, email, phone_number, country, state, city, " +
+    @Query(value = " SELECT DISTINCT doctors.id, first_name, last_name, email, phone_number, country, state, city, " +
             "street, number, zip_code, avatar, is_verified, profile_description FROM doctors " +
             "JOIN doctor_specialization ON doctor_id = doctors.id " +
             "JOIN specializations ON specialization_id = specializations.id " +

@@ -30,5 +30,9 @@ public class Specialization {
         this.specialization = specialization;
     }
 
+    public void addDoctor(Doctor doctor){
+        doctors.add(doctor);
+    }
+
 
 }
