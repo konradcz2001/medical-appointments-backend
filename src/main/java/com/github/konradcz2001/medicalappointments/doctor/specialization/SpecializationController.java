@@ -26,7 +26,7 @@ class SpecializationController {
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Specialization> readById(@PathVariable int id){
+    ResponseEntity<Specialization> readById(@PathVariable Integer id){
         return repository.findById(id)
                 .map(ResponseEntity::ok).orElse(ResponseEntity.notFound().build());
     }
@@ -47,21 +47,29 @@ class SpecializationController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<?> updateSpecialization(@PathVariable int id, @RequestBody Specialization specialization){
-        if(repository.existsById(id)){
-            specialization.setId(id);
-            repository.save(specialization);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+    ResponseEntity<?> updateSpecialization(@PathVariable Integer id, @RequestBody Specialization specialization){
+        if(repository.existsBySpecialization(specialization.getSpecialization()))
+            throw new IllegalArgumentException("Such specialization already exists");
+
+        return repository.findById(id)
+                .map(spec -> {
+                    specialization.setId(id);
+                    specialization.setDoctors(spec.getDoctors());
+                    return ResponseEntity.ok(repository.save(specialization));
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<?> deleteSpecialization(@PathVariable int id){
-        if(repository.existsById(id)){
-            repository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+    ResponseEntity<?> deleteSpecialization(@PathVariable Integer id){
+        return repository.findById(id)
+                .map(spec -> {
+                    spec.getDoctors().forEach(doctor -> {
+                        doctor.removeSpecialization(spec);
+                    });
+                    repository.deleteById(id);
+                    return ResponseEntity.noContent().build();
+                })
+                .orElse(ResponseEntity.notFound().build());
     }
 }
