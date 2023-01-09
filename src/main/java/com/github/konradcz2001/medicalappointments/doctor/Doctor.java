@@ -28,7 +28,7 @@ public class Doctor extends UserData{
     String profileDescription;
 
 
-    @ManyToMany(cascade = CascadeType.ALL)
+    @ManyToMany
     @JoinTable(
             name = "doctor_specialization",
             joinColumns = { @JoinColumn(name = "doctor_id") },
@@ -51,7 +51,8 @@ public class Doctor extends UserData{
         spec.addDoctor(this);
         specializations.add(spec);
     }
-    void removeSpecialization(Specialization spec) {
+    public void removeSpecialization(Specialization spec) {
+        spec.removeDoctor(this);
         specializations.remove(spec);
     }
     public void addLeave(final Leave leave) {
