@@ -1,103 +1,93 @@
 package com.github.konradcz2001.medicalappointments.visit;
 
-import com.github.konradcz2001.medicalappointments.client.Client;
-import com.github.konradcz2001.medicalappointments.doctor.Doctor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 @RestController
 @RequestMapping("/visits")
 @CrossOrigin
 class VisitController {
-    private final VisitRepository repository;
     private final VisitService service;
 
-    VisitController(final VisitRepository repository, final VisitService service) {
-        this.repository = repository;
+    VisitController(final VisitService service) {
         this.service = service;
     }
 
     @GetMapping
-    ResponseEntity<List<Visit>> readAll(){
-        return ResponseEntity.ok(repository.findAll());
+    ResponseEntity<Page<Visit>> readAll(Pageable pageable){
+        return service.readAll(pageable);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Visit> readById(@PathVariable long id){
-        return repository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    ResponseEntity<Visit> readById(@PathVariable Long id){
+        return service.readById(id);
     }
 
     @GetMapping(params = "type")
-    ResponseEntity<List<Visit>> readAllByTypeOfVisit(@RequestParam String type){
-        List<Visit> visits = repository.findAllByType(type);
-        if(visits.isEmpty())
-            return ResponseEntity.notFound().build();
-
-        return ResponseEntity.ok(visits);
+    ResponseEntity<Page<Visit>> readAllByTypeOfVisit(@RequestParam String type, Pageable pageable){
+        return service.readAllByTypeOfVisit(type, pageable);
     }
 
-    @GetMapping(params = "date")
-    ResponseEntity<List<Visit>> readAllByDateOfVisit(@RequestParam LocalDateTime date){
-        List<Visit> visits = repository.findAllByDateOfVisit(date);
-        if(visits.isEmpty())
-            return ResponseEntity.notFound().build();
-
-        return ResponseEntity.ok(visits);
+    @GetMapping(params = "after")
+    ResponseEntity<Page<Visit>> readAllByDateOfVisitAfter(@RequestParam LocalDateTime after, Pageable pageable){
+        return service.readAllByDateOfVisitAfter(after, pageable);
     }
 
-    @GetMapping(params = "doctor")
-    ResponseEntity<List<Visit>> readAllByDoctor(@RequestParam Doctor doctor){
-        List<Visit> visits = repository.findAllByDoctor(doctor);
-        if(visits.isEmpty())
-            return ResponseEntity.notFound().build();
-
-        return ResponseEntity.ok(visits);
+    @GetMapping(params = "before")
+    ResponseEntity<Page<Visit>> readAllByDateOfVisitBefore(@RequestParam LocalDateTime before, Pageable pageable){
+        return service.readAllByDateOfVisitBefore(before, pageable);
     }
 
-    @GetMapping(params = "client")
-    ResponseEntity<List<Visit>> readAllByClient(@RequestParam Client client){
-        List<Visit> visits = repository.findAllByClient(client);
-        if(visits.isEmpty())
-            return ResponseEntity.notFound().build();
-
-        return ResponseEntity.ok(visits);
+    @GetMapping("/between")
+    ResponseEntity<Page<Visit>> readAllByDateOfVisitBetween(@RequestParam LocalDateTime after, @RequestParam LocalDateTime before, Pageable pageable){
+        return service.readAllByDateOfVisitBetween(after, before, pageable);
     }
+
+    //TODO params
+    @GetMapping(params = "doctorId")
+    ResponseEntity<Page<Visit>> readAllByDoctorId(@RequestParam Long doctorId, Pageable pageable){
+        return service.readAllByDoctorId(doctorId, pageable);
+    }
+
+    @GetMapping(params = "clientId")
+    ResponseEntity<Page<Visit>> readAllByClientId(@RequestParam Long clientId, Pageable pageable){
+        return service.readAllByClientId(clientId, pageable);
+    }
+
+    @GetMapping(params = "price")
+    ResponseEntity<Page<Visit>> readAllByPrice(@RequestParam BigDecimal price, Pageable pageable){
+        return service.readAllByPrice(price, pageable);
+    }
+
+    @GetMapping(params = "price1")
+    ResponseEntity<Page<Visit>> readAllByPriceLessThan(@RequestParam BigDecimal price, Pageable pageable){
+        return service.readAllByPriceLessThan(price, pageable);
+    }
+
+    @GetMapping(params = "price2")
+    ResponseEntity<Page<Visit>> readAllByPriceGreaterThan(@RequestParam BigDecimal price, Pageable pageable){
+        return service.readAllByPriceGreaterThan(price, pageable);
+    }
+
 
     @PostMapping
-    ResponseEntity<?> addVisit(@RequestBody Visit visit){
-        try {
-            service.addVisit(visit);
-        }
-        catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-        Visit result = repository.save(visit);
-        return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
+    ResponseEntity<?> createVisit(@RequestBody Visit visit){
+        return service.createVisit(visit);
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<?> updateVisit(@PathVariable long id, @RequestBody Visit visit){
-        if(repository.existsById(id)){
-            visit.setId(id);
-            repository.save(visit);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+    ResponseEntity<?> updateVisit(@PathVariable Long id, @RequestBody Visit visit){
+        return service.updateVisit(id, visit);
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<?> deleteVisit(@PathVariable long id){
-        if(repository.existsById(id)){
-            repository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+    ResponseEntity<?> deleteVisit(@PathVariable Long id){
+        return service.deleteVisit(id);
     }
 
 }

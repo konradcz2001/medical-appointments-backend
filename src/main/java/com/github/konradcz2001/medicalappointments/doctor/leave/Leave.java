@@ -1,36 +1,37 @@
 package com.github.konradcz2001.medicalappointments.doctor.leave;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.konradcz2001.medicalappointments.doctor.Doctor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+
 import java.time.LocalDateTime;
-import java.util.Objects;
 
 @Entity
 @Table(name = "leaves")
-@Getter
-@Setter
+@Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@NoArgsConstructor
 public class Leave {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    long id;
-    LocalDateTime sinceWhen;
-    LocalDateTime tillWhen;
+    Long id;
+    LocalDateTime start;
+    LocalDateTime end;
+    @JsonIgnore
+    @ManyToOne
+    @JoinColumn(name="doctor_id", nullable=false)
+    Doctor doctor;
 
-    @Override
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final Leave leave = (Leave) o;
-        return Objects.equals(sinceWhen, leave.sinceWhen) && Objects.equals(tillWhen, leave.tillWhen);
+    public Leave(final LocalDateTime start, final LocalDateTime end) {
+        this.start = start;
+        this.end = end;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(sinceWhen, tillWhen);
+    public void setDoctor(final Doctor doctor) {
+        doctor.addLeave(this);
+        this.doctor = doctor;
     }
 }

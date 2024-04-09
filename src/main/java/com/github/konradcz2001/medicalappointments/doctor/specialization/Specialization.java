@@ -1,33 +1,40 @@
 package com.github.konradcz2001.medicalappointments.doctor.specialization;
 
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.github.konradcz2001.medicalappointments.doctor.Doctor;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import java.util.HashSet;
+import java.util.Set;
 
 @Entity
 @Table(name = "specializations")
-@Getter
-@Setter
+@Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
+@NoArgsConstructor
 public class Specialization {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    int id;
+    Integer id;
+    @Column(unique = true)
     String specialization;
 
-    /*@Override
-    public boolean equals(final Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        final Specialization that = (Specialization) o;
-        return specialization.equals(that.specialization);
+    @JsonIgnore
+    @ManyToMany(mappedBy = "specializations")
+    Set<Doctor> doctors = new HashSet<>();
+
+    public Specialization(final String specialization) {
+        this.specialization = specialization;
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(specialization);
-    }*/
+    public void addDoctor(Doctor doctor){
+        doctors.add(doctor);
+    }
+    public void removeDoctor(Doctor doctor){
+        doctors.remove(doctor);
+    }
+
+
 }

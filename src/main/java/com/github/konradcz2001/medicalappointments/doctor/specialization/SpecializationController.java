@@ -1,70 +1,48 @@
 package com.github.konradcz2001.medicalappointments.doctor.specialization;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/doctors/specializations")
 @CrossOrigin
 class SpecializationController {
-    private final SpecializationRepository repository;
+    private final SpecializationService service;
 
-    SpecializationController(final SpecializationRepository repository) {
-        this.repository = repository;
+    SpecializationController(final SpecializationService service) {
+        this.service = service;
     }
 
     @GetMapping
-    ResponseEntity<List<Specialization>> readAll(){
-        List<Specialization> all = repository.findAll();
-        if(all.isEmpty())
-            return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(all);
+    ResponseEntity<Page<Specialization>> readAll(Pageable pageable){
+        return service.readAll(pageable);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Specialization> readById(@PathVariable int id){
-        return repository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    ResponseEntity<Specialization> readById(@PathVariable Integer id){
+        return service.readById(id);
     }
 
     @GetMapping(params = "specialization")
     ResponseEntity<Specialization> readBySpecialization(@RequestParam String specialization){
-        Specialization s = repository.findFirstBySpecialization(specialization);
-        if(s == null)
-            return ResponseEntity.notFound().build();
-        return  ResponseEntity.ok(s);
+        return service.readBySpecialization(specialization);
     }
 
     @PostMapping
-    ResponseEntity<?> addSpecialization(@RequestBody Specialization specialization){
-        List<Specialization> specializations = repository.findAll();
-        if(specializations.contains(specialization))
-            return ResponseEntity.badRequest().body("Such specialization already exist");
-
-        Specialization result = repository.save(specialization);
-        return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
+    ResponseEntity<?> createSpecialization(@RequestBody Specialization specialization){
+        return service.createSpecialization(specialization);
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<?> updateSpecialization(@PathVariable int id, @RequestBody Specialization specialization){
-        if(repository.existsById(id)){
-            specialization.setId(id);
-            repository.save(specialization);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+    ResponseEntity<?> updateSpecialization(@PathVariable Integer id, @RequestBody Specialization specialization){
+        return service.updateSpecialization(id, specialization);
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<?> deleteSpecialization(@PathVariable int id){
-        if(repository.existsById(id)){
-            repository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+    ResponseEntity<?> deleteSpecialization(@PathVariable Integer id){
+        return service.deleteSpecialization(id);
     }
 }
