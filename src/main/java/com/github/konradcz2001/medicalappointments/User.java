@@ -9,7 +9,7 @@ import lombok.experimental.FieldDefaults;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
-public class UserData {
+public abstract class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
@@ -20,7 +20,7 @@ public class UserData {
     @Column(unique = true)
     String phoneNumber;
 
-    public UserData(final String firstName, final String lastName, final String email, final String phoneNumber) {
+    public User(final String firstName, final String lastName, final String email, final String phoneNumber) {
         this.firstName = firstName;
         this.lastName = lastName;
         this.email = email;

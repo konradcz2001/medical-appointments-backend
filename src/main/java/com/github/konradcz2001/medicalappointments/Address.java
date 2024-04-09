@@ -16,6 +16,6 @@ public class Address {
     String state;   // voivodeship, ...
     String city;
     String street;
-    String number;  // house/apartment number
+    String houseNumber;  // apartment number
     String zipCode;
 }

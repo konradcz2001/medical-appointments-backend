@@ -7,10 +7,10 @@ import org.springframework.data.jpa.repository.Query;
 
 import java.sql.Timestamp;
 
-
+//TODO DoctorRepository
 interface DoctorRepository extends JpaRepository<Doctor, Long> {
     /*
-        UserData
+        User
      */
     Page<Doctor> findAllByFirstNameContainingIgnoreCase(String firstName, Pageable pageable);
     Page<Doctor> findAllByLastNameContainingIgnoreCase(String lastName, Pageable pageable);
@@ -23,13 +23,13 @@ interface DoctorRepository extends JpaRepository<Doctor, Long> {
     Page<Doctor> findAllByAddress_StateContainingIgnoreCase(String state, Pageable pageable);
     Page<Doctor> findAllByAddress_CityContainingIgnoreCase(String city, Pageable pageable);
     Page<Doctor> findAllByAddress_StreetContainingIgnoreCase(String street, Pageable pageable);
-    Page<Doctor> findAllByAddress_NumberContainingIgnoreCase(String number, Pageable pageable);
+    Page<Doctor> findAllByAddress_HouseNumberContainingIgnoreCase(String number, Pageable pageable);
     Page<Doctor> findAllByAddress_ZipCodeContainingIgnoreCase(String zipCode, Pageable pageable);
     /*
         Leaves
      */
     @Query(value = " SELECT DISTINCT doctors.id, first_name, last_name, email, phone_number, country, state, city, " +
-            "street, number, zip_code, avatar, is_verified, profile_description FROM doctors " +
+            "street, house_number, zip_code, avatar, is_verified, profile_description FROM doctors " +
             "JOIN leaves ON doctor_id = doctors.id " +
             "WHERE since_when > ?1 AND till_when < ?2 " +
             "ORDER BY doctors.id ",
@@ -40,7 +40,7 @@ interface DoctorRepository extends JpaRepository<Doctor, Long> {
         Other
      */
     @Query(value = " SELECT DISTINCT doctors.id, first_name, last_name, email, phone_number, country, state, city, " +
-            "street, number, zip_code, avatar, is_verified, profile_description FROM doctors " +
+            "street, house_number, zip_code, avatar, is_verified, profile_description FROM doctors " +
             "JOIN doctor_specialization ON doctor_id = doctors.id " +
             "JOIN specializations ON specialization_id = specializations.id " +
             "WHERE LOWER(specialization) LIKE '%' || LOWER(?1) || '%' " +
@@ -48,7 +48,7 @@ interface DoctorRepository extends JpaRepository<Doctor, Long> {
             countQuery = " SELECT count(*) FROM doctors ",
             nativeQuery = true)
     Page<Doctor> findAllByAnySpecializationContainingIgnoreCase(String specialization, Pageable pageable);
-    Page<Doctor> findAllByIsVerified(boolean isVerified, Pageable pageable);
+    Page<Doctor> findAllByVerifiedIs(boolean isVerified, Pageable pageable);
 
     @Query(value = " SELECT * FROM doctors " +
             "WHERE LOWER(first_name) LIKE '%' || LOWER(?1) || '%' " +

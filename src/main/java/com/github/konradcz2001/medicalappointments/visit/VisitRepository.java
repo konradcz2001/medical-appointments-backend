@@ -1,15 +1,20 @@
 package com.github.konradcz2001.medicalappointments.visit;
 
-import com.github.konradcz2001.medicalappointments.client.Client;
-import com.github.konradcz2001.medicalappointments.doctor.Doctor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.List;
 
 interface VisitRepository extends JpaRepository<Visit, Long> {
-    List<Visit> findAllByDateOfVisit(LocalDateTime date);
-    List<Visit> findAllByType(String type);
-    List<Visit> findAllByDoctor(Doctor doctor);
-    List<Visit> findAllByClient(Client client);
+    Page<Visit> findAllByDateOfVisitAfter(LocalDateTime date, Pageable pageable);
+    Page<Visit> findAllByDateOfVisitBefore(LocalDateTime date, Pageable pageable);
+    Page<Visit> findAllByDateOfVisitAfterAndDateOfVisitBefore(LocalDateTime after, LocalDateTime before, Pageable pageable);
+    Page<Visit> findAllByTypeContainingIgnoreCase(String type, Pageable pageable);
+    Page<Visit> findAllByDoctorId(Long doctor, Pageable pageable);
+    Page<Visit> findAllByClientId(Long client, Pageable pageable);
+    Page<Visit> findAllByPrice(BigDecimal price, Pageable pageable);
+    Page<Visit> findAllByPriceLessThanEqual(BigDecimal price, Pageable pageable);
+    Page<Visit> findAllByPriceGreaterThanEqual(BigDecimal price, Pageable pageable);
 }

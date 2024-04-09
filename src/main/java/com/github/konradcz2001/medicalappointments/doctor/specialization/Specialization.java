@@ -11,8 +11,7 @@ import java.util.Set;
 
 @Entity
 @Table(name = "specializations")
-@Getter
-@Setter
+@Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 public class Specialization {

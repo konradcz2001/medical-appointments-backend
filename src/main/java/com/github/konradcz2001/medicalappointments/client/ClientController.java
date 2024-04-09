@@ -1,74 +1,84 @@
 package com.github.konradcz2001.medicalappointments.client;
 
+import com.github.konradcz2001.medicalappointments.review.Review;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-
-import java.net.URI;
-import java.util.List;
 
 @RestController
 @RequestMapping("/clients")
 @CrossOrigin
 class ClientController {
-    private final ClientRepository repository;
+    private final ClientService facade;
 
-    ClientController(final ClientRepository repository) {
-        this.repository = repository;
+    ClientController(final ClientService facade) {
+        this.facade = facade;
     }
 
     @GetMapping
-    ResponseEntity<List<Client>> readAll(){
-        return ResponseEntity.ok(repository.findAll());
+    ResponseEntity<Page<Client>> readAll(Pageable pageable){
+        return facade.readAll(pageable);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Client> readById(@PathVariable long id){
-        return repository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+    ResponseEntity<Client> readById(@PathVariable Long id){
+        return facade.readById(id);
     }
 
-    @GetMapping(params = "name")
-    ResponseEntity<List<Client>> readAllByName(@RequestParam String name){
-        List<Client> clients = repository.findAllByName(name);
-        if(clients.isEmpty())
-            return ResponseEntity.notFound().build();
-
-        return ResponseEntity.ok(clients);
+    @GetMapping(params = "firstName")
+    ResponseEntity<Page<Client>> readAllByFirstName(@RequestParam String firstName, Pageable pageable){
+        return facade.readAllByFirstName(firstName, pageable);
     }
 
-    @GetMapping(params = "surname")
-    ResponseEntity<List<Client>> readAllBySurname(@RequestParam String surname){
-        List<Client> clients = repository.findAllBySurname(surname);
-        if(clients.isEmpty())
-            return ResponseEntity.notFound().build();
-
-        return ResponseEntity.ok(clients);
+    @GetMapping(params = "lastName")
+    ResponseEntity<Page<Client>> readAllByLastName(@RequestParam String lastName, Pageable pageable){
+        return facade.readAllByLastName(lastName, pageable);
     }
 
     @PostMapping
-    ResponseEntity<?> addCustomer(@RequestBody Client client){
-        Client result = repository.save(client);
-        return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
+    ResponseEntity<?> createClient(@RequestBody Client client){
+        return facade.createClient(client);
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<?> updateCustomer(@PathVariable long id, @RequestBody Client client){
-        if(repository.existsById(id)){
-            client.setId(id);
-            repository.save(client);
-            return ResponseEntity.noContent().build();
-        }
-        return ResponseEntity.notFound().build();
+    ResponseEntity<?> updateClient(@PathVariable Long id, @RequestBody Client client){
+        return facade.updateCustomer(id, client);
     }
 
     @DeleteMapping("/{id}")
-    ResponseEntity<?> deleteCustomer(@PathVariable long id){
-        if(repository.existsById(id)){
-            repository.deleteById(id);
-            return ResponseEntity.noContent().build();
-        }
+    ResponseEntity<?> deleteClient(@PathVariable Long id){
+        return facade.deleteCustomer(id);
+    }
 
-        return ResponseEntity.notFound().build();
+    //TODO comments
+    /**
+     *
+     *
+     * @param clientId
+     * @param review
+     * @return
+     */
+
+    @PatchMapping("/{clientId}/add-review")
+    ResponseEntity<?> addReview(@PathVariable Long clientId, @RequestBody Review review){
+        return facade.addReview(clientId, review);
+    }
+
+
+    @PatchMapping(value = "/{clientId}/remove-review")
+    ResponseEntity<?> removeReview(@PathVariable Long clientId, @RequestParam Long reviewId){
+        return facade.removeReview(clientId, reviewId);
+    }
+
+    @PatchMapping(value = "/{clientId}/update-review")
+    ResponseEntity<?> updateReview(@PathVariable Long clientId, @RequestBody Review review){
+        return facade.updateReview(clientId, review);
+    }
+
+
+    @GetMapping("/{clientId}/reviews")
+    ResponseEntity<Page<Review>> readAllReviews(@PathVariable Long clientId, Pageable pageable){
+        return facade.readAllReviews(clientId, pageable);
     }
 }

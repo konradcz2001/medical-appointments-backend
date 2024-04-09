@@ -2,12 +2,12 @@ package com.github.konradcz2001.medicalappointments.doctor;
 
 import com.github.konradcz2001.medicalappointments.doctor.leave.Leave;
 import com.github.konradcz2001.medicalappointments.doctor.specialization.Specialization;
+import com.github.konradcz2001.medicalappointments.review.Review;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Set;
@@ -16,140 +16,95 @@ import java.util.Set;
 @RequestMapping("/doctors")
 @CrossOrigin
 class DoctorController {
-    private final DoctorRepository repository;
-    private final DoctorFacade facade;
+    private final DoctorService service;
 
-    DoctorController(final DoctorRepository repository, final DoctorFacade facade) {
-        this.repository = repository;
-        this.facade = facade;
+    DoctorController(final DoctorService service) {
+        this.service = service;
     }
 
     @GetMapping
     ResponseEntity<Page<Doctor>> readAll(Pageable pageable){
-        return ResponseEntity.ok(repository.findAll(pageable));
+        return service.readAll(pageable);
     }
 
     @GetMapping("/{id}")
     ResponseEntity<Doctor> readById(@PathVariable Long id){
-        return repository.findById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return service.readById(id);
     }
 
-    @GetMapping(params = "first-name")
-    ResponseEntity<Page<Doctor>> readAllByName(@RequestParam(name = "first-name") String firstName, Pageable pageable){
-        Page<Doctor> doctors = repository.findAllByFirstNameContainingIgnoreCase(firstName, pageable);
-        if(doctors.isEmpty())
-            return ResponseEntity.notFound().build();
-
-        return ResponseEntity.ok(doctors);
+    @GetMapping(params = "firstName")
+    ResponseEntity<Page<Doctor>> readAllByFirstName(@RequestParam String firstName, Pageable pageable){
+        return service.readAllByFirstName(firstName, pageable);
     }
 
-    @GetMapping(params = "last-name")
-    ResponseEntity<Page<Doctor>> readAllBySurname(@RequestParam(name = "last-name") String lastName, Pageable pageable){
-        Page<Doctor> doctors = repository.findAllByLastNameContainingIgnoreCase(lastName, pageable);
-        if(doctors.isEmpty())
-            return ResponseEntity.notFound().build();
-
-        return ResponseEntity.ok(doctors);
+    @GetMapping(params = "lastName")
+    ResponseEntity<Page<Doctor>> readAllByLastName(@RequestParam String lastName, Pageable pageable){
+        return service.readAllByLastName(lastName, pageable);
     }
 
     @GetMapping(params = "specialization")
     ResponseEntity<Page<Doctor>> readAllBySpecialization(@RequestParam String specialization, Pageable pageable){
-        Page<Doctor> doctors = repository.findAllByAnySpecializationContainingIgnoreCase(specialization, pageable);
-        if(doctors.isEmpty())
-            return ResponseEntity.notFound().build();
+        return service.readAllBySpecialization(specialization, pageable);
+    }
 
-        return ResponseEntity.ok(doctors);
+    @GetMapping(path = "/available", params = "date")
+    ResponseEntity<List<Doctor>> readAllAvailableByDate(@RequestParam LocalDateTime date){
+        return service.readAllAvailableByDate(date);
     }
 
     @PostMapping
-    ResponseEntity<Doctor> addDoctor(@RequestBody Doctor doctor){
-        Doctor result = facade.addDoctor(doctor);
-        return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
+    ResponseEntity<?> createDoctor(@RequestBody Doctor doctor){
+        return service.createDoctor(doctor);
     }
 
 
     @PutMapping("/{id}")
     ResponseEntity<?> updateDoctor(@PathVariable Long id, @RequestBody Doctor toUpdate){
-        return repository.findById(id)
-                .map(doctor -> ResponseEntity.ok(facade.updateDoctor(id, doctor, toUpdate)))
-                .orElse(ResponseEntity.notFound().build());
+        return service.updateDoctor(id, toUpdate);
     }
 
     @DeleteMapping("/{id}")
     ResponseEntity<?> deleteDoctor(@PathVariable Long id){
-        return repository.findById(id)
-                .map(doctor -> {
-                    //doctor.removeSpecialization();
-                    repository.deleteById(id);
-                    return ResponseEntity.noContent().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        return service.deleteDoctor(id);
     }
+
 
     @PatchMapping("/{id}/add-leave")
     ResponseEntity<?> addLeave(@PathVariable Long id, @RequestBody Leave leave){
-        return repository.findById(id)
-                .map(doctor ->{
-                    facade.addLeave(leave, doctor);
-                    return ResponseEntity.noContent().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        return service.addLeave(id, leave);
+    }
+
+
+    @PatchMapping(value = "/{doctorId}/remove-leave", params = "id")
+    ResponseEntity<?> removeLeave(@PathVariable Long doctorId, @RequestParam Long id){
+        return service.removeLeave(doctorId, id);
+    }
+
+
+    @GetMapping("/{id}/leaves")
+    ResponseEntity<Page<Leave>> readAllLeaves(@PathVariable Long id, Pageable pageable){
+        return service.readAllLeaves(id, pageable);
     }
 
     @PatchMapping("/{id}/add-specializations")
     ResponseEntity<?> addSpecializations(@PathVariable Long id, @RequestBody Set<Integer> specializationIds){
-        return repository.findById(id)
-                .map(doctor -> {
-                    facade.addSpecializations(doctor, specializationIds);
-                    return ResponseEntity.noContent().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @PatchMapping(value = "/{doctorId}/remove-leave", params = "id")
-    ResponseEntity<?> removeLeave(@PathVariable Long doctorId, @RequestParam Long id){
-        return repository.findById(doctorId)
-                .map(doctor -> {
-                    facade.removeLeave(id, doctor);
-                    return ResponseEntity.noContent().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
+        return service.addSpecializations(id, specializationIds);
     }
 
     @PatchMapping(value = "/{doctorId}/remove-specialization", params = "id")
     ResponseEntity<?> removeSpecialization(@PathVariable Long doctorId, @RequestParam Integer id){
-        return repository.findById(doctorId)
-                .map(doctor -> {
-                    facade.removeSpecialization(id, doctor);
-                    return ResponseEntity.noContent().build();
-                })
-                .orElse(ResponseEntity.notFound().build());
-    }
-
-    @GetMapping("/{id}/leaves")
-    ResponseEntity<Set<Leave>> readAllLeaves(@PathVariable Long id){
-        return repository.findById(id)
-                .map(Doctor::getLeaves)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return service.removeSpecialization(doctorId, id);
     }
 
     @GetMapping("/{id}/specializations")
     ResponseEntity<Set<Specialization>> readAllSpecializations(@PathVariable Long id){
-        return repository.findById(id)
-                .map(Doctor::getSpecializations)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+        return service.readAllSpecializations(id);
     }
 
-    @GetMapping(path = "/available", params = "date")
-    ResponseEntity<List<Doctor>> readAllAvailableByDate(@RequestParam LocalDateTime date){
-        List<Doctor> doctors = facade.readAllAvailableByDate(date);
-        if(doctors.isEmpty())
-            return ResponseEntity.notFound().build();
-        return ResponseEntity.ok(doctors);
+
+    @GetMapping("/{id}/reviews")
+    ResponseEntity<Page<Review>> readAllReviews(@PathVariable Long id, Pageable pageable){
+        return service.readAllReviews(id, pageable);
     }
 
 }

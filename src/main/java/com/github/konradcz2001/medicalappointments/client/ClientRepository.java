@@ -1,11 +1,11 @@
 package com.github.konradcz2001.medicalappointments.client;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
-
-import java.util.List;
 
 interface ClientRepository extends JpaRepository<Client, Long> {
 
-    List<Client> findAllByName(String name);
-    List<Client> findAllBySurname(String surname);
+    Page<Client> findAllByFirstNameContaining(String firstName, Pageable pageable);
+    Page<Client> findAllByLastNameContaining(String lastName, Pageable pageable);
 }

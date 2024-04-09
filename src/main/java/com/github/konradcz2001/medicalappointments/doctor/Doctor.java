@@ -1,9 +1,10 @@
 package com.github.konradcz2001.medicalappointments.doctor;
 
 import com.github.konradcz2001.medicalappointments.Address;
-import com.github.konradcz2001.medicalappointments.UserData;
+import com.github.konradcz2001.medicalappointments.User;
 import com.github.konradcz2001.medicalappointments.doctor.leave.Leave;
 import com.github.konradcz2001.medicalappointments.doctor.specialization.Specialization;
+import com.github.konradcz2001.medicalappointments.review.Review;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -20,13 +21,15 @@ import java.util.Set;
 @Setter(AccessLevel.PACKAGE)
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
-public class Doctor extends UserData{
+public class Doctor extends User {
     @Embedded
     Address address;
     boolean isVerified;
     byte[] avatar;
     String profileDescription;
 
+    @OneToMany(mappedBy = "doctor")
+    Set<Review> reviews = new HashSet<>();
 
     @ManyToMany
     @JoinTable(
@@ -35,8 +38,11 @@ public class Doctor extends UserData{
             inverseJoinColumns = { @JoinColumn(name = "specialization_id") }
     )
     Set<Specialization> specializations = new HashSet<>();
+
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
     Set<Leave> leaves = new HashSet<>();
+
+
 
     Doctor(final String firstName, final String lastName, final String email, final String phoneNumber,
            final Address address, final boolean isVerified, final byte[] avatar, final String profileDescription) {

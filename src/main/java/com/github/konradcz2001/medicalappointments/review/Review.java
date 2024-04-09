@@ -1,33 +1,29 @@
-package com.github.konradcz2001.medicalappointments.visit;
+package com.github.konradcz2001.medicalappointments.review;
 
 import com.github.konradcz2001.medicalappointments.client.Client;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.Setter;
+import jakarta.persistence.*;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
-import jakarta.persistence.*;
-
-import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "visits")
-@Getter
-@Setter(AccessLevel.PACKAGE)
+@Table(name = "reviews")
+@Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
-public class Visit {
+@NoArgsConstructor
+public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    LocalDateTime dateOfVisit;
-    String type;
-    String notes;
-    BigDecimal price;
+    LocalDateTime date;
+    Short rating; // 1-5 stars
+    String description;
+
     @ManyToOne
     Doctor doctor;
+
     @ManyToOne
     Client client;
-
 }
