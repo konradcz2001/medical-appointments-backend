@@ -1,5 +1,7 @@
 package com.github.konradcz2001.medicalappointments.review;
 
+import com.github.konradcz2001.medicalappointments.exception.MessageType;
+import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +22,12 @@ class ReviewService {
 
     ResponseEntity<Page<Review>> readAll(Pageable pageable) {
         return returnResponse(() -> repository.findAll(pageable));
+    }
+
+    ResponseEntity<Review> readById(Long id) {
+        return  repository.findById(id)
+                .map(ResponseEntity::ok)
+                .orElseThrow(() -> new ResourceNotFoundException(MessageType.REVIEW, id));
     }
 
 
@@ -51,5 +59,6 @@ class ReviewService {
     ResponseEntity<Page<Review>> readAllByRatingGreaterThan(Short number, Pageable pageable) {
         return returnResponse(() -> repository.findAllByRatingGreaterThan(number, pageable));
     }
+
 
 }

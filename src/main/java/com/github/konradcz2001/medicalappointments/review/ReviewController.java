@@ -22,6 +22,11 @@ class ReviewController {
         return service.readAll(pageable);
     }
 
+    @GetMapping("/{id}")
+    ResponseEntity<Review> readById(@PathVariable Long id){
+        return service.readById(id);
+    }
+
 
     @GetMapping("/between")
     ResponseEntity<Page<Review>> readAllBetween(@RequestParam LocalDateTime after, @RequestParam LocalDateTime before, Pageable pageable){

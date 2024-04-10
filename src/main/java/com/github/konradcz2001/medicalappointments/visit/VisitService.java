@@ -2,6 +2,8 @@ package com.github.konradcz2001.medicalappointments.visit;
 
 import com.github.konradcz2001.medicalappointments.client.ClientFacade;
 import com.github.konradcz2001.medicalappointments.doctor.DoctorFacade;
+import com.github.konradcz2001.medicalappointments.exception.MessageType;
+import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -12,6 +14,7 @@ import java.net.URI;
 import java.time.LocalDateTime;
 
 import static com.github.konradcz2001.medicalappointments.MedicalAppointmentsApplication.returnResponse;
+import static com.github.konradcz2001.medicalappointments.exception.MessageType.*;
 
 @Service
 class VisitService {
@@ -26,17 +29,6 @@ class VisitService {
     }
 
     ResponseEntity<?> createVisit(Visit visit){
-        try {
-            addVisit2(visit);
-        }
-        catch (IllegalArgumentException e){
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-        Visit result = repository.save(visit);
-        return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
-    }
-    //TODO add visit
-    void addVisit2(Visit visit) throws IllegalArgumentException {
         Long doctorId = visit.getDoctor().getId();
         Long clientId = visit.getClient().getId();
 
@@ -44,21 +36,20 @@ class VisitService {
                 .ifPresentOrElse(
                         doctor -> {
                             visit.setDoctor(doctor);
-                            //repository.save(visit);
                             clientFacade.findById(clientId)
                                     .ifPresentOrElse(
                                             visit::setClient,
                                             () -> {
-                                                throw new IllegalArgumentException("There is no client with such id");
+                                                throw new ResourceNotFoundException(CLIENT, clientId);
                                             }
                                     );
                         }, () -> {
-                            throw new IllegalArgumentException("There is no doctor with such id");
+                            throw new ResourceNotFoundException(DOCTOR, doctorId);
                         }
                 );
+        Visit result = repository.save(visit);
+        return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
     }
-
-
 
     ResponseEntity<Page<Visit>> readAll(Pageable pageable){
         return returnResponse(() -> repository.findAll(pageable));
@@ -67,7 +58,7 @@ class VisitService {
     ResponseEntity<Visit> readById(Long id){
         return repository.findById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException(VISIT, id));
     }
 
     ResponseEntity<Page<Visit>> readAllByTypeOfVisit(String type, Pageable pageable){
@@ -103,7 +94,7 @@ class VisitService {
                     //TODO Doctor and Client?
                     return ResponseEntity.ok(repository.save(toUpdate));
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException(VISIT, id));
     }
 
     ResponseEntity<?> deleteVisit(Long id){
@@ -113,20 +104,20 @@ class VisitService {
                     repository.deleteById(id);
                     return ResponseEntity.noContent().build();
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException(VISIT, id));
 
     }
 
 
-    public ResponseEntity<Page<Visit>> readAllByPrice(BigDecimal price, Pageable pageable) {
+    ResponseEntity<Page<Visit>> readAllByPrice(BigDecimal price, Pageable pageable) {
         return returnResponse(() -> repository.findAllByPrice(price, pageable));
     }
 
-    public ResponseEntity<Page<Visit>> readAllByPriceLessThan(BigDecimal price, Pageable pageable) {
+    ResponseEntity<Page<Visit>> readAllByPriceLessThan(BigDecimal price, Pageable pageable) {
         return returnResponse(() -> repository.findAllByPriceLessThanEqual(price, pageable));
     }
 
-    public ResponseEntity<Page<Visit>> readAllByPriceGreaterThan(BigDecimal price, Pageable pageable) {
+    ResponseEntity<Page<Visit>> readAllByPriceGreaterThan(BigDecimal price, Pageable pageable) {
         return returnResponse(() -> repository.findAllByPriceGreaterThanEqual(price, pageable));
     }
 }

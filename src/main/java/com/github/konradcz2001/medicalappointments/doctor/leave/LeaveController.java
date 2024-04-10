@@ -1,5 +1,6 @@
 package com.github.konradcz2001.medicalappointments.doctor.leave;
 
+import com.github.konradcz2001.medicalappointments.doctor.specialization.Specialization;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -20,6 +21,11 @@ class LeaveController {
     @GetMapping
     ResponseEntity<Page<Leave>> readAll(Pageable pageable){
         return service.readAll(pageable);
+    }
+
+    @GetMapping("/{id}")
+    ResponseEntity<Leave> readById(@PathVariable Long id){
+        return service.readById(id);
     }
 
     @GetMapping("/starts-after")

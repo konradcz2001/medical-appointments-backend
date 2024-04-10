@@ -1,5 +1,6 @@
 package com.github.konradcz2001.medicalappointments;
 
+import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.data.domain.Page;
@@ -18,7 +19,7 @@ public class MedicalAppointmentsApplication {
     public static <T> ResponseEntity<Page<T>> returnResponse(Supplier<Page<T>> supplier){
         Page<T> all = supplier.get();
         if(all.isEmpty())
-            return ResponseEntity.notFound().build();
+            throw new EmptyPageException();
         return ResponseEntity.ok(all);
     }
 

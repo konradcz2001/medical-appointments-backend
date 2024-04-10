@@ -4,6 +4,9 @@ import com.github.konradcz2001.medicalappointments.doctor.leave.Leave;
 import com.github.konradcz2001.medicalappointments.doctor.leave.LeaveFacade;
 import com.github.konradcz2001.medicalappointments.doctor.specialization.Specialization;
 import com.github.konradcz2001.medicalappointments.doctor.specialization.SpecializationFacade;
+import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
+import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
+import com.github.konradcz2001.medicalappointments.exception.WrongLeaveException;
 import com.github.konradcz2001.medicalappointments.review.Review;
 import com.github.konradcz2001.medicalappointments.review.ReviewFacade;
 import org.springframework.data.domain.Page;
@@ -14,11 +17,10 @@ import org.springframework.stereotype.Service;
 import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import static com.github.konradcz2001.medicalappointments.MedicalAppointmentsApplication.returnResponse;
+import static com.github.konradcz2001.medicalappointments.exception.MessageType.*;
 
 @Service
 class DoctorService {
@@ -42,7 +44,7 @@ class DoctorService {
     ResponseEntity<Doctor> readById(Long id){
         return repository.findById(id)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
     }
 
     ResponseEntity<Page<Doctor>> readAllByFirstName(String firstName, Pageable pageable){
@@ -65,7 +67,7 @@ class DoctorService {
                     repository.deleteById(id);
                     return ResponseEntity.noContent().build();
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
     }
 
     ResponseEntity<?> addLeave(Long id, Leave leave){
@@ -74,42 +76,42 @@ class DoctorService {
                 .map(doctor ->{
 
 
-                    if(leave.getEnd().isBefore(LocalDateTime.now()))
-                        throw new IllegalArgumentException("The leave is over");
+                    if(leave.getEndDate().isBefore(LocalDateTime.now()))
+                        throw new WrongLeaveException("The leave is over");
 
-                    if(leave.getStart().isAfter(leave.getEnd()))
-                        throw new IllegalArgumentException("The beginning of the leave cannot be later than the end");
+                    if(leave.getStartDate().isAfter(leave.getEndDate()))
+                        throw new WrongLeaveException("The beginning of the leave cannot be later than the end");
 
                     leave.setId(null);
 
                     doctor.getLeaves().forEach(doctorLeave -> {
-                        var ls = leave.getStart();
-                        var le = leave.getEnd();
-                        var dls = doctorLeave.getStart();
-                        var dle = doctorLeave.getEnd();
+                        var ls = leave.getStartDate();
+                        var le = leave.getEndDate();
+                        var dls = doctorLeave.getStartDate();
+                        var dle = doctorLeave.getEndDate();
 
 
                         // dls ls le dle
                         if((ls.isAfter(dls) || ls.isEqual(dls)) && (le.isBefore(dle) || le.isEqual(dle))){
-                            throw new IllegalArgumentException("Leave for the given period of time already exists");
+                            throw new WrongLeaveException("Leave for the given period of time already exists");
                         }
                         // ls dls dle le
                         else if((ls.isBefore(dls) || ls.isEqual(dls)) && (le.isAfter(dle) || le.isEqual(dle))){
-                            doctorLeave.setStart(leave.getStart());
-                            doctorLeave.setEnd(leave.getEnd());
+                            doctorLeave.setStartDate(leave.getStartDate());
+                            doctorLeave.setEndDate(leave.getEndDate());
                             leaveFacade.save(doctorLeave);
                         }
                         // ls dls le dle
                         else if((ls.isBefore(dls) || ls.isEqual(dls)) && (le.isBefore(dle) || le.isEqual(dle)) && (le.isAfter(dls) || le.isEqual(dls))){
                             if(dls.isBefore(LocalDateTime.now()))
-                                throw new IllegalArgumentException("Leave for the given period of time already exists");
+                                throw new WrongLeaveException("Leave for the given period of time already exists");
 
-                            doctorLeave.setStart(leave.getStart());
+                            doctorLeave.setStartDate(leave.getStartDate());
                             leaveFacade.save(doctorLeave);
                         }
                         // dls ls dle le
                         else if((ls.isAfter(dls) || ls.isEqual(dls)) && (le.isAfter(dle) || le.isEqual(dle)) && (dle.isAfter(ls) || dle.isEqual(ls))){
-                            doctorLeave.setEnd(leave.getEnd());
+                            doctorLeave.setEndDate(leave.getEndDate());
                             leaveFacade.save(doctorLeave);
                         }
                         // ls le dls dle || dls dle ls le
@@ -126,7 +128,7 @@ class DoctorService {
 
                     return ResponseEntity.noContent().build();
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
 
     }
 
@@ -140,10 +142,9 @@ class DoctorService {
                         return ResponseEntity.noContent().build();
                     }
 
-                     return ResponseEntity.notFound().build();
-                })
-                .orElse(ResponseEntity.notFound().build()))
-                .orElse(ResponseEntity.notFound().build());
+                     throw new WrongLeaveException("Doctor with id " + doctorId + " does not have the specified leave with id " + leaveId);
+                }).orElseThrow(() -> new ResourceNotFoundException(LEAVE, leaveId)))
+                .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, doctorId));
 
     }
 
@@ -155,23 +156,22 @@ class DoctorService {
                             repository.save(doctor);
                             return ResponseEntity.noContent().build();
                         })
-                        .orElse(ResponseEntity.notFound().build()))
-                .orElse(ResponseEntity.notFound().build());
+                        .orElseThrow(() -> new ResourceNotFoundException(SPECIALIZATION, specializationId.longValue())))
+                .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, doctorId));
     }
 
-    ResponseEntity<List<Doctor>> readAllAvailableByDate(LocalDateTime date){
-        List<Doctor> doctors = repository.findAll().stream()
-                .filter(doctor -> isAvailableByDate(date, doctor))
-                .collect(Collectors.toList());
+    ResponseEntity<Page<Doctor>> readAllAvailableByDate(LocalDateTime date, Pageable pageable){
+        Page<Doctor> doctors = repository.findAll(pageable)
+                .map(doctor -> isAvailableByDate(date, doctor) ? doctor : null);
 
         if(doctors.isEmpty())
-            return ResponseEntity.notFound().build();
+            throw new EmptyPageException();
         return ResponseEntity.ok(doctors);
     }
 
     boolean isAvailableByDate(LocalDateTime date, Doctor doctor){
         return doctor.getLeaves().stream()
-                .allMatch(leave -> (leave.getStart().isAfter(date) || leave.getEnd().isBefore(date)));
+                .allMatch(leave -> (leave.getStartDate().isAfter(date) || leave.getEndDate().isBefore(date)));
     }
 
     ResponseEntity<?> createDoctor(Doctor doctor){
@@ -192,7 +192,7 @@ class DoctorService {
                     toUpdate.setLeaves(doctor.getLeaves());
                     return ResponseEntity.ok(repository.save(toUpdate));
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
     }
 
     ResponseEntity<Page<Leave>> readAllLeaves(Long id, Pageable pageable){
@@ -203,7 +203,7 @@ class DoctorService {
         return repository.findById(id)
                 .map(Doctor::getSpecializations)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
     }
 
     ResponseEntity<?> addSpecializations(Long doctorId, Set<Integer> specializationIds) {
@@ -212,17 +212,17 @@ class DoctorService {
                 .map(doctor -> {
                     specializationIds.forEach(id -> specializationFacade.findById(id)
                             .ifPresentOrElse(doctor::addSpecialization,
-                                    () -> {throw new IllegalArgumentException("Specialization with id = " + id + " does not exist");}
+                                    () -> {throw new ResourceNotFoundException(SPECIALIZATION, id.longValue());}
                             ));
 
                     repository.save(doctor);
                     return ResponseEntity.noContent().build();
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, doctorId));
 
     }
 
-    public ResponseEntity<Page<Review>> readAllReviews(Long id, Pageable pageable) {
+    ResponseEntity<Page<Review>> readAllReviews(Long id, Pageable pageable) {
         return returnResponse(() -> reviewFacade.findAllByDoctorId(id, pageable));
     }
 }

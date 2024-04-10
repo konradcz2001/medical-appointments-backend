@@ -18,16 +18,16 @@ public class Leave {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
-    LocalDateTime start;
-    LocalDateTime end;
+    LocalDateTime startDate;
+    LocalDateTime endDate;
     @JsonIgnore
     @ManyToOne
     @JoinColumn(name="doctor_id", nullable=false)
     Doctor doctor;
 
-    public Leave(final LocalDateTime start, final LocalDateTime end) {
-        this.start = start;
-        this.end = end;
+    public Leave(final LocalDateTime startDate, final LocalDateTime endDate) {
+        this.startDate = startDate;
+        this.endDate = endDate;
     }
 
     public void setDoctor(final Doctor doctor) {

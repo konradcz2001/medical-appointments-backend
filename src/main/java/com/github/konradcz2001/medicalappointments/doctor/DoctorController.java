@@ -48,8 +48,8 @@ class DoctorController {
     }
 
     @GetMapping(path = "/available", params = "date")
-    ResponseEntity<List<Doctor>> readAllAvailableByDate(@RequestParam LocalDateTime date){
-        return service.readAllAvailableByDate(date);
+    ResponseEntity<Page<Doctor>> readAllAvailableByDate(@RequestParam LocalDateTime date, Pageable pageable){
+        return service.readAllAvailableByDate(date, pageable);
     }
 
     @PostMapping
