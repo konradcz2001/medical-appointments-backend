@@ -2,7 +2,6 @@ package com.github.konradcz2001.medicalappointments.visit;
 
 import com.github.konradcz2001.medicalappointments.client.ClientFacade;
 import com.github.konradcz2001.medicalappointments.doctor.DoctorFacade;
-import com.github.konradcz2001.medicalappointments.exception.MessageType;
 import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

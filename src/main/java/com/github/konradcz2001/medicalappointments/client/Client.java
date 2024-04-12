@@ -1,11 +1,9 @@
 package com.github.konradcz2001.medicalappointments.client;
 
+import com.github.konradcz2001.medicalappointments.Address;
 import com.github.konradcz2001.medicalappointments.User;
 import com.github.konradcz2001.medicalappointments.review.Review;
-import jakarta.persistence.CascadeType;
-import jakarta.persistence.Entity;
-import jakarta.persistence.OneToMany;
-import jakarta.persistence.Table;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -18,10 +16,13 @@ import java.util.Set;
 @Entity
 @Table(name = "clients")
 @Getter
-@Setter(AccessLevel.PACKAGE)
+@Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 public class Client extends User {
+
+    @Embedded
+    Address address;
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
     Set<Review> reviews = new HashSet<>();

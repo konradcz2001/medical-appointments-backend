@@ -1,9 +1,8 @@
 package com.github.konradcz2001.medicalappointments;
 
+import jakarta.persistence.Embeddable;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
-
-import jakarta.persistence.*;
 
 @Embeddable
 @Getter

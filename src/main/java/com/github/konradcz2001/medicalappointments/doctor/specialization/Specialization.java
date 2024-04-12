@@ -2,10 +2,12 @@ package com.github.konradcz2001.medicalappointments.doctor.specialization;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
-import lombok.*;
+import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
 
-import jakarta.persistence.*;
 import java.util.HashSet;
 import java.util.Set;
 

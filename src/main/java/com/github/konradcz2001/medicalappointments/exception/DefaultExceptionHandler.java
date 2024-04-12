@@ -1,12 +1,13 @@
 package com.github.konradcz2001.medicalappointments.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
-import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
 import java.time.LocalDateTime;
+
+import static org.springframework.http.HttpStatus.*;
 
 
 @ControllerAdvice
@@ -17,10 +18,10 @@ public class DefaultExceptionHandler {
         ApiError apiError = new ApiError(
                 request.getRequestURI(),
                 ex.getMessage(),
-                HttpStatus.NOT_FOUND.value(),
+                NOT_FOUND.value(),
                 LocalDateTime.now());
 
-        return new ResponseEntity<>(apiError, HttpStatus.NOT_FOUND);
+        return new ResponseEntity<>(apiError, NOT_FOUND);
     }
 
     @ExceptionHandler({WrongLeaveException.class, WrongSpecializationException.class})
@@ -28,11 +29,33 @@ public class DefaultExceptionHandler {
         ApiError apiError = new ApiError(
                 request.getRequestURI(),
                 ex.getMessage(),
-                HttpStatus.BAD_REQUEST.value(),
+                BAD_REQUEST.value(),
                 LocalDateTime.now());
 
-        return new ResponseEntity<>(apiError, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(apiError, BAD_REQUEST);
     }
+
+//    @ExceptionHandler(InsufficientAuthenticationException.class)
+//    public ResponseEntity<ApiError> handleAuthenticationException(InsufficientAuthenticationException ex, HttpServletRequest request){
+//        ApiError apiError = new ApiError(
+//                request.getRequestURI(),
+//                ex.getMessage(),
+//                FORBIDDEN.value(),
+//                LocalDateTime.now());
+//
+//        return new ResponseEntity<>(apiError, FORBIDDEN);
+//    }
+//
+//    @ExceptionHandler(BadCredentialsException.class)
+//    public ResponseEntity<ApiError> handleAuthorizationException(BadCredentialsException ex, HttpServletRequest request){
+//        ApiError apiError = new ApiError(
+//                request.getRequestURI(),
+//                ex.getMessage(),
+//                UNAUTHORIZED.value(),
+//                LocalDateTime.now());
+//
+//        return new ResponseEntity<>(apiError, UNAUTHORIZED);
+//    }
 
 
     @ExceptionHandler(Exception.class)
@@ -40,10 +63,10 @@ public class DefaultExceptionHandler {
         ApiError apiError = new ApiError(
                 request.getRequestURI(),
                 ex.getMessage(),
-                HttpStatus.INTERNAL_SERVER_ERROR.value(),
+                INTERNAL_SERVER_ERROR.value(),
                 LocalDateTime.now());
 
-        return new ResponseEntity<>(apiError, HttpStatus.INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(apiError, INTERNAL_SERVER_ERROR);
     }
 
 

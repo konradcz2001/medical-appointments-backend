@@ -2,10 +2,11 @@ package com.github.konradcz2001.medicalappointments.doctor.leave;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
-import lombok.*;
-import lombok.experimental.FieldDefaults;
-
 import jakarta.persistence.*;
+import lombok.AccessLevel;
+import lombok.Data;
+import lombok.NoArgsConstructor;
+import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 

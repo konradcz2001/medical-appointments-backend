@@ -14,6 +14,8 @@ import lombok.experimental.FieldDefaults;
 
 import java.util.HashSet;
 import java.util.Set;
+//TODO annotation validation
+//TODO record DTO
 
 @Entity
 @Table(name = "doctors")
@@ -67,5 +69,6 @@ public class Doctor extends User {
     void removeLeave(Leave leave){
         leaves.remove(leave);
     }
+
 
 }
