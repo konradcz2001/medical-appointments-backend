@@ -3,12 +3,12 @@ package com.github.konradcz2001.medicalappointments.doctor;
 
 import com.github.konradcz2001.medicalappointments.doctor.DTO.*;
 import com.github.konradcz2001.medicalappointments.doctor.leave.Leave;
-import com.github.konradcz2001.medicalappointments.doctor.leave.LeaveFacade;
-import com.github.konradcz2001.medicalappointments.doctor.specialization.SpecializationFacade;
+import com.github.konradcz2001.medicalappointments.doctor.leave.LeaveRepository;
+import com.github.konradcz2001.medicalappointments.doctor.specialization.SpecializationRepository;
 import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
 import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
 import com.github.konradcz2001.medicalappointments.exception.WrongLeaveException;
-import com.github.konradcz2001.medicalappointments.review.ReviewFacade;
+import com.github.konradcz2001.medicalappointments.review.ReviewRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -26,15 +26,16 @@ import static com.github.konradcz2001.medicalappointments.exception.MessageType.
 @Service
 class DoctorService {
     private final DoctorRepository repository;
-    private final SpecializationFacade specializationFacade;
-    private final ReviewFacade reviewFacade;
-    private final LeaveFacade leaveFacade;
+    private final SpecializationRepository specializationRepository;
+    private final ReviewRepository reviewRepository;
+    private final LeaveRepository leaveRepository;
 
-    DoctorService(final DoctorRepository repository, SpecializationFacade specializationFacade, final ReviewFacade reviewFacade, LeaveFacade leaveFacade) {
+    DoctorService(final DoctorRepository repository, final SpecializationRepository specializationRepository,
+                  final ReviewRepository reviewRepository, final LeaveRepository leaveRepository) {
         this.repository = repository;
-        this.specializationFacade = specializationFacade;
-        this.reviewFacade = reviewFacade;
-        this.leaveFacade = leaveFacade;
+        this.specializationRepository = specializationRepository;
+        this.reviewRepository = reviewRepository;
+        this.leaveRepository = leaveRepository;
     }
 
     private ResponseEntity<Page<DoctorResponseDTO>> returnResponse(Supplier<Page<Doctor>> suppliedDoctors) {
@@ -109,7 +110,7 @@ class DoctorService {
                         else if((ls.isBefore(dls) || ls.isEqual(dls)) && (le.isAfter(dle) || le.isEqual(dle))){
                             doctorLeave.setStartDate(leave.getStartDate());
                             doctorLeave.setEndDate(leave.getEndDate());
-                            leaveFacade.save(doctorLeave);
+                            leaveRepository.save(doctorLeave);
                         }
                         // ls dls le dle
                         else if((ls.isBefore(dls) || ls.isEqual(dls)) && (le.isBefore(dle) || le.isEqual(dle)) && (le.isAfter(dls) || le.isEqual(dls))){
@@ -117,23 +118,23 @@ class DoctorService {
                                 throw new WrongLeaveException("Leave for the given period of time already exists");
 
                             doctorLeave.setStartDate(leave.getStartDate());
-                            leaveFacade.save(doctorLeave);
+                            leaveRepository.save(doctorLeave);
                         }
                         // dls ls dle le
                         else if((ls.isAfter(dls) || ls.isEqual(dls)) && (le.isAfter(dle) || le.isEqual(dle)) && (dle.isAfter(ls) || dle.isEqual(ls))){
                             doctorLeave.setEndDate(leave.getEndDate());
-                            leaveFacade.save(doctorLeave);
+                            leaveRepository.save(doctorLeave);
                         }
                         // ls le dls dle || dls dle ls le
                         else{
                             leave.setDoctor(doctor);
-                            leaveFacade.save(leave);
+                            leaveRepository.save(leave);
                         }
                     });
 
                     if(doctor.getLeaves().isEmpty()){
                         leave.setDoctor(doctor);
-                        leaveFacade.save(leave);
+                        leaveRepository.save(leave);
                     }
 
                     return ResponseEntity.noContent().build();
@@ -144,7 +145,7 @@ class DoctorService {
 
     ResponseEntity<?> removeLeave(Long doctorId, Long leaveId){
         return repository.findById(doctorId)
-                .map(doctor -> leaveFacade.findById(leaveId).map(leave -> {
+                .map(doctor -> leaveRepository.findById(leaveId).map(leave -> {
                     boolean anyMatch = doctor.getLeaves().stream().anyMatch(doctorLeave -> doctorLeave.getId().equals(leaveId));
                     if(anyMatch){
                         doctor.removeLeave(leave);
@@ -160,7 +161,7 @@ class DoctorService {
 
     ResponseEntity<?> removeSpecialization(Long doctorId, Integer specializationId){
         return repository.findById(doctorId)
-                .map(doctor -> specializationFacade.findById(specializationId)
+                .map(doctor -> specializationRepository.findById(specializationId)
                         .map(specialization -> {
                             doctor.removeSpecialization(specialization);
                             repository.save(doctor);
@@ -207,7 +208,7 @@ class DoctorService {
     }
 
     ResponseEntity<Page<DoctorLeaveResponseDTO>> readAllLeaves(Long id, Pageable pageable){
-        var doctors = leaveFacade.findAllByDoctorId(id, pageable)
+        var doctors = leaveRepository.findAllByDoctorId(id, pageable)
                 .map(DoctorDTOMapper::applyForLeave);
 
         if(doctors.isEmpty())
@@ -228,7 +229,7 @@ class DoctorService {
 
         return repository.findById(doctorId)
                 .map(doctor -> {
-                    specializationIds.forEach(id -> specializationFacade.findById(id)
+                    specializationIds.forEach(id -> specializationRepository.findById(id)
                             .ifPresentOrElse(doctor::addSpecialization,
                                     () -> {throw new ResourceNotFoundException(SPECIALIZATION, id.longValue());}
                             ));
@@ -241,7 +242,7 @@ class DoctorService {
     }
 
     ResponseEntity<Page<DoctorReviewResponseDTO>> readAllReviews(Long id, Pageable pageable) {
-        var doctors = reviewFacade.findAllByDoctorId(id, pageable)
+        var doctors = reviewRepository.findAllByDoctorId(id, pageable)
                 .map(DoctorDTOMapper::applyForReview);
         if(doctors.isEmpty())
             throw new EmptyPageException();

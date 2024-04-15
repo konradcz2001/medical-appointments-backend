@@ -58,18 +58,18 @@ class ReviewService {
     }
 
 
-    ResponseEntity<Page<ReviewResponseDTO>> readAllByRating(Short number, Pageable pageable) {
-        return returnResponse(() -> repository.findAllByRating(number, pageable));
+    ResponseEntity<Page<ReviewResponseDTO>> readAllByRating(Rating rating, Pageable pageable) {
+        return returnResponse(() -> repository.findAllByRating(rating, pageable));
     }
 
 
-    ResponseEntity<Page<ReviewResponseDTO>> readAllByRatingLessThan(Short number, Pageable pageable) {
-        return returnResponse(() -> repository.findAllByRatingLessThan(number, pageable));
+    ResponseEntity<Page<ReviewResponseDTO>> readAllByRatingLessThan(Rating rating, Pageable pageable) {
+        return returnResponse(() -> repository.findAllByRatingLessThan(rating, pageable));
     }
 
 
-    ResponseEntity<Page<ReviewResponseDTO>> readAllByRatingGreaterThan(Short number, Pageable pageable) {
-        return returnResponse(() -> repository.findAllByRatingGreaterThan(number, pageable));
+    ResponseEntity<Page<ReviewResponseDTO>> readAllByRatingGreaterThan(Rating rating, Pageable pageable) {
+        return returnResponse(() -> repository.findAllByRatingGreaterThan(rating , pageable));
     }
 
 

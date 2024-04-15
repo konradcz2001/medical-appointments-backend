@@ -1,7 +1,7 @@
 package com.github.konradcz2001.medicalappointments.visit;
 
-import com.github.konradcz2001.medicalappointments.client.ClientFacade;
-import com.github.konradcz2001.medicalappointments.doctor.DoctorFacade;
+import com.github.konradcz2001.medicalappointments.client.ClientRepository;
+import com.github.konradcz2001.medicalappointments.doctor.DoctorRepository;
 import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
 import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
 import com.github.konradcz2001.medicalappointments.visit.DTO.VisitDTOMapper;
@@ -21,13 +21,13 @@ import static com.github.konradcz2001.medicalappointments.exception.MessageType.
 @Service
 class VisitService {
     private final VisitRepository repository;
-    private final DoctorFacade doctorFacade;
-    private final ClientFacade clientFacade;
+    private final DoctorRepository doctorRepository;
+    private final ClientRepository clientRepository;
 
-    VisitService(final VisitRepository repository, final DoctorFacade doctorFacade, final ClientFacade clientFacade) {
+    VisitService(final VisitRepository repository, final DoctorRepository doctorRepository, final ClientRepository clientRepository) {
         this.repository = repository;
-        this.doctorFacade = doctorFacade;
-        this.clientFacade = clientFacade;
+        this.doctorRepository = doctorRepository;
+        this.clientRepository = clientRepository;
     }
 
     private ResponseEntity<Page<VisitResponseDTO>> returnResponse(Supplier<Page<Visit>> suppliedVisits) {
@@ -43,11 +43,11 @@ class VisitService {
         Long doctorId = visit.getDoctor().getId();
         Long clientId = visit.getClient().getId();
 
-        doctorFacade.findById(doctorId)
+        doctorRepository.findById(doctorId)
                 .ifPresentOrElse(
                         doctor -> {
                             visit.setDoctor(doctor);
-                            clientFacade.findById(clientId)
+                            clientRepository.findById(clientId)
                                     .ifPresentOrElse(
                                             visit::setClient,
                                             () -> {

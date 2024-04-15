@@ -45,18 +45,18 @@ class ReviewController {
     }
 
     @GetMapping("/rating")
-    ResponseEntity<Page<ReviewResponseDTO>> readAllByRating(@RequestParam Short number, Pageable pageable){
-        return service.readAllByRating(number, pageable);
+    ResponseEntity<Page<ReviewResponseDTO>> readAllByRating(@RequestParam Rating rating, Pageable pageable){
+        return service.readAllByRating(rating, pageable);
     }
 
     @GetMapping("/rating-less-than")
-    ResponseEntity<Page<ReviewResponseDTO>> readAllByRatingLessThan(@RequestParam Short number, Pageable pageable){
-        return service.readAllByRatingLessThan(number, pageable);
+    ResponseEntity<Page<ReviewResponseDTO>> readAllByRatingLessThan(@RequestParam Rating rating, Pageable pageable){
+        return service.readAllByRatingLessThan(rating, pageable);
     }
 
     @GetMapping("/rating-greater-than")
-    ResponseEntity<Page<ReviewResponseDTO>> readAllByRatingGreaterThan(@RequestParam Short number, Pageable pageable){
-        return service.readAllByRatingGreaterThan(number, pageable);
+    ResponseEntity<Page<ReviewResponseDTO>> readAllByRatingGreaterThan(@RequestParam Rating rating, Pageable pageable){
+        return service.readAllByRatingGreaterThan(rating, pageable);
     }
 
 

@@ -4,7 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-interface SpecializationRepository extends JpaRepository<Specialization, Integer> {
+public interface SpecializationRepository extends JpaRepository<Specialization, Integer> {
     Optional<Specialization> findFirstBySpecialization(String specialization);
     boolean existsBySpecialization(String specialization);
 }

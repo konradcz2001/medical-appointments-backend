@@ -5,7 +5,7 @@ import com.github.konradcz2001.medicalappointments.client.DTO.ClientResponseDTO;
 import com.github.konradcz2001.medicalappointments.client.DTO.ClientReviewResponseDTO;
 import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
 import com.github.konradcz2001.medicalappointments.review.Review;
-import com.github.konradcz2001.medicalappointments.review.ReviewFacade;
+import com.github.konradcz2001.medicalappointments.review.ReviewRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +17,11 @@ import java.util.function.Supplier;
 @Service
 class ClientService {
     private final ClientRepository repository;
-    private final ReviewFacade reviewFacade;
+    private final ReviewRepository reviewRepository;
 
-    ClientService(final ClientRepository repository, ReviewFacade reviewFacade) {
+    ClientService(ClientRepository repository, ReviewRepository reviewRepository) {
         this.repository = repository;
-        this.reviewFacade = reviewFacade;
+        this.reviewRepository = reviewRepository;
     }
 
     private ResponseEntity<Page<ClientResponseDTO>> returnResponse(Supplier<Page<Client>> suppliedClients) {
@@ -96,9 +96,9 @@ class ClientService {
 
     ResponseEntity<?> updateReview(Long clientId, Review toUpdate){
         return repository.findById(clientId)
-                .map(client -> reviewFacade.findById(toUpdate.getId())
+                .map(client -> reviewRepository.findById(toUpdate.getId())
                         .map(review -> {
-                            reviewFacade.save(toUpdate);
+                            reviewRepository.save(toUpdate);
                             return ResponseEntity.noContent().build();
                         })
                         .orElse(ResponseEntity.notFound().build()))
@@ -108,7 +108,7 @@ class ClientService {
 //TODO cascade
     ResponseEntity<?> removeReview(Long clientId, Long reviewId){
         return repository.findById(clientId)
-                .map(client -> reviewFacade.findById(reviewId)
+                .map(client -> reviewRepository.findById(reviewId)
                         .map(review -> {
                             client.removeReview(review);
                             repository.save(client);
@@ -121,7 +121,7 @@ class ClientService {
 
 
     ResponseEntity<Page<ClientReviewResponseDTO>> readAllReviews(Long clientId, Pageable pageable){
-        var clients = reviewFacade.findAllByClientId(clientId, pageable)
+        var clients = reviewRepository.findAllByClientId(clientId, pageable)
                 .map(ClientDTOMapper::applyForReview);
         if(clients.isEmpty())
             throw new EmptyPageException();
