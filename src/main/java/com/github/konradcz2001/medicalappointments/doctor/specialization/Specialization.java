@@ -3,6 +3,8 @@ package com.github.konradcz2001.medicalappointments.doctor.specialization;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -20,23 +22,20 @@ public class Specialization {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
-    @Column(unique = true)
+    @Column(name = "specialization", unique = true, nullable = false)
+    @NotBlank
     String specialization;
 
-    @JsonIgnore
+    //@JsonIgnore
     @ManyToMany(mappedBy = "specializations")
     Set<Doctor> doctors = new HashSet<>();
 
-    public Specialization(final String specialization) {
-        this.specialization = specialization;
-    }
-
-    public void addDoctor(Doctor doctor){
-        doctors.add(doctor);
-    }
-    public void removeDoctor(Doctor doctor){
-        doctors.remove(doctor);
-    }
+//    public void addDoctor(Doctor doctor){
+//        doctors.add(doctor);
+//    }
+//    public void removeDoctor(Doctor doctor){
+//        doctors.remove(doctor);
+//    }
 
 
 }

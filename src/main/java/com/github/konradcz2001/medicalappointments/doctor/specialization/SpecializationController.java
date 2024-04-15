@@ -1,5 +1,7 @@
 package com.github.konradcz2001.medicalappointments.doctor.specialization;
 
+import com.github.konradcz2001.medicalappointments.doctor.specialization.DTO.SpecializationResponseDTO;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -17,27 +19,27 @@ class SpecializationController {
     }
 
     @GetMapping
-    ResponseEntity<Page<Specialization>> readAll(Pageable pageable){
+    ResponseEntity<Page<SpecializationResponseDTO>> readAll(Pageable pageable){
         return service.readAll(pageable);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Specialization> readById(@PathVariable Integer id){
+    ResponseEntity<SpecializationResponseDTO> readById(@PathVariable Integer id){
         return service.readById(id);
     }
 
     @GetMapping(params = "specialization")
-    ResponseEntity<Specialization> readBySpecialization(@RequestParam String specialization){
+    ResponseEntity<SpecializationResponseDTO> readBySpecialization(@RequestParam String specialization){
         return service.readBySpecialization(specialization);
     }
 
     @PostMapping
-    ResponseEntity<?> createSpecialization(@RequestBody Specialization specialization){
+    ResponseEntity<?> createSpecialization(@Valid @RequestBody Specialization specialization){
         return service.createSpecialization(specialization);
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<?> updateSpecialization(@PathVariable Integer id, @RequestBody Specialization specialization){
+    ResponseEntity<?> updateSpecialization(@PathVariable Integer id, @Valid @RequestBody Specialization specialization){
         return service.updateSpecialization(id, specialization);
     }
 

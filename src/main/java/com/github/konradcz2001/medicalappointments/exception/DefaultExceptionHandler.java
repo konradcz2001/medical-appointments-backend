@@ -1,6 +1,7 @@
 package com.github.konradcz2001.medicalappointments.exception;
 
 import jakarta.servlet.http.HttpServletRequest;
+import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -24,7 +25,7 @@ public class DefaultExceptionHandler {
         return new ResponseEntity<>(apiError, NOT_FOUND);
     }
 
-    @ExceptionHandler({WrongLeaveException.class, WrongSpecializationException.class})
+    @ExceptionHandler({WrongLeaveException.class, WrongSpecializationException.class, ConstraintViolationException.class})
     public ResponseEntity<ApiError> handleWrongDataException(RuntimeException ex, HttpServletRequest request){
         ApiError apiError = new ApiError(
                 request.getRequestURI(),

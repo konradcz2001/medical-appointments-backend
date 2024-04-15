@@ -1,8 +1,11 @@
 package com.github.konradcz2001.medicalappointments.doctor;
 
+import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorLeaveResponseDTO;
+import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorResponseDTO;
+import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorReviewResponseDTO;
+import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorSpecializationResponseDTO;
 import com.github.konradcz2001.medicalappointments.doctor.leave.Leave;
-import com.github.konradcz2001.medicalappointments.doctor.specialization.Specialization;
-import com.github.konradcz2001.medicalappointments.review.Review;
+import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -22,43 +25,43 @@ class DoctorController {
     }
 
     @GetMapping
-    ResponseEntity<Page<Doctor>> readAll(Pageable pageable){
+    ResponseEntity<Page<DoctorResponseDTO>> readAll(Pageable pageable){
         return service.readAll(pageable);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<Doctor> readById(@PathVariable Long id){
+    ResponseEntity<DoctorResponseDTO> readById(@PathVariable Long id){
         return service.readById(id);
     }
 
     @GetMapping(params = "firstName")
-    ResponseEntity<Page<Doctor>> readAllByFirstName(@RequestParam String firstName, Pageable pageable){
+    ResponseEntity<Page<DoctorResponseDTO>> readAllByFirstName(@RequestParam String firstName, Pageable pageable){
         return service.readAllByFirstName(firstName, pageable);
     }
 
     @GetMapping(params = "lastName")
-    ResponseEntity<Page<Doctor>> readAllByLastName(@RequestParam String lastName, Pageable pageable){
+    ResponseEntity<Page<DoctorResponseDTO>> readAllByLastName(@RequestParam String lastName, Pageable pageable){
         return service.readAllByLastName(lastName, pageable);
     }
 
     @GetMapping(params = "specialization")
-    ResponseEntity<Page<Doctor>> readAllBySpecialization(@RequestParam String specialization, Pageable pageable){
+    ResponseEntity<Page<DoctorResponseDTO>> readAllBySpecialization(@RequestParam String specialization, Pageable pageable){
         return service.readAllBySpecialization(specialization, pageable);
     }
 
     @GetMapping(path = "/available", params = "date")
-    ResponseEntity<Page<Doctor>> readAllAvailableByDate(@RequestParam LocalDateTime date, Pageable pageable){
+    ResponseEntity<Page<DoctorResponseDTO>> readAllAvailableByDate(@RequestParam LocalDateTime date, Pageable pageable){
         return service.readAllAvailableByDate(date, pageable);
     }
 
     @PostMapping
-    ResponseEntity<?> createDoctor(@RequestBody Doctor doctor){
+    ResponseEntity<?> createDoctor(@Valid @RequestBody Doctor doctor){
         return service.createDoctor(doctor);
     }
 
 
     @PutMapping("/{id}")
-    ResponseEntity<?> updateDoctor(@PathVariable Long id, @RequestBody Doctor toUpdate){
+    ResponseEntity<?> updateDoctor(@PathVariable Long id, @Valid @RequestBody Doctor toUpdate){
         return service.updateDoctor(id, toUpdate);
     }
 
@@ -69,7 +72,7 @@ class DoctorController {
 
 
     @PatchMapping("/{id}/add-leave")
-    ResponseEntity<?> addLeave(@PathVariable Long id, @RequestBody Leave leave){
+    ResponseEntity<?> addLeave(@PathVariable Long id, @Valid @RequestBody Leave leave){
         return service.addLeave(id, leave);
     }
 
@@ -81,7 +84,7 @@ class DoctorController {
 
 
     @GetMapping("/{id}/leaves")
-    ResponseEntity<Page<Leave>> readAllLeaves(@PathVariable Long id, Pageable pageable){
+    ResponseEntity<Page<DoctorLeaveResponseDTO>> readAllLeaves(@PathVariable Long id, Pageable pageable){
         return service.readAllLeaves(id, pageable);
     }
 
@@ -96,13 +99,13 @@ class DoctorController {
     }
 
     @GetMapping("/{id}/specializations")
-    ResponseEntity<Set<Specialization>> readAllSpecializations(@PathVariable Long id){
+    ResponseEntity<Set<DoctorSpecializationResponseDTO>> readAllSpecializations(@PathVariable Long id){
         return service.readAllSpecializations(id);
     }
 
 
     @GetMapping("/{id}/reviews")
-    ResponseEntity<Page<Review>> readAllReviews(@PathVariable Long id, Pageable pageable){
+    ResponseEntity<Page<DoctorReviewResponseDTO>> readAllReviews(@PathVariable Long id, Pageable pageable){
         return service.readAllReviews(id, pageable);
     }
 

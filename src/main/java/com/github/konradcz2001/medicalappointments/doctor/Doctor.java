@@ -1,11 +1,11 @@
 package com.github.konradcz2001.medicalappointments.doctor;
 
-import com.github.konradcz2001.medicalappointments.Address;
 import com.github.konradcz2001.medicalappointments.User;
 import com.github.konradcz2001.medicalappointments.doctor.leave.Leave;
 import com.github.konradcz2001.medicalappointments.doctor.specialization.Specialization;
 import com.github.konradcz2001.medicalappointments.review.Review;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotNull;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -26,8 +26,12 @@ import java.util.Set;
 public class Doctor extends User {
     @Embedded
     Address address;
+    @Column(name = "is_verified", nullable = false)
+    @NotNull
     boolean isVerified;
+    @Column(name = "avatar")
     byte[] avatar;
+    @Column(name = "profile_description")
     String profileDescription;
 
     @OneToMany(mappedBy = "doctor")
@@ -46,21 +50,12 @@ public class Doctor extends User {
 
 
 
-    Doctor(final String firstName, final String lastName, final String email, final String phoneNumber,
-           final Address address, final boolean isVerified, final byte[] avatar, final String profileDescription) {
-        super(firstName, lastName, email, phoneNumber);
-        this.address = address;
-        this.isVerified = isVerified;
-        this.avatar = avatar;
-        this.profileDescription = profileDescription;
-    }
-
     void addSpecialization(final Specialization spec) {
-        spec.addDoctor(this);
+        //spec.addDoctor(this);
         specializations.add(spec);
     }
     public void removeSpecialization(Specialization spec) {
-        spec.removeDoctor(this);
+        //spec.removeDoctor(this);
         specializations.remove(spec);
     }
     public void addLeave(final Leave leave) {

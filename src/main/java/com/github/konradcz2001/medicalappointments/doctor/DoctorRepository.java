@@ -17,7 +17,6 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     Page<Doctor> findAllByFirstNameContainingIgnoreCase(String firstName, Pageable pageable);
     Page<Doctor> findAllByLastNameContainingIgnoreCase(String lastName, Pageable pageable);
     Page<Doctor> findAllByEmailContainingIgnoreCase(String email, Pageable pageable);
-    Page<Doctor> findAllByPhoneNumberContainingIgnoreCase(String phoneNumber, Pageable pageable);
     /*
         Address
      */

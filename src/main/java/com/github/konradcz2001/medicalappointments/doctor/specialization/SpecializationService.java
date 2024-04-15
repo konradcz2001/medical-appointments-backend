@@ -1,5 +1,8 @@
 package com.github.konradcz2001.medicalappointments.doctor.specialization;
 
+import com.github.konradcz2001.medicalappointments.doctor.specialization.DTO.SpecializationDTOMapper;
+import com.github.konradcz2001.medicalappointments.doctor.specialization.DTO.SpecializationResponseDTO;
+import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
 import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
 import com.github.konradcz2001.medicalappointments.exception.WrongSpecializationException;
 import org.springframework.data.domain.Page;
@@ -8,8 +11,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
+import java.util.function.Supplier;
 
-import static com.github.konradcz2001.medicalappointments.MedicalAppointmentsApplication.returnResponse;
 import static com.github.konradcz2001.medicalappointments.exception.MessageType.SPECIALIZATION;
 
 @Service
@@ -20,20 +23,33 @@ class SpecializationService {
         this.repository = repository;
     }
 
-    ResponseEntity<Page<Specialization>> readAll(Pageable pageable){
+    //TODO get rid of it - one usage
+    private ResponseEntity<Page<SpecializationResponseDTO>> returnResponse(Supplier<Page<Specialization>> suppliedSpecializations) {
+        var specializations = suppliedSpecializations.get()
+                .map(SpecializationDTOMapper::apply);
+        if(specializations.isEmpty())
+            throw new EmptyPageException();
+
+        return ResponseEntity.ok(specializations);
+    }
+
+
+    ResponseEntity<Page<SpecializationResponseDTO>> readAll(Pageable pageable){
         return returnResponse(() -> repository.findAll(pageable));
     }
 
 
-    ResponseEntity<Specialization> readById(Integer id){
+    ResponseEntity<SpecializationResponseDTO> readById(Integer id){
         return repository.findById(id)
+                .map(SpecializationDTOMapper::apply)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResourceNotFoundException(SPECIALIZATION, id.longValue()));
     }
 
 
-    ResponseEntity<Specialization> readBySpecialization(String specialization){
+    ResponseEntity<SpecializationResponseDTO> readBySpecialization(String specialization){
         return repository.findFirstBySpecialization(specialization)
+                .map(SpecializationDTOMapper::apply)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());//TODO exception
     }

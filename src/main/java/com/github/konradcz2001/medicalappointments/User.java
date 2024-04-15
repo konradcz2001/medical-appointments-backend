@@ -2,7 +2,14 @@ package com.github.konradcz2001.medicalappointments;
 
 import com.github.konradcz2001.medicalappointments.security.Role;
 import jakarta.persistence.*;
-import lombok.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Pattern;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
@@ -16,27 +23,29 @@ import java.util.List;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
-@AllArgsConstructor
 public class User implements UserDetails {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
+    @Column(name = "first_name", nullable = false)
+    @NotBlank
     String firstName;
+    @Column(name = "last_name", nullable = false)
+    @NotBlank
     String lastName;
-    @Column(unique = true)
+    @Column(name = "email", unique = true, nullable = false)
+    @NotBlank
+    @Email
     String email;
-    @Column(unique = true)
-    String phoneNumber;
+    @Column(name = "password", nullable = false)
+    @NotBlank
+    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$", message = "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one digit")
     String password;
     @Enumerated(EnumType.STRING)
+    @Column(name = "role", nullable = false)
+    @NotNull
     Role role;
 
-    public User(final String firstName, final String lastName, final String email, final String phoneNumber) {
-        this.firstName = firstName;
-        this.lastName = lastName;
-        this.email = email;
-        this.phoneNumber = phoneNumber;
-    }
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

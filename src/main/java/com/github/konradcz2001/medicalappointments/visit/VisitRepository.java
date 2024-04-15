@@ -8,9 +8,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 interface VisitRepository extends JpaRepository<Visit, Long> {
-    Page<Visit> findAllByDateOfVisitAfter(LocalDateTime date, Pageable pageable);
-    Page<Visit> findAllByDateOfVisitBefore(LocalDateTime date, Pageable pageable);
-    Page<Visit> findAllByDateOfVisitAfterAndDateOfVisitBefore(LocalDateTime after, LocalDateTime before, Pageable pageable);
+    Page<Visit> findAllByDateAfter(LocalDateTime date, Pageable pageable);
+    Page<Visit> findAllByDateBefore(LocalDateTime date, Pageable pageable);
+    Page<Visit> findAllByDateAfterAndDateBefore(LocalDateTime after, LocalDateTime before, Pageable pageable);
     Page<Visit> findAllByTypeContainingIgnoreCase(String type, Pageable pageable);
     Page<Visit> findAllByDoctorId(Long doctor, Pageable pageable);
     Page<Visit> findAllByClientId(Long client, Pageable pageable);

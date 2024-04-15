@@ -1,13 +1,13 @@
 package com.github.konradcz2001.medicalappointments.doctor;
 
+
+import com.github.konradcz2001.medicalappointments.doctor.DTO.*;
 import com.github.konradcz2001.medicalappointments.doctor.leave.Leave;
 import com.github.konradcz2001.medicalappointments.doctor.leave.LeaveFacade;
-import com.github.konradcz2001.medicalappointments.doctor.specialization.Specialization;
 import com.github.konradcz2001.medicalappointments.doctor.specialization.SpecializationFacade;
 import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
 import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
 import com.github.konradcz2001.medicalappointments.exception.WrongLeaveException;
-import com.github.konradcz2001.medicalappointments.review.Review;
 import com.github.konradcz2001.medicalappointments.review.ReviewFacade;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -18,8 +18,9 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
 
-import static com.github.konradcz2001.medicalappointments.MedicalAppointmentsApplication.returnResponse;
 import static com.github.konradcz2001.medicalappointments.exception.MessageType.*;
 
 @Service
@@ -36,26 +37,35 @@ class DoctorService {
         this.leaveFacade = leaveFacade;
     }
 
+    private ResponseEntity<Page<DoctorResponseDTO>> returnResponse(Supplier<Page<Doctor>> suppliedDoctors) {
+        var doctors = suppliedDoctors.get()
+                .map(DoctorDTOMapper::apply);
+        if(doctors.isEmpty())
+            throw new EmptyPageException();
 
-    ResponseEntity<Page<Doctor>> readAll(Pageable pageable){
+        return ResponseEntity.ok(doctors);
+    }
+
+    ResponseEntity<Page<DoctorResponseDTO>> readAll(Pageable pageable){
         return returnResponse(() -> repository.findAll(pageable));
     }
 
-    ResponseEntity<Doctor> readById(Long id){
+    ResponseEntity<DoctorResponseDTO> readById(Long id){
         return repository.findById(id)
+                .map(DoctorDTOMapper::apply)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
     }
 
-    ResponseEntity<Page<Doctor>> readAllByFirstName(String firstName, Pageable pageable){
+    ResponseEntity<Page<DoctorResponseDTO>> readAllByFirstName(String firstName, Pageable pageable){
         return returnResponse(() -> repository.findAllByFirstNameContainingIgnoreCase(firstName, pageable));
     }
 
-    ResponseEntity<Page<Doctor>> readAllByLastName(String lastName, Pageable pageable){
+    ResponseEntity<Page<DoctorResponseDTO>> readAllByLastName(String lastName, Pageable pageable){
         return returnResponse(() -> repository.findAllByLastNameContainingIgnoreCase(lastName, pageable));
     }
 
-    ResponseEntity<Page<Doctor>> readAllBySpecialization(String specialization, Pageable pageable){
+    ResponseEntity<Page<DoctorResponseDTO>> readAllBySpecialization(String specialization, Pageable pageable){
         return returnResponse(() -> repository.findAllByAnySpecializationContainingIgnoreCase(specialization, pageable));
     }
 
@@ -160,16 +170,17 @@ class DoctorService {
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, doctorId));
     }
 
-    ResponseEntity<Page<Doctor>> readAllAvailableByDate(LocalDateTime date, Pageable pageable){
-        Page<Doctor> doctors = repository.findAll(pageable)
-                .map(doctor -> isAvailableByDate(date, doctor) ? doctor : null);
+    ResponseEntity<Page<DoctorResponseDTO>> readAllAvailableByDate(LocalDateTime date, Pageable pageable){
+        var doctors = repository.findAll(pageable)
+                .map(doctor -> isAvailableByDate(date, doctor) ? doctor : null)
+                .map(DoctorDTOMapper::apply);
 
         if(doctors.isEmpty())
             throw new EmptyPageException();
         return ResponseEntity.ok(doctors);
     }
 
-    boolean isAvailableByDate(LocalDateTime date, Doctor doctor){
+    private boolean isAvailableByDate(LocalDateTime date, Doctor doctor){
         return doctor.getLeaves().stream()
                 .allMatch(leave -> (leave.getStartDate().isAfter(date) || leave.getEndDate().isBefore(date)));
     }
@@ -195,13 +206,20 @@ class DoctorService {
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
     }
 
-    ResponseEntity<Page<Leave>> readAllLeaves(Long id, Pageable pageable){
-        return returnResponse(() -> leaveFacade.findAllByDoctorId(id, pageable));
+    ResponseEntity<Page<DoctorLeaveResponseDTO>> readAllLeaves(Long id, Pageable pageable){
+        var doctors = leaveFacade.findAllByDoctorId(id, pageable)
+                .map(DoctorDTOMapper::applyForLeave);
+
+        if(doctors.isEmpty())
+            throw new EmptyPageException();
+        return ResponseEntity.ok(doctors);
     }
 
-    ResponseEntity<Set<Specialization>> readAllSpecializations(Long id){
+    ResponseEntity<Set<DoctorSpecializationResponseDTO>> readAllSpecializations(Long id){
         return repository.findById(id)
                 .map(Doctor::getSpecializations)
+                .map(spec -> spec.stream().map(DoctorDTOMapper::applyForSpecialization)
+                        .collect(Collectors.toSet()))
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
     }
@@ -222,7 +240,12 @@ class DoctorService {
 
     }
 
-    ResponseEntity<Page<Review>> readAllReviews(Long id, Pageable pageable) {
-        return returnResponse(() -> reviewFacade.findAllByDoctorId(id, pageable));
+    ResponseEntity<Page<DoctorReviewResponseDTO>> readAllReviews(Long id, Pageable pageable) {
+        var doctors = reviewFacade.findAllByDoctorId(id, pageable)
+                .map(DoctorDTOMapper::applyForReview);
+        if(doctors.isEmpty())
+            throw new EmptyPageException();
+
+        return ResponseEntity.ok(doctors);
     }
 }

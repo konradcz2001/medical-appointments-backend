@@ -1,5 +1,9 @@
 package com.github.konradcz2001.medicalappointments.client;
 
+import com.github.konradcz2001.medicalappointments.client.DTO.ClientDTOMapper;
+import com.github.konradcz2001.medicalappointments.client.DTO.ClientResponseDTO;
+import com.github.konradcz2001.medicalappointments.client.DTO.ClientReviewResponseDTO;
+import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
 import com.github.konradcz2001.medicalappointments.review.Review;
 import com.github.konradcz2001.medicalappointments.review.ReviewFacade;
 import org.springframework.data.domain.Page;
@@ -8,8 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
-
-import static com.github.konradcz2001.medicalappointments.MedicalAppointmentsApplication.returnResponse;
+import java.util.function.Supplier;
 
 @Service
 class ClientService {
@@ -21,36 +24,46 @@ class ClientService {
         this.reviewFacade = reviewFacade;
     }
 
+    private ResponseEntity<Page<ClientResponseDTO>> returnResponse(Supplier<Page<Client>> suppliedClients) {
+        var clients = suppliedClients.get()
+                .map(ClientDTOMapper::apply);
+        if(clients.isEmpty())
+            throw new EmptyPageException();
 
-    ResponseEntity<Page<Client>> readAll(Pageable pageable){
+        return ResponseEntity.ok(clients);
+    }
+
+
+    ResponseEntity<Page<ClientResponseDTO>> readAll(Pageable pageable){
         return returnResponse(() -> repository.findAll(pageable));
     }
 
-    ResponseEntity<Client> readById(Long id){
+    ResponseEntity<ClientResponseDTO> readById(Long id){
         return repository.findById(id)
+                .map(ClientDTOMapper::apply)
                 .map(ResponseEntity::ok)
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    ResponseEntity<Page<Client>> readAllByFirstName(String name, Pageable pageable){
+    ResponseEntity<Page<ClientResponseDTO>> readAllByFirstName(String name, Pageable pageable){
         return returnResponse(() -> repository.findAllByFirstNameContaining(name, pageable));
     }
 
-    ResponseEntity<Page<Client>> readAllByLastName(String surname, Pageable pageable){
+    ResponseEntity<Page<ClientResponseDTO>> readAllByLastName(String surname, Pageable pageable){
         return returnResponse(() -> repository.findAllByLastNameContaining(surname, pageable));
     }
 
     ResponseEntity<?> createClient(Client client){
         client.setId(null);
         Client result = repository.save(client);
-        return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
+        return ResponseEntity.created(URI.create("/" + result.getId())).body(ClientDTOMapper.apply(result));
     }
 
     ResponseEntity<?> updateCustomer(Long id, Client toUpdate){
         return repository.findById(id)
                 .map(client -> {
                     toUpdate.setId(id);
-                    return ResponseEntity.ok(repository.save(toUpdate));
+                    return ResponseEntity.ok(ClientDTOMapper.apply(repository.save(toUpdate)));
                 })
                 .orElse(ResponseEntity.notFound().build());
     }
@@ -107,7 +120,12 @@ class ClientService {
 
 
 
-    ResponseEntity<Page<Review>> readAllReviews(Long clientId, Pageable pageable){
-        return returnResponse(() -> reviewFacade.findAllByClientId(clientId, pageable));
+    ResponseEntity<Page<ClientReviewResponseDTO>> readAllReviews(Long clientId, Pageable pageable){
+        var clients = reviewFacade.findAllByClientId(clientId, pageable)
+                .map(ClientDTOMapper::applyForReview);
+        if(clients.isEmpty())
+            throw new EmptyPageException();
+
+        return ResponseEntity.ok(clients);
     }
 }

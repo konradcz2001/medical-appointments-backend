@@ -74,7 +74,6 @@ public class AuthenticationService {
         user.setLastName(request.getLastName());
         user.setEmail(request.getEmail());
         user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setPhoneNumber(request.getPhoneNumber());
         user.setRole(request.getRole());
         return user;
     }

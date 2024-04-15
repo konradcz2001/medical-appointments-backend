@@ -2,7 +2,10 @@ package com.github.konradcz2001.medicalappointments.visit;
 
 import com.github.konradcz2001.medicalappointments.client.ClientFacade;
 import com.github.konradcz2001.medicalappointments.doctor.DoctorFacade;
+import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
 import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
+import com.github.konradcz2001.medicalappointments.visit.DTO.VisitDTOMapper;
+import com.github.konradcz2001.medicalappointments.visit.DTO.VisitResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -11,8 +14,8 @@ import org.springframework.stereotype.Service;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.util.function.Supplier;
 
-import static com.github.konradcz2001.medicalappointments.MedicalAppointmentsApplication.returnResponse;
 import static com.github.konradcz2001.medicalappointments.exception.MessageType.*;
 
 @Service
@@ -25,6 +28,15 @@ class VisitService {
         this.repository = repository;
         this.doctorFacade = doctorFacade;
         this.clientFacade = clientFacade;
+    }
+
+    private ResponseEntity<Page<VisitResponseDTO>> returnResponse(Supplier<Page<Visit>> suppliedVisits) {
+        var visits = suppliedVisits.get()
+                .map(VisitDTOMapper::apply);
+        if(visits.isEmpty())
+            throw new EmptyPageException();
+
+        return ResponseEntity.ok(visits);
     }
 
     ResponseEntity<?> createVisit(Visit visit){
@@ -50,38 +62,39 @@ class VisitService {
         return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
     }
 
-    ResponseEntity<Page<Visit>> readAll(Pageable pageable){
+    ResponseEntity<Page<VisitResponseDTO>> readAll(Pageable pageable){
         return returnResponse(() -> repository.findAll(pageable));
     }
 
-    ResponseEntity<Visit> readById(Long id){
+    ResponseEntity<VisitResponseDTO> readById(Long id){
         return repository.findById(id)
+                .map(VisitDTOMapper::apply)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResourceNotFoundException(VISIT, id));
     }
 
-    ResponseEntity<Page<Visit>> readAllByTypeOfVisit(String type, Pageable pageable){
+    ResponseEntity<Page<VisitResponseDTO>> readAllByTypeOfVisit(String type, Pageable pageable){
         return returnResponse(() -> repository.findAllByTypeContainingIgnoreCase(type, pageable));
     }
 
-    ResponseEntity<Page<Visit>> readAllByDateOfVisitAfter(LocalDateTime after, Pageable pageable){
-        return returnResponse(() -> repository.findAllByDateOfVisitAfter(after, pageable));
+    ResponseEntity<Page<VisitResponseDTO>> readAllByDateOfVisitAfter(LocalDateTime after, Pageable pageable){
+        return returnResponse(() -> repository.findAllByDateAfter(after, pageable));
     }
 
-    ResponseEntity<Page<Visit>> readAllByDateOfVisitBefore(LocalDateTime before, Pageable pageable){
-        return returnResponse(() -> repository.findAllByDateOfVisitBefore(before, pageable));
+    ResponseEntity<Page<VisitResponseDTO>> readAllByDateOfVisitBefore(LocalDateTime before, Pageable pageable){
+        return returnResponse(() -> repository.findAllByDateBefore(before, pageable));
     }
 
-    ResponseEntity<Page<Visit>> readAllByDateOfVisitBetween(LocalDateTime after, LocalDateTime before, Pageable pageable){
-        return returnResponse(() -> repository.findAllByDateOfVisitAfterAndDateOfVisitBefore(after, before, pageable));
+    ResponseEntity<Page<VisitResponseDTO>> readAllByDateOfVisitBetween(LocalDateTime after, LocalDateTime before, Pageable pageable){
+        return returnResponse(() -> repository.findAllByDateAfterAndDateBefore(after, before, pageable));
     }
 
 
-    ResponseEntity<Page<Visit>> readAllByDoctorId(Long doctorId, Pageable pageable){
+    ResponseEntity<Page<VisitResponseDTO>> readAllByDoctorId(Long doctorId, Pageable pageable){
         return returnResponse(() -> repository.findAllByDoctorId(doctorId, pageable));
     }
 
-    ResponseEntity<Page<Visit>> readAllByClientId(Long clientId, Pageable pageable){
+    ResponseEntity<Page<VisitResponseDTO>> readAllByClientId(Long clientId, Pageable pageable){
         return returnResponse(() -> repository.findAllByClientId(clientId, pageable));
     }
 
@@ -108,15 +121,15 @@ class VisitService {
     }
 
 
-    ResponseEntity<Page<Visit>> readAllByPrice(BigDecimal price, Pageable pageable) {
+    ResponseEntity<Page<VisitResponseDTO>> readAllByPrice(BigDecimal price, Pageable pageable) {
         return returnResponse(() -> repository.findAllByPrice(price, pageable));
     }
 
-    ResponseEntity<Page<Visit>> readAllByPriceLessThan(BigDecimal price, Pageable pageable) {
+    ResponseEntity<Page<VisitResponseDTO>> readAllByPriceLessThan(BigDecimal price, Pageable pageable) {
         return returnResponse(() -> repository.findAllByPriceLessThanEqual(price, pageable));
     }
 
-    ResponseEntity<Page<Visit>> readAllByPriceGreaterThan(BigDecimal price, Pageable pageable) {
+    ResponseEntity<Page<VisitResponseDTO>> readAllByPriceGreaterThan(BigDecimal price, Pageable pageable) {
         return returnResponse(() -> repository.findAllByPriceGreaterThanEqual(price, pageable));
     }
 }
