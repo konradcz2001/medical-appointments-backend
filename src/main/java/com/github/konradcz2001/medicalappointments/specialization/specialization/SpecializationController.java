@@ -1,6 +1,6 @@
-package com.github.konradcz2001.medicalappointments.doctor.specialization;
+package com.github.konradcz2001.medicalappointments.specialization.specialization;
 
-import com.github.konradcz2001.medicalappointments.doctor.specialization.DTO.SpecializationResponseDTO;
+import com.github.konradcz2001.medicalappointments.specialization.specialization.DTO.SpecializationResponseDTO;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

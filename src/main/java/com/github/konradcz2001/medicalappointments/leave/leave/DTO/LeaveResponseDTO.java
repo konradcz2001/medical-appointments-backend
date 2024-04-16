@@ -1,4 +1,4 @@
-package com.github.konradcz2001.medicalappointments.doctor.leave.DTO;
+package com.github.konradcz2001.medicalappointments.leave.leave.DTO;
 
 import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorResponseDTO;
 

@@ -4,7 +4,7 @@ import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorLeaveRespons
 import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorResponseDTO;
 import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorReviewResponseDTO;
 import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorSpecializationResponseDTO;
-import com.github.konradcz2001.medicalappointments.doctor.leave.Leave;
+import com.github.konradcz2001.medicalappointments.leave.leave.Leave;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

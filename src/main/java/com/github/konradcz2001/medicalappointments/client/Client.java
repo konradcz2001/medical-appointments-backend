@@ -1,6 +1,6 @@
 package com.github.konradcz2001.medicalappointments.client;
 
-import com.github.konradcz2001.medicalappointments.User;
+import com.github.konradcz2001.medicalappointments.common.User;
 import com.github.konradcz2001.medicalappointments.review.Review;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Entity;

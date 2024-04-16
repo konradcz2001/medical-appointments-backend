@@ -1,6 +1,6 @@
 package com.github.konradcz2001.medicalappointments.security;
 
-import com.github.konradcz2001.medicalappointments.User;
+import com.github.konradcz2001.medicalappointments.common.User;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.io.Decoders;

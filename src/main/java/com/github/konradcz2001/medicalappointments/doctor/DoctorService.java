@@ -2,9 +2,9 @@ package com.github.konradcz2001.medicalappointments.doctor;
 
 
 import com.github.konradcz2001.medicalappointments.doctor.DTO.*;
-import com.github.konradcz2001.medicalappointments.doctor.leave.Leave;
-import com.github.konradcz2001.medicalappointments.doctor.leave.LeaveRepository;
-import com.github.konradcz2001.medicalappointments.doctor.specialization.SpecializationRepository;
+import com.github.konradcz2001.medicalappointments.leave.leave.Leave;
+import com.github.konradcz2001.medicalappointments.leave.leave.LeaveRepository;
+import com.github.konradcz2001.medicalappointments.specialization.specialization.SpecializationRepository;
 import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
 import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
 import com.github.konradcz2001.medicalappointments.exception.WrongLeaveException;
@@ -18,9 +18,9 @@ import java.net.URI;
 import java.time.LocalDateTime;
 import java.util.HashSet;
 import java.util.Set;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import static com.github.konradcz2001.medicalappointments.common.Utils.returnResponse;
 import static com.github.konradcz2001.medicalappointments.exception.MessageType.*;
 
 @Service
@@ -29,45 +29,39 @@ class DoctorService {
     private final SpecializationRepository specializationRepository;
     private final ReviewRepository reviewRepository;
     private final LeaveRepository leaveRepository;
+    private final DoctorDTOMapper dtoMapper;
 
     DoctorService(final DoctorRepository repository, final SpecializationRepository specializationRepository,
-                  final ReviewRepository reviewRepository, final LeaveRepository leaveRepository) {
+                  final ReviewRepository reviewRepository, final LeaveRepository leaveRepository, DoctorDTOMapper dtoMapper) {
         this.repository = repository;
         this.specializationRepository = specializationRepository;
         this.reviewRepository = reviewRepository;
         this.leaveRepository = leaveRepository;
+        this.dtoMapper = dtoMapper;
     }
 
-    private ResponseEntity<Page<DoctorResponseDTO>> returnResponse(Supplier<Page<Doctor>> suppliedDoctors) {
-        var doctors = suppliedDoctors.get()
-                .map(DoctorDTOMapper::apply);
-        if(doctors.isEmpty())
-            throw new EmptyPageException();
-
-        return ResponseEntity.ok(doctors);
-    }
 
     ResponseEntity<Page<DoctorResponseDTO>> readAll(Pageable pageable){
-        return returnResponse(() -> repository.findAll(pageable));
+        return returnResponse(() -> repository.findAll(pageable), dtoMapper);
     }
 
     ResponseEntity<DoctorResponseDTO> readById(Long id){
         return repository.findById(id)
-                .map(DoctorDTOMapper::apply)
+                .map(dtoMapper::apply)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
     }
 
     ResponseEntity<Page<DoctorResponseDTO>> readAllByFirstName(String firstName, Pageable pageable){
-        return returnResponse(() -> repository.findAllByFirstNameContainingIgnoreCase(firstName, pageable));
+        return returnResponse(() -> repository.findAllByFirstNameContainingIgnoreCase(firstName, pageable), dtoMapper);
     }
 
     ResponseEntity<Page<DoctorResponseDTO>> readAllByLastName(String lastName, Pageable pageable){
-        return returnResponse(() -> repository.findAllByLastNameContainingIgnoreCase(lastName, pageable));
+        return returnResponse(() -> repository.findAllByLastNameContainingIgnoreCase(lastName, pageable), dtoMapper);
     }
 
     ResponseEntity<Page<DoctorResponseDTO>> readAllBySpecialization(String specialization, Pageable pageable){
-        return returnResponse(() -> repository.findAllByAnySpecializationContainingIgnoreCase(specialization, pageable));
+        return returnResponse(() -> repository.findAllByAnySpecializationContainingIgnoreCase(specialization, pageable), dtoMapper);
     }
 
     ResponseEntity<?> deleteDoctor(Long id){
@@ -174,7 +168,7 @@ class DoctorService {
     ResponseEntity<Page<DoctorResponseDTO>> readAllAvailableByDate(LocalDateTime date, Pageable pageable){
         var doctors = repository.findAll(pageable)
                 .map(doctor -> isAvailableByDate(date, doctor) ? doctor : null)
-                .map(DoctorDTOMapper::apply);
+                .map(dtoMapper::apply);
 
         if(doctors.isEmpty())
             throw new EmptyPageException();
@@ -209,7 +203,7 @@ class DoctorService {
 
     ResponseEntity<Page<DoctorLeaveResponseDTO>> readAllLeaves(Long id, Pageable pageable){
         var doctors = leaveRepository.findAllByDoctorId(id, pageable)
-                .map(DoctorDTOMapper::applyForLeave);
+                .map(dtoMapper::applyForLeave);
 
         if(doctors.isEmpty())
             throw new EmptyPageException();
@@ -219,7 +213,7 @@ class DoctorService {
     ResponseEntity<Set<DoctorSpecializationResponseDTO>> readAllSpecializations(Long id){
         return repository.findById(id)
                 .map(Doctor::getSpecializations)
-                .map(spec -> spec.stream().map(DoctorDTOMapper::applyForSpecialization)
+                .map(spec -> spec.stream().map(dtoMapper::applyForSpecialization)
                         .collect(Collectors.toSet()))
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
@@ -243,7 +237,7 @@ class DoctorService {
 
     ResponseEntity<Page<DoctorReviewResponseDTO>> readAllReviews(Long id, Pageable pageable) {
         var doctors = reviewRepository.findAllByDoctorId(id, pageable)
-                .map(DoctorDTOMapper::applyForReview);
+                .map(dtoMapper::applyForReview);
         if(doctors.isEmpty())
             throw new EmptyPageException();
 

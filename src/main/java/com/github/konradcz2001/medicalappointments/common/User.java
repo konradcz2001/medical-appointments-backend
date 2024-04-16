@@ -1,4 +1,4 @@
-package com.github.konradcz2001.medicalappointments;
+package com.github.konradcz2001.medicalappointments.common;
 
 import com.github.konradcz2001.medicalappointments.security.Role;
 import jakarta.persistence.*;

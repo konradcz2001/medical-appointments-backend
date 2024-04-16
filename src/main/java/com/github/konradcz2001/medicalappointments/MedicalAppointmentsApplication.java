@@ -1,12 +1,7 @@
 package com.github.konradcz2001.medicalappointments;
 
-import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.data.domain.Page;
-import org.springframework.http.ResponseEntity;
-
-import java.util.function.Supplier;
 
 @SpringBootApplication
 public class MedicalAppointmentsApplication {

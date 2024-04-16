@@ -1,6 +1,6 @@
 package com.github.konradcz2001.medicalappointments.security;
 
-import com.github.konradcz2001.medicalappointments.User;
+import com.github.konradcz2001.medicalappointments.common.User;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;

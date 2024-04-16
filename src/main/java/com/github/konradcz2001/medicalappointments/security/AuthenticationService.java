@@ -1,6 +1,6 @@
 package com.github.konradcz2001.medicalappointments.security;
 
-import com.github.konradcz2001.medicalappointments.User;
+import com.github.konradcz2001.medicalappointments.common.User;
 import com.github.konradcz2001.medicalappointments.client.Client;
 import com.github.konradcz2001.medicalappointments.client.ClientRepository;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;

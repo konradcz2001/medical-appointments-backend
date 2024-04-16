@@ -1,12 +1,16 @@
 package com.github.konradcz2001.medicalappointments.client.DTO;
 
 
+import com.github.konradcz2001.medicalappointments.common.DTOMapper;
 import com.github.konradcz2001.medicalappointments.client.Client;
 import com.github.konradcz2001.medicalappointments.review.Review;
+import org.springframework.stereotype.Service;
 
-public class ClientDTOMapper {
+@Service
+public class ClientDTOMapper implements DTOMapper <ClientResponseDTO, Client> {
 
-    public static ClientResponseDTO apply(Client client) {
+    @Override
+    public ClientResponseDTO apply(Client client) {
         return new ClientResponseDTO(
                 client.getId(),
                 client.getFirstName(),
@@ -16,7 +20,7 @@ public class ClientDTOMapper {
         );
     }
 
-    public static ClientReviewResponseDTO applyForReview(Review review) {
+    public ClientReviewResponseDTO applyForReview(Review review) {
         return new ClientReviewResponseDTO(
                 review.getId(),
                 review.getDate(),

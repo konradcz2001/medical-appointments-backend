@@ -1,4 +1,4 @@
-package com.github.konradcz2001.medicalappointments.doctor.specialization;
+package com.github.konradcz2001.medicalappointments.specialization.specialization;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

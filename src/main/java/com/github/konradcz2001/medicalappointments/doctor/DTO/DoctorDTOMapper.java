@@ -1,14 +1,18 @@
 package com.github.konradcz2001.medicalappointments.doctor.DTO;
 
 
+import com.github.konradcz2001.medicalappointments.common.DTOMapper;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
-import com.github.konradcz2001.medicalappointments.doctor.leave.Leave;
-import com.github.konradcz2001.medicalappointments.doctor.specialization.Specialization;
+import com.github.konradcz2001.medicalappointments.leave.leave.Leave;
+import com.github.konradcz2001.medicalappointments.specialization.specialization.Specialization;
 import com.github.konradcz2001.medicalappointments.review.Review;
+import org.springframework.stereotype.Service;
 
-public class DoctorDTOMapper {
+@Service
+public class DoctorDTOMapper implements DTOMapper<DoctorResponseDTO, Doctor> {
 
-    public static DoctorResponseDTO apply(Doctor doctor) {
+    @Override
+    public DoctorResponseDTO apply(Doctor doctor) {
         return new DoctorResponseDTO(
                 doctor.getId(),
                 doctor.getFirstName(),
@@ -22,7 +26,7 @@ public class DoctorDTOMapper {
         );
     }
 
-    public static DoctorLeaveResponseDTO applyForLeave(Leave leave) {
+    public DoctorLeaveResponseDTO applyForLeave(Leave leave) {
         return new DoctorLeaveResponseDTO(
                 leave.getId(),
                 leave.getStartDate(),
@@ -31,14 +35,14 @@ public class DoctorDTOMapper {
     }
 
 
-    public static DoctorSpecializationResponseDTO applyForSpecialization(Specialization specialization) {
+    public DoctorSpecializationResponseDTO applyForSpecialization(Specialization specialization) {
         return new DoctorSpecializationResponseDTO(
                 specialization.getId(),
                 specialization.getSpecialization()
         );
     }
 
-    public static DoctorReviewResponseDTO applyForReview(Review review) {
+    public DoctorReviewResponseDTO applyForReview(Review review) {
         return new DoctorReviewResponseDTO(
                 review.getId(),
                 review.getDate(),

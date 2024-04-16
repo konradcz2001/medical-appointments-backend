@@ -1,6 +1,6 @@
-package com.github.konradcz2001.medicalappointments.doctor.leave;
+package com.github.konradcz2001.medicalappointments.leave.leave;
 
-import com.github.konradcz2001.medicalappointments.doctor.leave.DTO.LeaveResponseDTO;
+import com.github.konradcz2001.medicalappointments.leave.leave.DTO.LeaveResponseDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
