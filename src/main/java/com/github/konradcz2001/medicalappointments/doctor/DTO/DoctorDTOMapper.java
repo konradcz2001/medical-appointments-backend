@@ -9,25 +9,36 @@ import com.github.konradcz2001.medicalappointments.review.Review;
 import org.springframework.stereotype.Service;
 
 @Service
-public class DoctorDTOMapper implements DTOMapper<DoctorResponseDTO, Doctor> {
+public class DoctorDTOMapper implements DTOMapper<DoctorDTO, Doctor> {
 
     @Override
-    public DoctorResponseDTO apply(Doctor doctor) {
-        return new DoctorResponseDTO(
-                doctor.getId(),
-                doctor.getFirstName(),
-                doctor.getLastName(),
-                doctor.getEmail(),
-                doctor.getRole(),
-                doctor.isVerified(),
-                doctor.getAvatar(),
-                doctor.getProfileDescription(),
-                doctor.getAddress()
+    public DoctorDTO mapToDTO(Doctor source) {
+        return new DoctorDTO(
+                source.getId(),
+                source.getFirstName(),
+                source.getLastName(),
+                source.getEmail(),
+                source.getRole(),
+                source.isVerified(),
+                source.getAvatar(),
+                source.getProfileDescription(),
+                source.getAddress()
         );
     }
 
-    public DoctorLeaveResponseDTO applyForLeave(Leave leave) {
-        return new DoctorLeaveResponseDTO(
+    @Override
+    public Doctor mapFromDTO(DoctorDTO sourceDTO, Doctor target) {
+        target.setFirstName(sourceDTO.firstName());
+        target.setLastName(sourceDTO.lastName());
+        target.setAvatar(sourceDTO.avatar());
+        target.setProfileDescription(sourceDTO.profileDescription());
+        target.setAddress(sourceDTO.address());
+
+        return target;
+    }
+
+    public DoctorLeaveDTO applyForLeave(Leave leave) {
+        return new DoctorLeaveDTO(
                 leave.getId(),
                 leave.getStartDate(),
                 leave.getEndDate()
@@ -35,15 +46,15 @@ public class DoctorDTOMapper implements DTOMapper<DoctorResponseDTO, Doctor> {
     }
 
 
-    public DoctorSpecializationResponseDTO applyForSpecialization(Specialization specialization) {
-        return new DoctorSpecializationResponseDTO(
+    public DoctorSpecializationDTO applyForSpecialization(Specialization specialization) {
+        return new DoctorSpecializationDTO(
                 specialization.getId(),
                 specialization.getSpecialization()
         );
     }
 
-    public DoctorReviewResponseDTO applyForReview(Review review) {
-        return new DoctorReviewResponseDTO(
+    public DoctorReviewDTO applyForReview(Review review) {
+        return new DoctorReviewDTO(
                 review.getId(),
                 review.getDate(),
                 review.getRating(),

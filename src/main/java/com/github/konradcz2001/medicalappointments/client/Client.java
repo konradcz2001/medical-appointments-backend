@@ -12,7 +12,9 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
 @Entity
@@ -24,7 +26,7 @@ import java.util.Set;
 public class Client extends User {
 
     @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
-    Set<Review> reviews = new HashSet<>();
+    List<Review> reviews = new ArrayList<>();
 
 
     void addReview(Review review) {

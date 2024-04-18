@@ -18,7 +18,7 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "visits")
 @Getter
-@Setter(AccessLevel.PACKAGE)
+@Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 public class Visit {
     @Id

@@ -6,19 +6,28 @@ import com.github.konradcz2001.medicalappointments.visit.Visit;
 import org.springframework.stereotype.Service;
 
 @Service
-public class VisitDTOMapper implements DTOMapper<VisitResponseDTO, Visit> {
+public class VisitDTOMapper implements DTOMapper<VisitDTO, Visit> {
 
     @Override
-    public VisitResponseDTO apply(Visit visit) {
-        return new VisitResponseDTO(
-                visit.getId(),
-                visit.getDate(),
-                visit.getType(),
-                visit.getNotes(),
-                visit.getPrice(),
-                visit.getDoctor().getId(),
-                visit.getClient().getId()
+    public VisitDTO mapToDTO(Visit source) {
+        return new VisitDTO(
+                source.getId(),
+                source.getDate(),
+                source.getType(),
+                source.getNotes(),
+                source.getPrice(),
+                source.getDoctor().getId(),
+                source.getClient().getId()
         );
+    }
+
+    @Override
+    public Visit mapFromDTO(VisitDTO sourceDTO, Visit target) {
+        target.setDate(sourceDTO.date());
+        target.setType(sourceDTO.type());
+        target.setNotes(sourceDTO.notes());
+        target.setPrice(sourceDTO.price());
+        return target;
     }
 
 

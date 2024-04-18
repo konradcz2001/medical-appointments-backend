@@ -6,14 +6,20 @@ import com.github.konradcz2001.medicalappointments.specialization.specialization
 import org.springframework.stereotype.Service;
 
 @Service
-public class SpecializationDTOMapper implements DTOMapper<SpecializationResponseDTO, Specialization> {
+public class SpecializationDTOMapper implements DTOMapper<SpecializationDTO, Specialization> {
 
     @Override
-    public SpecializationResponseDTO apply(Specialization specialization) {
-        return new SpecializationResponseDTO(
-                specialization.getId(),
-                specialization.getSpecialization()
+    public SpecializationDTO mapToDTO(Specialization source) {
+        return new SpecializationDTO(
+                source.getId(),
+                source.getSpecialization()
         );
+    }
+
+    @Override
+    public Specialization mapFromDTO(SpecializationDTO sourceDTO, Specialization target) {
+        target.setSpecialization(sourceDTO.specialization());
+        return target;
     }
 
 }

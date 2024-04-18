@@ -10,13 +10,5 @@ public class MedicalAppointmentsApplication {
         SpringApplication.run(MedicalAppointmentsApplication.class, args);
 
     }
-// TODO maybe in the future you will need this
-
-//    public static <T> ResponseEntity<Page<T>> returnResponse(Supplier<Page<T>> supplier){
-//        Page<T> all = supplier.get();
-//        if(all.isEmpty())
-//            throw new EmptyPageException();
-//        return ResponseEntity.ok(all);
-//    }
 
 }

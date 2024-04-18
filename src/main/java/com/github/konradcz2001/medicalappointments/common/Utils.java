@@ -9,7 +9,8 @@ import java.util.function.Supplier;
 public class Utils {
     public static <T, S> ResponseEntity<Page<S>> returnResponse(Supplier<Page<T>> suppliedResources, DTOMapper<S, T> dtoMapper) {
         var all = suppliedResources.get()
-                .map(dtoMapper::apply);
+                .map(dtoMapper::mapToDTO);
+
         if(all.isEmpty())
             throw new EmptyPageException();
 

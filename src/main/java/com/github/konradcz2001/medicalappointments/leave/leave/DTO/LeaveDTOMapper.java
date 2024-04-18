@@ -7,7 +7,7 @@ import com.github.konradcz2001.medicalappointments.leave.leave.Leave;
 import org.springframework.stereotype.Service;
 
 @Service
-public class LeaveDTOMapper implements DTOMapper<LeaveResponseDTO, Leave> {
+public class LeaveDTOMapper implements DTOMapper<LeaveDTO, Leave> {
 
     private final DoctorDTOMapper doctorDTOMapper;
 
@@ -16,13 +16,18 @@ public class LeaveDTOMapper implements DTOMapper<LeaveResponseDTO, Leave> {
     }
 
     @Override
-    public LeaveResponseDTO apply(Leave leave) {
-        return new LeaveResponseDTO(
-                leave.getId(),
-                leave.getStartDate(),
-                leave.getEndDate(),
-                doctorDTOMapper.apply(leave.getDoctor())
+    public LeaveDTO mapToDTO(Leave source) {
+        return new LeaveDTO(
+                source.getId(),
+                source.getStartDate(),
+                source.getEndDate(),
+                doctorDTOMapper.mapToDTO(source.getDoctor())
         );
+    }
+
+    @Override
+    public Leave mapFromDTO(LeaveDTO sourceDTO, Leave target) {
+        return target;
     }
 
 }

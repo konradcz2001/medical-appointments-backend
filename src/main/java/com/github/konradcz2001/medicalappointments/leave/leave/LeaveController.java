@@ -1,6 +1,6 @@
 package com.github.konradcz2001.medicalappointments.leave.leave;
 
-import com.github.konradcz2001.medicalappointments.leave.leave.DTO.LeaveResponseDTO;
+import com.github.konradcz2001.medicalappointments.leave.leave.DTO.LeaveDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -19,37 +19,37 @@ class LeaveController {
     }
 
     @GetMapping
-    ResponseEntity<Page<LeaveResponseDTO>> readAll(Pageable pageable){
+    ResponseEntity<Page<LeaveDTO>> readAll(Pageable pageable){
         return service.readAll(pageable);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<LeaveResponseDTO> readById(@PathVariable Long id){
+    ResponseEntity<LeaveDTO> readById(@PathVariable Long id){
         return service.readById(id);
     }
 
     @GetMapping("/starts-after")
-    ResponseEntity<Page<LeaveResponseDTO>> readAllByStartAfter(@RequestParam LocalDateTime after, Pageable pageable){
+    ResponseEntity<Page<LeaveDTO>> readAllByStartAfter(@RequestParam LocalDateTime after, Pageable pageable){
         return service.readAllByStartAfter(after, pageable);
     }
 
     @GetMapping("/ends-after")
-    ResponseEntity<Page<LeaveResponseDTO>> readAllByEndAfter(@RequestParam LocalDateTime after, Pageable pageable){
+    ResponseEntity<Page<LeaveDTO>> readAllByEndAfter(@RequestParam LocalDateTime after, Pageable pageable){
         return service.readAllByEndAfter(after, pageable);
     }
 
     @GetMapping("/starts-before")
-    ResponseEntity<Page<LeaveResponseDTO>> readAllByStartBefore(@RequestParam LocalDateTime before, Pageable pageable){
+    ResponseEntity<Page<LeaveDTO>> readAllByStartBefore(@RequestParam LocalDateTime before, Pageable pageable){
         return service.readAllByStartBefore(before, pageable);
     }
 
     @GetMapping("/ends-before")
-    ResponseEntity<Page<LeaveResponseDTO>> readAllByEndBefore(@RequestParam LocalDateTime before, Pageable pageable){
+    ResponseEntity<Page<LeaveDTO>> readAllByEndBefore(@RequestParam LocalDateTime before, Pageable pageable){
         return service.readAllByEndBefore(before, pageable);
     }
 
     @GetMapping("/between")
-    ResponseEntity<Page<LeaveResponseDTO>> readAllBetween(@RequestParam LocalDateTime after, @RequestParam LocalDateTime before, Pageable pageable){
+    ResponseEntity<Page<LeaveDTO>> readAllBetween(@RequestParam LocalDateTime after, @RequestParam LocalDateTime before, Pageable pageable){
         return service.readAllBetween(after, before, pageable);
     }
 

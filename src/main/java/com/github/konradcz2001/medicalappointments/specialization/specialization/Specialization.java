@@ -4,6 +4,7 @@ import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.FieldDefaults;
@@ -16,6 +17,7 @@ import java.util.Set;
 @Data
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
+@AllArgsConstructor
 public class Specialization {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -28,12 +30,6 @@ public class Specialization {
     @ManyToMany(mappedBy = "specializations")
     Set<Doctor> doctors = new HashSet<>();
 
-//    public void addDoctor(Doctor doctor){
-//        doctors.add(doctor);
-//    }
-//    public void removeDoctor(Doctor doctor){
-//        doctors.remove(doctor);
-//    }
 
 
 }

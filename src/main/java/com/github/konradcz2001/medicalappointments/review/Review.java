@@ -4,10 +4,7 @@ import com.github.konradcz2001.medicalappointments.client.Client;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
@@ -15,9 +12,10 @@ import java.time.LocalDateTime;
 @Entity
 @Table(name = "reviews")
 @Getter
-@Setter(AccessLevel.PACKAGE)
+@Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
+@AllArgsConstructor
 public class Review {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

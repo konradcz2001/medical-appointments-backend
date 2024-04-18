@@ -1,0 +1,601 @@
+package com.github.konradcz2001.medicalappointments.doctor;
+
+import com.github.konradcz2001.medicalappointments.client.Client;
+import com.github.konradcz2001.medicalappointments.doctor.DTO.*;
+import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
+import com.github.konradcz2001.medicalappointments.exception.WrongLeaveException;
+import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
+import com.github.konradcz2001.medicalappointments.exception.WrongSpecializationException;
+import com.github.konradcz2001.medicalappointments.leave.leave.Leave;
+import com.github.konradcz2001.medicalappointments.leave.leave.LeaveRepository;
+import com.github.konradcz2001.medicalappointments.review.Review;
+import com.github.konradcz2001.medicalappointments.review.ReviewRepository;
+import com.github.konradcz2001.medicalappointments.security.Role;
+import com.github.konradcz2001.medicalappointments.specialization.specialization.Specialization;
+import com.github.konradcz2001.medicalappointments.specialization.specialization.SpecializationRepository;
+import org.junit.jupiter.api.AfterEach;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Disabled;
+import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.Spy;
+import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.Pageable;
+import org.springframework.http.HttpStatusCode;
+
+import java.time.LocalDateTime;
+import java.util.*;
+
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.ArgumentMatchers.anyLong;
+import static org.mockito.Mockito.*;
+
+@ExtendWith(MockitoExtension.class)
+class DoctorServiceTest {
+    @Mock
+    private  DoctorRepository repository;
+    @Mock
+    private SpecializationRepository specializationRepository;
+    @Mock
+    private ReviewRepository reviewRepository;
+    @Mock
+    private LeaveRepository leaveRepository;
+    @Spy
+    private DoctorDTOMapper dtoMapper;
+
+    @InjectMocks
+    private DoctorService underTest;
+
+    @BeforeEach
+    void setUp() {
+    }
+
+    @AfterEach
+    void tearDown() {
+    }
+
+
+    @Test
+    void shouldThrownDoctorNotFoundException() {
+        //given
+        when(repository.findById(anyLong())).thenReturn(Optional.empty());
+
+        //when
+        //then
+        verify(repository, never()).save(any());
+        assertThatThrownBy(() -> underTest.addLeave(1L, new Leave()))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Doctor with id = 1");
+
+    }
+
+
+    @Test
+    void shouldThrownExceptionThatStartDateIsAfterEndDate() {
+        //given
+        Doctor doctor = new Doctor();
+        Leave toAdd = new Leave(1L, LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(1), doctor);
+
+        when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.addLeave(1L, toAdd))
+                .isInstanceOf(WrongLeaveException.class)
+                .hasMessage("The beginning of the leave cannot be later than the end");
+
+    }
+
+    @Test
+    void shouldMergeLeavesWhenAddingNewLeave() {
+        //given
+        LocalDateTime now = LocalDateTime.now();
+
+        Doctor doctor = new Doctor();
+        Leave leave1 = new Leave(1L, now.plusDays(1), now.plusDays(3), doctor);
+        Leave leave2 = new Leave(2L, now.plusDays(5), now.plusDays(7), doctor);
+        Leave leave3 = new Leave(3L, now.plusDays(9), now.plusDays(11), doctor);
+
+        doctor.addLeave(leave1);
+        doctor.addLeave(leave2);
+        doctor.addLeave(leave3);
+
+        Leave toAdd = new Leave(4L, now.plusDays(6), now.plusDays(10), null);
+
+        when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
+
+        //when
+        var response = underTest.addLeave(1L, toAdd);
+
+        //then
+        assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
+        assertEquals(2, doctor.getLeaves().size());
+        assertEquals(now.plusDays(1), doctor.getLeaves().get(0).getStartDate());
+        assertEquals(now.plusDays(3), doctor.getLeaves().get(0).getEndDate());
+        assertEquals(now.plusDays(5), doctor.getLeaves().get(1).getStartDate());
+        assertEquals(now.plusDays(11), doctor.getLeaves().get(1).getEndDate());
+
+    }
+
+    @Test
+    void shouldAddLeaveWithoutMerging() {
+        //given
+        LocalDateTime now = LocalDateTime.now();
+
+        Doctor doctor = new Doctor();
+        Leave leave1 = new Leave(1L, now.plusDays(1), now.plusDays(2), doctor);
+        Leave leave2 = new Leave(2L, now.plusDays(5), now.plusDays(6), doctor);
+
+        doctor.addLeave(leave1);
+        doctor.addLeave(leave2);
+
+        Leave toAdd = new Leave(3L, now.plusDays(3), now.plusDays(4), null);
+
+        when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
+
+        //when
+        var response = underTest.addLeave(1L, toAdd);
+
+        //then
+        assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
+        assertEquals(3, doctor.getLeaves().size());
+        assertEquals(now.plusDays(3), doctor.getLeaves().get(2).getStartDate());
+        assertEquals(now.plusDays(4), doctor.getLeaves().get(2).getEndDate());
+    }
+
+    @Test
+    void shouldFindAllLeavesByDoctorId() {
+        //given
+        Long doctorId = 1L;
+        LocalDateTime now = LocalDateTime.now();
+        Leave leave1 = new Leave(1L, now.plusDays(1), now.plusDays(2), null);
+        Leave leave2 = new Leave(2L, now.plusDays(5), now.plusDays(6), null);
+
+        Page<Leave> leaves = new PageImpl<>(List.of(leave1, leave2));
+        Pageable pageable = Pageable.ofSize(10).withPage(0);
+
+        when(leaveRepository.findAllByDoctorId(doctorId, pageable)).thenReturn(leaves);
+
+        //when
+        var response = underTest.readAllLeaves(doctorId, pageable);
+
+        //then
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+        assertEquals(2, response.getBody().getTotalElements());
+        assertEquals(2, response.getBody().getContent().get(1).id());
+        assertEquals(DoctorLeaveDTO.class, response.getBody().getContent().get(1).getClass());
+    }
+
+    @Test
+    void shouldFindAllReviewsByDoctorId() {
+        //given
+        Long doctorId = 1L;
+        Review review1 = new Review();
+        Review review2 = new Review();
+        review1.setClient(new Client());
+        review2.setClient(new Client());
+        review2.setId(2L);
+
+        Page<Review> reviews = new PageImpl<>(List.of(review1, review2));
+        Pageable pageable = Pageable.ofSize(10).withPage(0);
+
+        when(reviewRepository.findAllByDoctorId(doctorId, pageable)).thenReturn(reviews);
+
+        //when
+        var response = underTest.readAllReviews(doctorId, pageable);
+
+        //then
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+        assertEquals(2, response.getBody().getTotalElements());
+        assertEquals(2, response.getBody().getContent().get(1).id());
+        assertEquals(DoctorReviewDTO.class, response.getBody().getContent().get(1).getClass());
+    }
+
+    @Test
+    void shouldFindAllSpecializationsByDoctorId() {
+        //given
+        Long doctorId = 1L;
+        Doctor doctor = new Doctor();
+        Set<Specialization> specializations = Set.of(new Specialization(1, null, null), new Specialization(2, null, null));
+        doctor.setSpecializations(specializations);
+
+        when(repository.findById(doctorId)).thenReturn(Optional.of(doctor));
+
+        //when
+        var response = underTest.readAllSpecializations(doctorId);
+
+        //then
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+        assertEquals(2, response.getBody().size());
+        assertEquals(DoctorSpecializationDTO.class, response.getBody().stream().findAny().get().getClass());
+    }
+
+    @Test
+    void shouldAddAllNewSpecializationsByDoctorId() {
+        //given
+        Long doctorId = 1L;
+        Doctor doctor = spy(new Doctor());
+
+        Specialization s1 = new Specialization(1, null, null);
+        Specialization s2 = new Specialization(2, null, null);
+        Specialization s3 = new Specialization(3, null, null);
+        Specialization s4 = new Specialization(4, null, null);
+        List<Specialization> allSpecializations = List.of(s1, s2, s3, s4);
+
+        doctor.addSpecialization(s2);
+        doctor.addSpecialization(s3);
+
+        Set<Integer> specializationsToAdd = Set.of(1, 4);
+
+        when(repository.findById(doctorId)).thenReturn(Optional.of(doctor));
+        when(specializationRepository.findById(any())).thenAnswer(invocation -> Optional.of(allSpecializations.get((int)invocation.getArgument(0) - 1)));
+
+        //when
+        var response = underTest.addSpecializations(doctorId, specializationsToAdd);
+
+        //then
+        assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
+        assertEquals(4, doctor.getSpecializations().size());
+        verify(doctor, times(4)).addSpecialization(any());
+        verify(repository).save(doctor);
+    }
+
+    @Test
+    void shouldThrowSpecializationNotFoundExceptionWhenTryingToAddNewSet() {
+        //given
+        Long doctorId = 1L;
+        Doctor doctor = new Doctor();
+
+        Specialization s1 = new Specialization(1, null, null);
+        Specialization s2 = new Specialization(2, null, null);
+        Specialization s3 = new Specialization(3, null, null);
+        Specialization s4 = new Specialization(4, null, null);
+        List<Specialization> allSpecializations = List.of(s1, s2, s3, s4);
+
+        doctor.addSpecialization(s2);
+        doctor.addSpecialization(s3);
+
+        Set<Integer> specializationsToAdd = Set.of(1, 4, 5);
+
+        when(repository.findById(doctorId)).thenReturn(Optional.of(doctor));
+        when(specializationRepository.findById(any())).thenAnswer(invocation ->
+                Optional.ofNullable((int)invocation.getArgument(0) <= allSpecializations.size() ?
+                        allSpecializations.get((int)invocation.getArgument(0) - 1) : null));
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.addSpecializations(doctorId, specializationsToAdd))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Specialization with id ");
+        verify(repository, never()).save(any());
+
+    }
+
+    @Test
+    void shouldThrowWrongSpecializationExceptionWhenTryingToAddNewSet_Max5SpecializationsPerDoctor() {
+        //given
+        Long doctorId = 1L;
+        Doctor doctor = new Doctor();
+
+        Specialization s1 = new Specialization(1, null, null);
+        Specialization s2 = new Specialization(2, null, null);
+
+        doctor.addSpecialization(s1);
+        doctor.addSpecialization(s2);
+
+        Set<Integer> specializationsToAdd = Set.of(3, 4, 5, 6);
+
+        when(repository.findById(doctorId)).thenReturn(Optional.of(doctor));
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.addSpecializations(doctorId, specializationsToAdd))
+                .isInstanceOf(WrongSpecializationException.class)
+                .hasMessageContaining("5 specializations");
+        verify(repository, never()).save(any());
+
+    }
+
+    @Test
+    void shouldRemoveLeave() {
+        //given
+        Long leaveId = 2L;
+        LocalDateTime now = LocalDateTime.now();
+
+        Doctor doctor = new Doctor();
+        Leave leave1 = new Leave(1L, now.plusDays(1), now.plusDays(2), doctor);
+        Leave leave2 = new Leave(2L, now.plusDays(5), now.plusDays(6), doctor);
+
+        doctor.addLeave(leave1);
+        doctor.addLeave(leave2);
+
+        when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
+
+        //when
+        var response = underTest.removeLeave(1L, leaveId);
+
+        //then
+        assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
+        assertEquals(1, doctor.getLeaves().size());
+        verify(repository).save(isA(Doctor.class));
+    }
+
+    @Test
+    void shouldThrowWrongLeaveExceptionWhenRemovingLeave() {
+        //given
+        Long leaveId = 3L;
+        LocalDateTime now = LocalDateTime.now();
+
+        Doctor doctor = new Doctor();
+        Leave leave1 = new Leave(1L, now.plusDays(1), now.plusDays(2), doctor);
+        Leave leave2 = new Leave(2L, now.plusDays(5), now.plusDays(6), doctor);
+
+        doctor.addLeave(leave1);
+        doctor.addLeave(leave2);
+
+        when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.removeLeave(1L, leaveId))
+                .isInstanceOf(WrongLeaveException.class)
+                .hasMessageContaining("Doctor with id = " + 1 + " does not have the specified");
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void shouldThrownResourceNotFoundExceptionWhenTryingToRemoveLeave() {
+        //given
+        Long leaveId = 2L;
+        Long doctorId = 2L;
+
+        when(repository.findById(anyLong())).thenReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.removeLeave(doctorId, leaveId))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Doctor with id = " + doctorId) ;
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void shouldRemoveSpecialization() {
+        //given
+        Integer specializationId = 2;
+        LocalDateTime now = LocalDateTime.now();
+
+        Doctor doctor = new Doctor();
+        Specialization specialization1 = new Specialization(1, "spec1", Set.of(doctor));
+        Specialization specialization2 = new Specialization(2, "spec2", Set.of(doctor));
+
+        doctor.addSpecialization(specialization1);
+        doctor.addSpecialization(specialization2);
+
+        when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
+
+        //when
+        var response = underTest.removeSpecialization(1L, specializationId);
+
+        //then
+        assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
+        assertEquals(1, doctor.getSpecializations().size());
+        verify(repository).save(isA(Doctor.class));
+    }
+
+    @Test
+    void shouldThrowWrongSpecializationExceptionWhenRemovingSpecialization() {
+        //given
+        Integer specializationId = 3;
+        LocalDateTime now = LocalDateTime.now();
+
+        Doctor doctor = new Doctor();
+        Specialization specialization1 = new Specialization(1, "spec1", Set.of(doctor));
+        Specialization specialization2 = new Specialization(2, "spec2", Set.of(doctor));
+
+        doctor.addSpecialization(specialization1);
+        doctor.addSpecialization(specialization2);
+
+        when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.removeSpecialization(1L, specializationId))
+                .isInstanceOf(WrongSpecializationException.class)
+                .hasMessageContaining("Doctor with id = " + 1 + " does not have the specified");
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void shouldThrownResourceNotFoundExceptionWhenTryingToRemoveSpecialization() {
+        //given
+        Integer specializationId = 2;
+        Long doctorId = 2L;
+
+        when(repository.findById(anyLong())).thenReturn(Optional.empty());
+
+        //when
+        //then
+        assertThatThrownBy(() -> underTest.removeSpecialization(doctorId, specializationId))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Doctor with id = " + doctorId);
+        verify(repository, never()).save(any());
+    }
+
+    @Test
+    void shouldFindDoctorById() {
+        // given
+        Doctor doctor1 = new Doctor();
+        Doctor doctor2 = new Doctor();
+        doctor1.setId(1L);
+        doctor2.setId(2L);
+
+        when(repository.findById(2L)).thenReturn(Optional.of(doctor2));
+
+        // when
+        var response = underTest.readById(2L);
+
+        // then
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+        assertEquals(DoctorDTO.class, response.getBody().getClass());
+        assertEquals(2, response.getBody().id());
+    }
+
+    @Test
+    void shouldCreateNewDoctor() {
+        // given
+        Doctor doctor = new Doctor();
+        doctor.setId(1L);
+        doctor.setFirstName("name");
+
+        when(repository.save(doctor)).thenReturn(doctor);
+
+        // when
+        var response = underTest.createDoctor(doctor);
+
+        // then
+        assertEquals(HttpStatusCode.valueOf(201), response.getStatusCode());
+        assertEquals(DoctorDTO.class, response.getBody().getClass());
+        assertNull(response.getBody().id());
+        assertEquals("name", response.getBody().firstName());
+    }
+
+    @Test
+    void shouldUpdateDoctor() {
+        // given
+        Long id = 1L;
+        Doctor orginal = new Doctor();
+        orginal.setId(id);
+        DoctorDTO toUpdate = new DoctorDTO(2L, "name2", "lastname2", "email2", Role.CLIENT,true, null, "description2", null);
+
+        when(repository.findById(id)).thenReturn(Optional.of(orginal));
+        when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+
+        // when
+        var response = underTest.updateDoctor(id, toUpdate);
+
+        // then
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+        assertEquals(DoctorDTO.class, response.getBody().getClass());
+        assertEquals(1, response.getBody().id());
+        assertEquals("name2", response.getBody().firstName());
+        assertEquals("description2", response.getBody().profileDescription());
+        assertNull(response.getBody().email());
+        assertNull(response.getBody().role());
+        assertFalse(response.getBody().isVerified());
+    }
+
+    @Test
+    @Disabled
+    void shouldFindAllDoctorAvailableByDate() {
+        // given
+        LocalDateTime date = LocalDateTime.now().plusDays(5);
+
+        Doctor doctor1 = new Doctor();
+        Doctor doctor2 = new Doctor();
+        Doctor doctor3 = new Doctor();
+
+        doctor1.setId(1L);
+        doctor2.setId(2L);
+        doctor3.setId(3L);
+
+        LocalDateTime now = LocalDateTime.now();
+        Leave leave1 = new Leave(1L, now.plusDays(1), now.plusDays(6), doctor1);
+        Leave leave2 = new Leave(2L, now.plusDays(6), now.plusDays(7), doctor2);
+        Leave leave3 = new Leave(3L, now.plusDays(4), now.plusDays(8), doctor3);
+
+        doctor1.addLeave(leave1);
+        doctor2.addLeave(leave2);
+        doctor3.addLeave(leave3);
+
+
+        Page<Doctor> doctors = new PageImpl<>(List.of(doctor1, doctor2, doctor3));
+        Pageable pageable = Pageable.ofSize(10).withPage(0);
+
+        when(repository.findAll(pageable)).thenReturn(doctors);
+
+        // when
+        var response = underTest.readAllAvailableByDate(date, pageable);
+
+        // then
+        assertEquals(1, response.getBody().getTotalElements());
+        assertEquals(1, response.getBody().getTotalPages());
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+        assertEquals(DoctorDTO.class, response.getBody().getContent().get(0).getClass());
+        assertEquals(2, response.getBody().getContent().get(0).id());
+    }
+
+    @Test
+    void shouldDeleteDoctorById() {
+        // given
+        Long id = 1L;
+        Doctor doctor1 = new Doctor();
+        doctor1.setId(1L);
+        when(repository.findById(id)).thenReturn(Optional.of(doctor1));
+
+        // when
+        var response = underTest.deleteDoctor(id);
+
+        // then
+        assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
+        verify(repository).deleteById(id);
+    }
+
+    @Test
+    void shouldThrowResourceNotFoundExceptionIfDoctorToDeleteNotFound() {
+        // given
+        Long id = 1L;
+        when(repository.findById(id)).thenReturn(Optional.empty());
+
+        // when
+        // then
+        assertThatThrownBy(() -> underTest.deleteDoctor(id))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Doctor with id = " + id) ;
+        verify(repository, never()).deleteById(id);
+    }
+
+    @Test
+    void shouldFindAllDoctors() {
+        // given
+        Doctor doctor1 = new Doctor();
+        Doctor doctor2 = new Doctor();
+        doctor1.setId(1L);
+        doctor2.setId(2L);
+        Page<Doctor> doctors = new PageImpl<>(List.of(doctor1, doctor2));
+        Pageable pageable = Pageable.ofSize(10).withPage(0);
+
+        when(repository.findAll(pageable)).thenReturn(doctors);
+
+        // when
+        var response = underTest.readAll(pageable);
+
+        // then
+        assertEquals(2, response.getBody().getTotalElements());
+        assertEquals(1, response.getBody().getTotalPages());
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+        assertEquals(DoctorDTO.class, response.getBody().getContent().get(0).getClass());
+        assertEquals(2, response.getBody().getContent().get(1).id());
+
+    }
+
+    @Test
+    void shouldThrowEmptyPageException() {
+        // given
+        Page<Doctor> doctors = new PageImpl<>(List.of());
+        Pageable pageable = Pageable.ofSize(10).withPage(0);
+
+        when(repository.findAll(pageable)).thenReturn(doctors);
+
+        // when
+        // then
+        assertThatThrownBy(() -> underTest.readAll(pageable))
+                .isInstanceOf(EmptyPageException.class)
+                .hasMessage("Page is empty");
+    }
+}

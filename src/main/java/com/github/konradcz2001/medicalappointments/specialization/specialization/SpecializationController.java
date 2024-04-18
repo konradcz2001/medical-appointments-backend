@@ -1,6 +1,6 @@
 package com.github.konradcz2001.medicalappointments.specialization.specialization;
 
-import com.github.konradcz2001.medicalappointments.specialization.specialization.DTO.SpecializationResponseDTO;
+import com.github.konradcz2001.medicalappointments.specialization.specialization.DTO.SpecializationDTO;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -19,27 +19,27 @@ class SpecializationController {
     }
 
     @GetMapping
-    ResponseEntity<Page<SpecializationResponseDTO>> readAll(Pageable pageable){
+    ResponseEntity<Page<SpecializationDTO>> readAll(Pageable pageable){
         return service.readAll(pageable);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<SpecializationResponseDTO> readById(@PathVariable Integer id){
+    ResponseEntity<SpecializationDTO> readById(@PathVariable Integer id){
         return service.readById(id);
     }
 
     @GetMapping(params = "specialization")
-    ResponseEntity<SpecializationResponseDTO> readBySpecialization(@RequestParam String specialization){
+    ResponseEntity<SpecializationDTO> readBySpecialization(@RequestParam String specialization){
         return service.readBySpecialization(specialization);
     }
 
     @PostMapping
-    ResponseEntity<?> createSpecialization(@Valid @RequestBody Specialization specialization){
+    ResponseEntity<SpecializationDTO> createSpecialization(@Valid @RequestBody Specialization specialization){
         return service.createSpecialization(specialization);
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<?> updateSpecialization(@PathVariable Integer id, @Valid @RequestBody Specialization specialization){
+    ResponseEntity<SpecializationDTO> updateSpecialization(@PathVariable Integer id, @Valid @RequestBody SpecializationDTO specialization){
         return service.updateSpecialization(id, specialization);
     }
 

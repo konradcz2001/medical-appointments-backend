@@ -31,10 +31,9 @@ public class Leave {
     @NotNull
     @FutureOrPresent
     LocalDateTime endDate;
-    @JsonIgnore//TODO delete jsonignore, create dto
+
     @ManyToOne
     @JoinColumn(name="doctor_id", nullable=false)
-    @NotNull
     Doctor doctor;
 
 

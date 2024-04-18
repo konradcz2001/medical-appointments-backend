@@ -2,6 +2,7 @@ package com.github.konradcz2001.medicalappointments.doctor;
 
 
 import com.github.konradcz2001.medicalappointments.doctor.DTO.*;
+import com.github.konradcz2001.medicalappointments.exception.WrongSpecializationException;
 import com.github.konradcz2001.medicalappointments.leave.leave.Leave;
 import com.github.konradcz2001.medicalappointments.leave.leave.LeaveRepository;
 import com.github.konradcz2001.medicalappointments.specialization.specialization.SpecializationRepository;
@@ -16,8 +17,7 @@ import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.time.LocalDateTime;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.github.konradcz2001.medicalappointments.common.Utils.returnResponse;
@@ -41,167 +41,125 @@ class DoctorService {
     }
 
 
-    ResponseEntity<Page<DoctorResponseDTO>> readAll(Pageable pageable){
+    ResponseEntity<Page<DoctorDTO>> readAll(Pageable pageable){
         return returnResponse(() -> repository.findAll(pageable), dtoMapper);
     }
 
-    ResponseEntity<DoctorResponseDTO> readById(Long id){
+    ResponseEntity<DoctorDTO> readById(Long id){
         return repository.findById(id)
-                .map(dtoMapper::apply)
+                .map(dtoMapper::mapToDTO)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
     }
 
-    ResponseEntity<Page<DoctorResponseDTO>> readAllByFirstName(String firstName, Pageable pageable){
+    ResponseEntity<Page<DoctorDTO>> readAllByFirstName(String firstName, Pageable pageable){
         return returnResponse(() -> repository.findAllByFirstNameContainingIgnoreCase(firstName, pageable), dtoMapper);
     }
 
-    ResponseEntity<Page<DoctorResponseDTO>> readAllByLastName(String lastName, Pageable pageable){
+    ResponseEntity<Page<DoctorDTO>> readAllByLastName(String lastName, Pageable pageable){
         return returnResponse(() -> repository.findAllByLastNameContainingIgnoreCase(lastName, pageable), dtoMapper);
     }
 
-    ResponseEntity<Page<DoctorResponseDTO>> readAllBySpecialization(String specialization, Pageable pageable){
+    ResponseEntity<Page<DoctorDTO>> readAllBySpecialization(String specialization, Pageable pageable){
         return returnResponse(() -> repository.findAllByAnySpecializationContainingIgnoreCase(specialization, pageable), dtoMapper);
     }
 
     ResponseEntity<?> deleteDoctor(Long id){
         return repository.findById(id)
                 .map(doctor -> {
-                    //TODO is specialization, reviews or leaves removed?
-                    //doctor.removeSpecialization();
                     repository.deleteById(id);
                     return ResponseEntity.noContent().build();
                 })
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
     }
 
-    ResponseEntity<?> addLeave(Long id, Leave leave){
 
-        return repository.findById(id)
-                .map(doctor ->{
-
-
-                    if(leave.getEndDate().isBefore(LocalDateTime.now()))
-                        throw new WrongLeaveException("The leave is over");
-
-                    if(leave.getStartDate().isAfter(leave.getEndDate()))
-                        throw new WrongLeaveException("The beginning of the leave cannot be later than the end");
-
-                    leave.setId(null);
-
-                    doctor.getLeaves().forEach(doctorLeave -> {
-                        var ls = leave.getStartDate();
-                        var le = leave.getEndDate();
-                        var dls = doctorLeave.getStartDate();
-                        var dle = doctorLeave.getEndDate();
-
-
-                        // dls ls le dle
-                        if((ls.isAfter(dls) || ls.isEqual(dls)) && (le.isBefore(dle) || le.isEqual(dle))){
-                            throw new WrongLeaveException("Leave for the given period of time already exists");
-                        }
-                        // ls dls dle le
-                        else if((ls.isBefore(dls) || ls.isEqual(dls)) && (le.isAfter(dle) || le.isEqual(dle))){
-                            doctorLeave.setStartDate(leave.getStartDate());
-                            doctorLeave.setEndDate(leave.getEndDate());
-                            leaveRepository.save(doctorLeave);
-                        }
-                        // ls dls le dle
-                        else if((ls.isBefore(dls) || ls.isEqual(dls)) && (le.isBefore(dle) || le.isEqual(dle)) && (le.isAfter(dls) || le.isEqual(dls))){
-                            if(dls.isBefore(LocalDateTime.now()))
-                                throw new WrongLeaveException("Leave for the given period of time already exists");
-
-                            doctorLeave.setStartDate(leave.getStartDate());
-                            leaveRepository.save(doctorLeave);
-                        }
-                        // dls ls dle le
-                        else if((ls.isAfter(dls) || ls.isEqual(dls)) && (le.isAfter(dle) || le.isEqual(dle)) && (dle.isAfter(ls) || dle.isEqual(ls))){
-                            doctorLeave.setEndDate(leave.getEndDate());
-                            leaveRepository.save(doctorLeave);
-                        }
-                        // ls le dls dle || dls dle ls le
-                        else{
-                            leave.setDoctor(doctor);
-                            leaveRepository.save(leave);
-                        }
-                    });
-
-                    if(doctor.getLeaves().isEmpty()){
-                        leave.setDoctor(doctor);
-                        leaveRepository.save(leave);
-                    }
-
-                    return ResponseEntity.noContent().build();
-                })
+    ResponseEntity<?> addLeave(Long id, Leave leave) {
+        Doctor doctor = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
 
+        if (leave.getStartDate().isAfter(leave.getEndDate()))
+            throw new WrongLeaveException("The beginning of the leave cannot be later than the end");
+
+        leave.setId(null);
+
+        List<Leave> leavesToRemove = new ArrayList<>();
+
+
+        for (Leave existingLeave : doctor.getLeaves()) {
+            if (!(leave.getEndDate().isBefore(existingLeave.getStartDate()) || leave.getStartDate().isAfter(existingLeave.getEndDate()))) {
+
+                leave.setStartDate(leave.getStartDate().isBefore(existingLeave.getStartDate()) ? leave.getStartDate() : existingLeave.getStartDate());
+                leave.setEndDate(leave.getEndDate().isAfter(existingLeave.getEndDate()) ? leave.getEndDate() : existingLeave.getEndDate());
+
+                leavesToRemove.add(existingLeave);
+            }
+        }
+
+        doctor.getLeaves().removeAll(leavesToRemove);
+        doctor.addLeave(leave);
+
+        repository.save(doctor);
+
+        return ResponseEntity.noContent().build();
     }
+
 
     ResponseEntity<?> removeLeave(Long doctorId, Long leaveId){
         return repository.findById(doctorId)
-                .map(doctor -> leaveRepository.findById(leaveId).map(leave -> {
-                    boolean anyMatch = doctor.getLeaves().stream().anyMatch(doctorLeave -> doctorLeave.getId().equals(leaveId));
-                    if(anyMatch){
-                        doctor.removeLeave(leave);
-                        repository.save(doctor);
-                        return ResponseEntity.noContent().build();
-                    }
-
-                     throw new WrongLeaveException("Doctor with id " + doctorId + " does not have the specified leave with id " + leaveId);
-                }).orElseThrow(() -> new ResourceNotFoundException(LEAVE, leaveId)))
+                .map(doctor -> doctor.getLeaves().stream()
+                        .filter(leave -> leave.getId().equals(leaveId)).findAny()
+                        .map(leave -> {
+                            doctor.removeLeave(leave);
+                            repository.save(doctor);
+                            return ResponseEntity.noContent().build();
+                        })
+                        .orElseThrow(() -> new WrongLeaveException("Doctor with id = " + doctorId + " does not have the specified leave with id = " + leaveId)))
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, doctorId));
 
     }
 
     ResponseEntity<?> removeSpecialization(Long doctorId, Integer specializationId){
         return repository.findById(doctorId)
-                .map(doctor -> specializationRepository.findById(specializationId)
-                        .map(specialization -> {
-                            doctor.removeSpecialization(specialization);
-                            repository.save(doctor);
-                            return ResponseEntity.noContent().build();
+                .map(doctor -> doctor.getSpecializations().stream()
+                        .filter(spec -> spec.getId().equals(specializationId)).findAny()
+                        .map(spec ->{
+                              doctor.removeSpecialization(spec);
+                              repository.save(doctor);
+                              return ResponseEntity.noContent().build();
                         })
-                        .orElseThrow(() -> new ResourceNotFoundException(SPECIALIZATION, specializationId.longValue())))
+                        .orElseThrow(() -> new WrongSpecializationException("Doctor with id = " + doctorId + " does not have the specified specialization with id = " + specializationId)))
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, doctorId));
     }
 
-    ResponseEntity<Page<DoctorResponseDTO>> readAllAvailableByDate(LocalDateTime date, Pageable pageable){
-        var doctors = repository.findAll(pageable)
-                .map(doctor -> isAvailableByDate(date, doctor) ? doctor : null)
-                .map(dtoMapper::apply);
-
-        if(doctors.isEmpty())
-            throw new EmptyPageException();
-        return ResponseEntity.ok(doctors);
+    ResponseEntity<Page<DoctorDTO>> readAllAvailableByDate(LocalDateTime date, Pageable pageable){
+        return returnResponse(() -> repository.findAllAvailableByDate(date, pageable), dtoMapper);
     }
 
-    private boolean isAvailableByDate(LocalDateTime date, Doctor doctor){
-        return doctor.getLeaves().stream()
-                .allMatch(leave -> (leave.getStartDate().isAfter(date) || leave.getEndDate().isBefore(date)));
-    }
+//    private boolean isAvailableByDate(LocalDateTime date, Doctor doctor){
+//        return doctor.getLeaves().stream()
+//                .allMatch(leave -> (leave.getStartDate().isAfter(date) || leave.getEndDate().isBefore(date)));
+//    }
 
-    ResponseEntity<?> createDoctor(Doctor doctor){
+    ResponseEntity<DoctorDTO> createDoctor(Doctor doctor){
         doctor.setId(null);
-        //TODO setSpecjalizations and setLeaves is ok in addDoctor?
         doctor.setSpecializations(new HashSet<>());
-        doctor.setLeaves(new HashSet<>());
-        Doctor result =  repository.save(doctor);
-        return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
+        doctor.setLeaves(new ArrayList<>());
+        doctor.setReviews(new ArrayList<>());
+        Doctor created =  repository.save(doctor);
+        return ResponseEntity.created(URI.create("/" + created.getId())).body(dtoMapper.mapToDTO(created));
     }
 
-    ResponseEntity<?> updateDoctor(Long id, Doctor toUpdate){
+    ResponseEntity<DoctorDTO> updateDoctor(Long id, DoctorDTO toUpdate){
         return repository.findById(id)
                 .map(doctor -> {
-                    toUpdate.setId(id);
-                    //TODO setSpecjalizations and setLeaves is ok in updateDoctor?
-                    toUpdate.setSpecializations(doctor.getSpecializations());
-                    toUpdate.setLeaves(doctor.getLeaves());
-                    return ResponseEntity.ok(repository.save(toUpdate));
+                    Doctor updated = repository.save(dtoMapper.mapFromDTO(toUpdate, doctor));
+                    return ResponseEntity.ok(dtoMapper.mapToDTO(updated));
                 })
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
     }
 
-    ResponseEntity<Page<DoctorLeaveResponseDTO>> readAllLeaves(Long id, Pageable pageable){
+    ResponseEntity<Page<DoctorLeaveDTO>> readAllLeaves(Long id, Pageable pageable){
         var doctors = leaveRepository.findAllByDoctorId(id, pageable)
                 .map(dtoMapper::applyForLeave);
 
@@ -210,7 +168,7 @@ class DoctorService {
         return ResponseEntity.ok(doctors);
     }
 
-    ResponseEntity<Set<DoctorSpecializationResponseDTO>> readAllSpecializations(Long id){
+    ResponseEntity<Set<DoctorSpecializationDTO>> readAllSpecializations(Long id){
         return repository.findById(id)
                 .map(Doctor::getSpecializations)
                 .map(spec -> spec.stream().map(dtoMapper::applyForSpecialization)
@@ -223,6 +181,8 @@ class DoctorService {
 
         return repository.findById(doctorId)
                 .map(doctor -> {
+                    if((doctor.getSpecializations().size() + specializationIds.size()) > 5)
+                        throw new WrongSpecializationException("Doctor with id = " + doctorId + " can not have more than 5 specializations, he has already " + specializationIds.size() + " specializations and in request there are next " + specializationIds.size() + " specializations");
                     specializationIds.forEach(id -> specializationRepository.findById(id)
                             .ifPresentOrElse(doctor::addSpecialization,
                                     () -> {throw new ResourceNotFoundException(SPECIALIZATION, id.longValue());}
@@ -235,7 +195,7 @@ class DoctorService {
 
     }
 
-    ResponseEntity<Page<DoctorReviewResponseDTO>> readAllReviews(Long id, Pageable pageable) {
+    ResponseEntity<Page<DoctorReviewDTO>> readAllReviews(Long id, Pageable pageable) {
         var doctors = reviewRepository.findAllByDoctorId(id, pageable)
                 .map(dtoMapper::applyForReview);
         if(doctors.isEmpty())

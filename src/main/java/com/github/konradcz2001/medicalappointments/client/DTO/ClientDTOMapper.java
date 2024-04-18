@@ -7,21 +7,28 @@ import com.github.konradcz2001.medicalappointments.review.Review;
 import org.springframework.stereotype.Service;
 
 @Service
-public class ClientDTOMapper implements DTOMapper <ClientResponseDTO, Client> {
+public class ClientDTOMapper implements DTOMapper <ClientDTO, Client> {
 
     @Override
-    public ClientResponseDTO apply(Client client) {
-        return new ClientResponseDTO(
-                client.getId(),
-                client.getFirstName(),
-                client.getLastName(),
-                client.getEmail(),
-                client.getRole()
+    public ClientDTO mapToDTO(Client source) {
+        return new ClientDTO(
+                source.getId(),
+                source.getFirstName(),
+                source.getLastName(),
+                source.getEmail(),
+                source.getRole()
         );
     }
 
-    public ClientReviewResponseDTO applyForReview(Review review) {
-        return new ClientReviewResponseDTO(
+    @Override
+    public Client mapFromDTO(ClientDTO sourceDTO, Client target) {
+        target.setFirstName(sourceDTO.firstName());
+        target.setLastName(sourceDTO.lastName());
+        return target;
+    }
+
+    public ClientReviewDTO applyForReview(Review review) {
+        return new ClientReviewDTO(
                 review.getId(),
                 review.getDate(),
                 review.getRating(),

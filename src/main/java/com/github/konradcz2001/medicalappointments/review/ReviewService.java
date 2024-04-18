@@ -3,7 +3,7 @@ package com.github.konradcz2001.medicalappointments.review;
 import com.github.konradcz2001.medicalappointments.exception.MessageType;
 import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
 import com.github.konradcz2001.medicalappointments.review.DTO.ReviewDTOMapper;
-import com.github.konradcz2001.medicalappointments.review.DTO.ReviewResponseDTO;
+import com.github.konradcz2001.medicalappointments.review.DTO.ReviewDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -24,44 +24,44 @@ class ReviewService {
     }
 
 
-    ResponseEntity<Page<ReviewResponseDTO>> readAll(Pageable pageable) {
+    ResponseEntity<Page<ReviewDTO>> readAll(Pageable pageable) {
         return returnResponse(() -> repository.findAll(pageable), dtoMapper);
     }
 
-    ResponseEntity<ReviewResponseDTO> readById(Long id) {
+    ResponseEntity<ReviewDTO> readById(Long id) {
         return  repository.findById(id)
-                .map(dtoMapper::apply)
+                .map(dtoMapper::mapToDTO)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResourceNotFoundException(MessageType.REVIEW, id));
     }
 
 
-    ResponseEntity<Page<ReviewResponseDTO>> readAllBetween(LocalDateTime after, LocalDateTime before, Pageable pageable) {
+    ResponseEntity<Page<ReviewDTO>> readAllBetween(LocalDateTime after, LocalDateTime before, Pageable pageable) {
         return returnResponse(() -> repository.findAllByDateAfterAndDateBefore(after, before, pageable), dtoMapper);
     }
 
 
-    ResponseEntity<Page<ReviewResponseDTO>> readAllAfter(LocalDateTime after, Pageable pageable) {
+    ResponseEntity<Page<ReviewDTO>> readAllAfter(LocalDateTime after, Pageable pageable) {
         return returnResponse(() -> repository.findAllByDateAfter(after, pageable), dtoMapper);
     }
 
 
-    ResponseEntity<Page<ReviewResponseDTO>> readAllBefore(LocalDateTime before, Pageable pageable) {
+    ResponseEntity<Page<ReviewDTO>> readAllBefore(LocalDateTime before, Pageable pageable) {
         return returnResponse(() -> repository.findAllByDateBefore(before, pageable), dtoMapper);
     }
 
 
-    ResponseEntity<Page<ReviewResponseDTO>> readAllByRating(Rating rating, Pageable pageable) {
+    ResponseEntity<Page<ReviewDTO>> readAllByRating(Rating rating, Pageable pageable) {
         return returnResponse(() -> repository.findAllByRating(rating, pageable), dtoMapper);
     }
 
 
-    ResponseEntity<Page<ReviewResponseDTO>> readAllByRatingLessThan(Rating rating, Pageable pageable) {
+    ResponseEntity<Page<ReviewDTO>> readAllByRatingLessThan(Rating rating, Pageable pageable) {
         return returnResponse(() -> repository.findAllByRatingLessThan(rating, pageable), dtoMapper);
     }
 
 
-    ResponseEntity<Page<ReviewResponseDTO>> readAllByRatingGreaterThan(Rating rating, Pageable pageable) {
+    ResponseEntity<Page<ReviewDTO>> readAllByRatingGreaterThan(Rating rating, Pageable pageable) {
         return returnResponse(() -> repository.findAllByRatingGreaterThan(rating , pageable), dtoMapper);
     }
 

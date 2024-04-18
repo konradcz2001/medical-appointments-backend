@@ -1,8 +1,8 @@
 package com.github.konradcz2001.medicalappointments.client;
 
-import com.github.konradcz2001.medicalappointments.client.DTO.ClientResponseDTO;
-import com.github.konradcz2001.medicalappointments.client.DTO.ClientReviewResponseDTO;
-import com.github.konradcz2001.medicalappointments.review.Review;
+import com.github.konradcz2001.medicalappointments.client.DTO.ClientDTO;
+import com.github.konradcz2001.medicalappointments.client.DTO.ClientReviewDTO;
+import com.github.konradcz2001.medicalappointments.review.DTO.ReviewDTO;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -20,38 +20,38 @@ class ClientController {
     }
 
     @GetMapping
-    ResponseEntity<Page<ClientResponseDTO>> readAll(Pageable pageable){
+    ResponseEntity<Page<ClientDTO>> readAll(Pageable pageable){
         return service.readAll(pageable);
     }
 
     @GetMapping("/{id}")
-    ResponseEntity<ClientResponseDTO> readById(@PathVariable Long id){
+    ResponseEntity<ClientDTO> readById(@PathVariable Long id){
         return service.readById(id);
     }
 
     @GetMapping(params = "firstName")
-    ResponseEntity<Page<ClientResponseDTO>> readAllByFirstName(@RequestParam String firstName, Pageable pageable){
+    ResponseEntity<Page<ClientDTO>> readAllByFirstName(@RequestParam String firstName, Pageable pageable){
         return service.readAllByFirstName(firstName, pageable);
     }
 
     @GetMapping(params = "lastName")
-    ResponseEntity<Page<ClientResponseDTO>> readAllByLastName(@RequestParam String lastName, Pageable pageable){
+    ResponseEntity<Page<ClientDTO>> readAllByLastName(@RequestParam String lastName, Pageable pageable){
         return service.readAllByLastName(lastName, pageable);
     }
 
     @PostMapping
-    ResponseEntity<?> createClient(@Valid @RequestBody Client client){
+    ResponseEntity<ClientDTO> createClient(@Valid @RequestBody Client client){
         return service.createClient(client);
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<?> updateClient(@PathVariable Long id, @Valid @RequestBody Client client){
-        return service.updateCustomer(id, client);
+    ResponseEntity<?> updateClient(@PathVariable Long id, @Valid @RequestBody ClientDTO client){
+        return service.updateClient(id, client);
     }
 
     @DeleteMapping("/{id}")
     ResponseEntity<?> deleteClient(@PathVariable Long id){
-        return service.deleteCustomer(id);
+        return service.deleteClient(id);
     }
 
     //TODO comments
@@ -64,7 +64,7 @@ class ClientController {
      */
 
     @PatchMapping("/{clientId}/add-review")
-    ResponseEntity<?> addReview(@PathVariable Long clientId, @Valid @RequestBody Review review){
+    ResponseEntity<?> addReview(@PathVariable Long clientId, @Valid @RequestBody ReviewDTO review){
         return service.addReview(clientId, review);
     }
 
@@ -75,13 +75,13 @@ class ClientController {
     }
 
     @PatchMapping(value = "/{clientId}/update-review")
-    ResponseEntity<?> updateReview(@PathVariable Long clientId, @Valid @RequestBody Review review){
+    ResponseEntity<?> updateReview(@PathVariable Long clientId, @Valid @RequestBody ReviewDTO review){
         return service.updateReview(clientId, review);
     }
 
 
     @GetMapping("/{clientId}/reviews")
-    ResponseEntity<Page<ClientReviewResponseDTO>> readAllReviews(@PathVariable Long clientId, Pageable pageable){
+    ResponseEntity<Page<ClientReviewDTO>> readAllReviews(@PathVariable Long clientId, Pageable pageable){
         return service.readAllReviews(clientId, pageable);
     }
 }

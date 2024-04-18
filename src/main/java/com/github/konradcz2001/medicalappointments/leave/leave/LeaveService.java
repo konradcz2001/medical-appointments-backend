@@ -1,7 +1,7 @@
 package com.github.konradcz2001.medicalappointments.leave.leave;
 
 import com.github.konradcz2001.medicalappointments.leave.leave.DTO.LeaveDTOMapper;
-import com.github.konradcz2001.medicalappointments.leave.leave.DTO.LeaveResponseDTO;
+import com.github.konradcz2001.medicalappointments.leave.leave.DTO.LeaveDTO;
 import com.github.konradcz2001.medicalappointments.exception.MessageType;
 import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;
@@ -24,40 +24,40 @@ class LeaveService {
     }
 
 
-    ResponseEntity<Page<LeaveResponseDTO>> readAll(Pageable pageable){
+    ResponseEntity<Page<LeaveDTO>> readAll(Pageable pageable){
         return returnResponse(() -> repository.findAll(pageable), dtoMapper);
     }
 
-    ResponseEntity<LeaveResponseDTO> readById(Long id) {
+    ResponseEntity<LeaveDTO> readById(Long id) {
         return  repository.findById(id)
-                .map(dtoMapper::apply)
+                .map(dtoMapper::mapToDTO)
                 .map(ResponseEntity::ok)
                 .orElseThrow(() -> new ResourceNotFoundException(MessageType.LEAVE, id));
     }
 
 
-    ResponseEntity<Page<LeaveResponseDTO>> readAllByStartAfter(LocalDateTime after, Pageable pageable){
+    ResponseEntity<Page<LeaveDTO>> readAllByStartAfter(LocalDateTime after, Pageable pageable){
         return returnResponse(() -> repository.findAllByStartDateAfter(after, pageable), dtoMapper);
     }
 
 
 
-    ResponseEntity<Page<LeaveResponseDTO>> readAllByEndAfter(LocalDateTime after, Pageable pageable){
+    ResponseEntity<Page<LeaveDTO>> readAllByEndAfter(LocalDateTime after, Pageable pageable){
         return returnResponse(() -> repository.findAllByEndDateAfter(after, pageable), dtoMapper);
     }
 
 
-    ResponseEntity<Page<LeaveResponseDTO>> readAllByStartBefore(LocalDateTime before, Pageable pageable){
+    ResponseEntity<Page<LeaveDTO>> readAllByStartBefore(LocalDateTime before, Pageable pageable){
         return returnResponse(() -> repository.findAllByStartDateBefore(before, pageable), dtoMapper);
     }
 
 
-    ResponseEntity<Page<LeaveResponseDTO>> readAllByEndBefore(LocalDateTime before, Pageable pageable){
+    ResponseEntity<Page<LeaveDTO>> readAllByEndBefore(LocalDateTime before, Pageable pageable){
         return returnResponse(() -> repository.findAllByEndDateBefore(before, pageable), dtoMapper);
     }
 
 
-    ResponseEntity<Page<LeaveResponseDTO>> readAllBetween(LocalDateTime after, LocalDateTime before, Pageable pageable){
+    ResponseEntity<Page<LeaveDTO>> readAllBetween(LocalDateTime after, LocalDateTime before, Pageable pageable){
         return returnResponse(() -> repository.findAllByStartDateAfterAndEndDateBefore(after, before, pageable), dtoMapper);
 
     }

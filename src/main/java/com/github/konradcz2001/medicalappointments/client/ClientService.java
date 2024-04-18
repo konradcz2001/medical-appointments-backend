@@ -1,9 +1,15 @@
 package com.github.konradcz2001.medicalappointments.client;
 
 import com.github.konradcz2001.medicalappointments.client.DTO.ClientDTOMapper;
-import com.github.konradcz2001.medicalappointments.client.DTO.ClientResponseDTO;
-import com.github.konradcz2001.medicalappointments.client.DTO.ClientReviewResponseDTO;
+import com.github.konradcz2001.medicalappointments.client.DTO.ClientDTO;
+import com.github.konradcz2001.medicalappointments.client.DTO.ClientReviewDTO;
+import com.github.konradcz2001.medicalappointments.doctor.Doctor;
+import com.github.konradcz2001.medicalappointments.doctor.DoctorRepository;
 import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
+import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
+import com.github.konradcz2001.medicalappointments.exception.WrongReviewException;
+import com.github.konradcz2001.medicalappointments.review.DTO.ReviewDTO;
+import com.github.konradcz2001.medicalappointments.review.DTO.ReviewDTOMapper;
 import com.github.konradcz2001.medicalappointments.review.Review;
 import com.github.konradcz2001.medicalappointments.review.ReviewRepository;
 import org.springframework.data.domain.Page;
@@ -12,91 +18,112 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
+import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashSet;
 
 import static com.github.konradcz2001.medicalappointments.common.Utils.returnResponse;
+import static com.github.konradcz2001.medicalappointments.exception.MessageType.CLIENT;
+import static com.github.konradcz2001.medicalappointments.exception.MessageType.DOCTOR;
 
 @Service
 class ClientService {
     private final ClientRepository repository;
     private final ReviewRepository reviewRepository;
     private final ClientDTOMapper dtoMapper;
+    private final DoctorRepository doctorRepository;
+    private final ReviewDTOMapper reviewDTOMapper;
 
-    ClientService(ClientRepository repository, ReviewRepository reviewRepository, ClientDTOMapper dtoMapper) {
+
+    ClientService(ClientRepository repository, ReviewRepository reviewRepository, ClientDTOMapper dtoMapper, DoctorRepository doctorRepository, ReviewDTOMapper reviewDTOMapper) {
         this.repository = repository;
         this.reviewRepository = reviewRepository;
         this.dtoMapper = dtoMapper;
+        this.doctorRepository = doctorRepository;
+        this.reviewDTOMapper = reviewDTOMapper;
     }
 
 
-    ResponseEntity<Page<ClientResponseDTO>> readAll(Pageable pageable){
+    ResponseEntity<Page<ClientDTO>> readAll(Pageable pageable){
         return returnResponse(() -> repository.findAll(pageable), dtoMapper);
     }
 
-    ResponseEntity<ClientResponseDTO> readById(Long id){
+    ResponseEntity<ClientDTO> readById(Long id){
         return repository.findById(id)
-                .map(dtoMapper::apply)
+                .map(dtoMapper::mapToDTO)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException(CLIENT, id));
     }
 
-    ResponseEntity<Page<ClientResponseDTO>> readAllByFirstName(String name, Pageable pageable){
+    ResponseEntity<Page<ClientDTO>> readAllByFirstName(String name, Pageable pageable){
         return returnResponse(() -> repository.findAllByFirstNameContaining(name, pageable), dtoMapper);
     }
 
-    ResponseEntity<Page<ClientResponseDTO>> readAllByLastName(String surname, Pageable pageable){
+    ResponseEntity<Page<ClientDTO>> readAllByLastName(String surname, Pageable pageable){
         return returnResponse(() -> repository.findAllByLastNameContaining(surname, pageable), dtoMapper);
     }
 
-    ResponseEntity<?> createClient(Client client){
+    ResponseEntity<ClientDTO> createClient(Client client){
         client.setId(null);
-        Client result = repository.save(client);
-        return ResponseEntity.created(URI.create("/" + result.getId())).body(dtoMapper.apply(result));
+        client.setReviews(new ArrayList<>());
+        Client created = repository.save(client);
+        return ResponseEntity.created(URI.create("/" + created.getId())).body(dtoMapper.mapToDTO(created));
     }
 
-    ResponseEntity<?> updateCustomer(Long id, Client toUpdate){
+    ResponseEntity<?> updateClient(Long id, ClientDTO toUpdate){
         return repository.findById(id)
                 .map(client -> {
-                    toUpdate.setId(id);
-                    return ResponseEntity.ok(dtoMapper.apply(repository.save(toUpdate)));
+                    repository.save(dtoMapper.mapFromDTO(toUpdate, client));
+                    return ResponseEntity.noContent().build();
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException(CLIENT, id));
     }
 
-    ResponseEntity<?> deleteCustomer(Long id){
+    ResponseEntity<?> deleteClient(Long id){
         return repository.findById(id)
                 .map(client -> {
                     repository.deleteById(id);
                     return ResponseEntity.noContent().build();
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException(CLIENT, id));
     }
 
-    ResponseEntity<?> addReview(Long clientId, Review toAdd){
+    ResponseEntity<?> addReview(Long clientId, ReviewDTO toAdd){
         return repository.findById(clientId)
                 .map(client -> {
+                    Long doctorId = toAdd.doctorId();
+                    Doctor doctor = doctorRepository.findById(doctorId)
+                            .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, doctorId));
+
                     client.getReviews().forEach(review -> {
-                        if(review.getClient().getId().equals(clientId) &&
-                                review.getDoctor().getId().equals(toAdd.getDoctor().getId())){
-                            throw new IllegalArgumentException("This client already has a review for this doctor");
+                        if(review.getClient().getId().equals(clientId) && review.getDoctor().getId().equals(doctorId)){
+                            throw new WrongReviewException("Client with id = " + clientId + " already has a review for doctor with id = " + doctorId);
                         }
                     });
-                    client.addReview(toAdd);
+
+                    Review review = reviewDTOMapper.mapFromDTO(toAdd, new Review());
+                    review.setClient(client);
+                    review.setDoctor(doctor);
+                    review.setDate(LocalDateTime.now());
+
+                    //reviewRepository.save(review);
+                    client.addReview(review);
                     repository.save(client);
                     return ResponseEntity.noContent().build();
                 })
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException(CLIENT, clientId));
     }
 
 
-    ResponseEntity<?> updateReview(Long clientId, Review toUpdate){
+    ResponseEntity<?> updateReview(Long clientId, ReviewDTO toUpdate){
         return repository.findById(clientId)
-                .map(client -> reviewRepository.findById(toUpdate.getId())
+                .map(client -> reviewRepository.findById(toUpdate.id())
                         .map(review -> {
-                            reviewRepository.save(toUpdate);
+                            reviewRepository.save(reviewDTOMapper.mapFromDTO(toUpdate, review));
                             return ResponseEntity.noContent().build();
                         })
                         .orElse(ResponseEntity.notFound().build()))
-                .orElse(ResponseEntity.notFound().build());
+                .orElseThrow(() -> new ResourceNotFoundException(CLIENT, clientId));
     }
 
 //TODO cascade
@@ -114,7 +141,7 @@ class ClientService {
 
 
 
-    ResponseEntity<Page<ClientReviewResponseDTO>> readAllReviews(Long clientId, Pageable pageable){
+    ResponseEntity<Page<ClientReviewDTO>> readAllReviews(Long clientId, Pageable pageable){
         var clients = reviewRepository.findAllByClientId(clientId, pageable)
                 .map(dtoMapper::applyForReview);
         if(clients.isEmpty())

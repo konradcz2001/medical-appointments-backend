@@ -6,21 +6,18 @@ import com.github.konradcz2001.medicalappointments.specialization.specialization
 import com.github.konradcz2001.medicalappointments.review.Review;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
-//TODO annotation validation
-//TODO record DTO
 
 @Entity
 @Table(name = "doctors")
 @Getter
-@Setter(AccessLevel.PACKAGE)
+@Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 public class Doctor extends User {
@@ -35,7 +32,7 @@ public class Doctor extends User {
     String profileDescription;
 
     @OneToMany(mappedBy = "doctor")
-    Set<Review> reviews = new HashSet<>();
+    List<Review> reviews = new ArrayList<>();
 
     @ManyToMany
     @JoinTable(
@@ -46,19 +43,17 @@ public class Doctor extends User {
     Set<Specialization> specializations = new HashSet<>();
 
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
-    Set<Leave> leaves = new HashSet<>();
+    List<Leave> leaves = new ArrayList<>();
 
 
 
-    void addSpecialization(final Specialization spec) {
-        //spec.addDoctor(this);
+    void addSpecialization(Specialization spec) {
         specializations.add(spec);
     }
     public void removeSpecialization(Specialization spec) {
-        //spec.removeDoctor(this);
         specializations.remove(spec);
     }
-    public void addLeave(final Leave leave) {
+    public void addLeave(Leave leave) {
         leaves.add(leave);
     }
     void removeLeave(Leave leave){
