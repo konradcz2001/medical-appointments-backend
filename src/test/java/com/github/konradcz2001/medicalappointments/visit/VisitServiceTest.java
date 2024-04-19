@@ -2,10 +2,8 @@ package com.github.konradcz2001.medicalappointments.visit;
 
 import com.github.konradcz2001.medicalappointments.client.Client;
 import com.github.konradcz2001.medicalappointments.client.ClientRepository;
-import com.github.konradcz2001.medicalappointments.client.DTO.ClientDTO;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import com.github.konradcz2001.medicalappointments.doctor.DoctorRepository;
-import com.github.konradcz2001.medicalappointments.security.Role;
 import com.github.konradcz2001.medicalappointments.visit.DTO.VisitDTO;
 import com.github.konradcz2001.medicalappointments.visit.DTO.VisitDTOMapper;
 import org.junit.jupiter.api.Test;
@@ -19,7 +17,6 @@ import org.springframework.http.HttpStatusCode;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -42,7 +39,7 @@ class VisitServiceTest {
 
     @Test
     void shouldCreateVisit() {
-        //given
+        // Arrange
         VisitDTO visit = spy(new VisitDTO(null, null, "consultation", null, null, null, null));
 
 
@@ -50,10 +47,10 @@ class VisitServiceTest {
         when(clientRepository.findById(any())).thenReturn(Optional.of(new Client()));
         when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        //when
+        // Act
         var response = underTest.createVisit(visit);
 
-        //then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(201), response.getStatusCode());
         assertEquals(VisitDTO.class, response.getBody().getClass());
         assertEquals("consultation", response.getBody().type());
@@ -68,7 +65,7 @@ class VisitServiceTest {
 
     @Test
     void shouldFindVisitById() {
-        // given
+        // Arrange
         Visit visit2 = new Visit();
         visit2.setId(2L);
         visit2.setDoctor(new Doctor());
@@ -76,10 +73,10 @@ class VisitServiceTest {
 
         when(repository.findById(2L)).thenReturn(Optional.of(visit2));
 
-        // when
+        // Act
         var response = underTest.readById(2L);
 
-        // then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         assertEquals(VisitDTO.class, response.getBody().getClass());
         assertEquals(2, response.getBody().id());
@@ -87,7 +84,7 @@ class VisitServiceTest {
 
     @Test
     void shouldUpdateVisit() {
-        // given
+        // Arrange
         Long id = 1L;
         Visit original = new Visit();
         original.setId(id);
@@ -98,10 +95,10 @@ class VisitServiceTest {
         when(repository.findById(id)).thenReturn(Optional.of(original));
         when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // when
+        // Act
         var response = underTest.updateVisit(id, toUpdate);
 
-        // then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
         ArgumentCaptor<Visit> visitCaptor = ArgumentCaptor.forClass(Visit.class);
         verify(repository).save(visitCaptor.capture());
@@ -118,15 +115,15 @@ class VisitServiceTest {
 
     @Test
     void shouldDeleteVisitById() {
-        // given
+        // Arrange
         Long id = 1L;
         Visit visit = new Visit();
         when(repository.findById(id)).thenReturn(Optional.of(visit));
 
-        // when
+        // Act
         var response = underTest.deleteVisit(id);
 
-        // then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
         verify(repository).deleteById(id);
     }

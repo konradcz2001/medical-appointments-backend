@@ -2,11 +2,14 @@ package com.github.konradcz2001.medicalappointments.doctor;
 
 import com.github.konradcz2001.medicalappointments.common.User;
 import com.github.konradcz2001.medicalappointments.leave.Leave;
-import com.github.konradcz2001.medicalappointments.specialization.Specialization;
 import com.github.konradcz2001.medicalappointments.review.Review;
+import com.github.konradcz2001.medicalappointments.specialization.Specialization;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
-import lombok.*;
+import lombok.AccessLevel;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import java.util.ArrayList;

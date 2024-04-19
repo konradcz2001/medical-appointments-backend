@@ -1,7 +1,7 @@
 package com.github.konradcz2001.medicalappointments.client;
 
-import com.github.konradcz2001.medicalappointments.client.DTO.ClientDTOMapper;
 import com.github.konradcz2001.medicalappointments.client.DTO.ClientDTO;
+import com.github.konradcz2001.medicalappointments.client.DTO.ClientDTOMapper;
 import com.github.konradcz2001.medicalappointments.client.DTO.ClientReviewDTO;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import com.github.konradcz2001.medicalappointments.doctor.DoctorRepository;

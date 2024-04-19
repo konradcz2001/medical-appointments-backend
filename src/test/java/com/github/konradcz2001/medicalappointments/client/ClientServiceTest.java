@@ -3,7 +3,6 @@ package com.github.konradcz2001.medicalappointments.client;
 import com.github.konradcz2001.medicalappointments.client.DTO.ClientDTO;
 import com.github.konradcz2001.medicalappointments.client.DTO.ClientDTOMapper;
 import com.github.konradcz2001.medicalappointments.client.DTO.ClientReviewDTO;
-import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorDTO;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import com.github.konradcz2001.medicalappointments.doctor.DoctorRepository;
 import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
@@ -26,16 +25,13 @@ import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatusCode;
 
-import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyLong;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -56,16 +52,16 @@ class ClientServiceTest {
 
     @Test
     void shouldFindClientById() {
-        // given
+        // Arrange
         Client client2 = new Client();
         client2.setId(2L);
 
         when(repository.findById(2L)).thenReturn(Optional.of(client2));
 
-        // when
+        // Act
         var response = underTest.readById(2L);
 
-        // then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         assertEquals(ClientDTO.class, response.getBody().getClass());
         assertEquals(2, response.getBody().id());
@@ -73,7 +69,7 @@ class ClientServiceTest {
 
     @Test
     void shouldCreateNewClient() {
-        // given
+        // Arrange
         Client client = spy(new Client());
         client.setId(1L);
         client.setFirstName("name");
@@ -81,10 +77,10 @@ class ClientServiceTest {
         when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
 
-        // when
+        // Act
         var response = underTest.createClient(client);
 
-        // then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(201), response.getStatusCode());
         assertEquals(ClientDTO.class, response.getBody().getClass());
         assertEquals("name", response.getBody().firstName());
@@ -95,7 +91,7 @@ class ClientServiceTest {
 
     @Test
     void shouldUpdateClient() {
-        // given
+        // Arrange
         Long id = 1L;
         Client original = new Client();
         original.setId(id);
@@ -104,10 +100,10 @@ class ClientServiceTest {
         when(repository.findById(id)).thenReturn(Optional.of(original));
         when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // when
+        // Act
         var response = underTest.updateClient(id, toUpdate);
 
-        // then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
         ArgumentCaptor<Client> clientCaptor = ArgumentCaptor.forClass(Client.class);
         verify(repository).save(clientCaptor.capture());
@@ -122,23 +118,23 @@ class ClientServiceTest {
 
     @Test
     void shouldDeleteClientById() {
-        // given
+        // Arrange
         Long id = 1L;
         Client client1 = new Client();
         client1.setId(1L);
         when(repository.findById(id)).thenReturn(Optional.of(client1));
 
-        // when
+        // Act
         var response = underTest.deleteClient(id);
 
-        // then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
         verify(repository).deleteById(id);
     }
 
     @Test
     void shouldAddReviewToClient() {
-        //given
+        // Arrange
         Long clientId = 1L;
         Client client = spy(new Client());
         Doctor doctor1 = new Doctor();
@@ -159,10 +155,10 @@ class ClientServiceTest {
         when(repository.findById(clientId)).thenReturn(Optional.of(client));
         when(doctorRepository.findById(3L)).thenReturn(Optional.of(doctor3));
 
-        //when
+        // Act
         var response = underTest.addReview(clientId, toAdd);
 
-        //then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
         verify(repository).save(client);
         verify(doctorRepository).findById(3L);
@@ -180,7 +176,7 @@ class ClientServiceTest {
 
     @Test
     void shouldThrowWrongReviewExceptionWhileAddingNewReviewToClient() {
-        //given
+        // Arrange
         Long clientId = 1L;
         Client client = spy(new Client());
         Doctor doctor1 = new Doctor();
@@ -199,8 +195,8 @@ class ClientServiceTest {
         when(repository.findById(clientId)).thenReturn(Optional.of(client));
         when(doctorRepository.findById(2L)).thenReturn(Optional.of(doctor2));
 
-        //when
-        //then
+        // Act
+        // Assert
         assertThatThrownBy(() -> underTest.addReview(clientId, toAdd))
                 .isInstanceOf(WrongReviewException.class)
                 .hasMessageContaining("already has a review") ;
@@ -209,7 +205,7 @@ class ClientServiceTest {
 
     @Test
     void shouldThrowDoctorNotFoundExceptionWhileAddingNewReviewToClient() {
-        //given
+        // Arrange
         Long clientId = 1L;
         Client client = spy(new Client());
         ReviewDTO toAdd = new ReviewDTO(1L, null, null, null, 2L, 1L);
@@ -217,8 +213,8 @@ class ClientServiceTest {
         when(repository.findById(clientId)).thenReturn(Optional.of(client));
         when(doctorRepository.findById(2L)).thenReturn(Optional.empty());
 
-        //when
-        //then
+        // Act
+        // Assert
         assertThatThrownBy(() -> underTest.addReview(clientId, toAdd))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Doctor with id") ;
@@ -227,14 +223,14 @@ class ClientServiceTest {
 
     @Test
     void shouldThrowClientNotFoundExceptionWhileAddingNewReviewToClient() {
-        //given
+        // Arrange
         Long clientId = 1L;
         ReviewDTO toAdd = new ReviewDTO(1L, null, null, null, 2L, 2L);
 
         when(repository.findById(clientId)).thenReturn(Optional.empty());
 
-        //when
-        //then
+        // Act
+        // Assert
         assertThatThrownBy(() -> underTest.addReview(clientId, toAdd))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Client with id") ;
@@ -243,7 +239,7 @@ class ClientServiceTest {
 
     @Test
     void shouldUpdateReview() {
-        // given
+        // Arrange
         Long clientId = 1L;
         Client client = new Client();
         Review original = new Review();
@@ -258,10 +254,10 @@ class ClientServiceTest {
 
         when(repository.findById(clientId)).thenReturn(Optional.of(client));
 
-        // when
+        // Act
         var response = underTest.updateReview(clientId, toUpdate);
 
-        // then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
         ArgumentCaptor<Review> reviewCaptor = ArgumentCaptor.forClass(Review.class);
         verify(reviewRepository).save(reviewCaptor.capture());
@@ -277,7 +273,7 @@ class ClientServiceTest {
 
     @Test
     void shouldThrownWrongReviewExceptionWhileUpdatingReview() {
-        // given
+        // Arrange
         Long clientId = 1L;
         Client client = new Client();
         Review original = new Review();
@@ -292,8 +288,8 @@ class ClientServiceTest {
 
         when(repository.findById(clientId)).thenReturn(Optional.of(client));
 
-        // when
-        // then
+        // Act
+        // Assert
         assertThatThrownBy(() -> underTest.updateReview(clientId, toUpdate))
                 .isInstanceOf(WrongReviewException.class)
                 .hasMessageContaining("does not have a review with id") ;
@@ -302,7 +298,7 @@ class ClientServiceTest {
 
     @Test
     void shouldRemoveClientsReview() {
-        //given
+        // Arrange
         Long clientId = 1L;
         Long reviewId = 2L;
         Client client = new Client();
@@ -316,10 +312,10 @@ class ClientServiceTest {
 
         when(repository.findById(clientId)).thenReturn(Optional.of(client));
 
-        //when
+        // Act
         var response = underTest.removeReview(clientId, reviewId);
 
-        //then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
         verify(repository).save(client);
         assertEquals(1, client.getReviews().size());
@@ -328,7 +324,7 @@ class ClientServiceTest {
 
     @Test
     void shouldFindAllReviewByClient() {
-        //given
+        // Arrange
         Long clientId = 1L;
         Client client = new Client();
         client.setId(clientId);
@@ -344,10 +340,10 @@ class ClientServiceTest {
 
         when(reviewRepository.findAllByClientId(clientId, pageable)).thenReturn(reviews);
 
-        //when
+        // Act
         var response = underTest.readAllReviews(clientId, pageable);
 
-        //then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         assertEquals(2, response.getBody().getTotalElements());
         assertEquals(ClientReviewDTO.class, response.getBody().getContent().get(0).getClass());

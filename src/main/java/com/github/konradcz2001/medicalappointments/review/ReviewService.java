@@ -2,8 +2,8 @@ package com.github.konradcz2001.medicalappointments.review;
 
 import com.github.konradcz2001.medicalappointments.exception.MessageType;
 import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
-import com.github.konradcz2001.medicalappointments.review.DTO.ReviewDTOMapper;
 import com.github.konradcz2001.medicalappointments.review.DTO.ReviewDTO;
+import com.github.konradcz2001.medicalappointments.review.DTO.ReviewDTOMapper;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;

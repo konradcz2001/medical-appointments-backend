@@ -2,9 +2,9 @@ package com.github.konradcz2001.medicalappointments.doctor;
 
 import com.github.konradcz2001.medicalappointments.client.Client;
 import com.github.konradcz2001.medicalappointments.doctor.DTO.*;
+import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
 import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
 import com.github.konradcz2001.medicalappointments.exception.WrongLeaveException;
-import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
 import com.github.konradcz2001.medicalappointments.exception.WrongSpecializationException;
 import com.github.konradcz2001.medicalappointments.leave.Leave;
 import com.github.konradcz2001.medicalappointments.leave.LeaveRepository;
@@ -54,11 +54,11 @@ class DoctorServiceTest {
 
     @Test
     void shouldThrownDoctorNotFoundException() {
-        //given
+        // Arrange
         when(repository.findById(anyLong())).thenReturn(Optional.empty());
 
-        //when
-        //then
+        // Act
+        // Assert
         verify(repository, never()).save(any());
         assertThatThrownBy(() -> underTest.addLeave(1L, new Leave()))
                 .isInstanceOf(ResourceNotFoundException.class)
@@ -69,14 +69,14 @@ class DoctorServiceTest {
 
     @Test
     void shouldThrownExceptionThatStartDateIsAfterEndDate() {
-        //given
+        // Arrange
         Doctor doctor = new Doctor();
         Leave toAdd = new Leave(1L, LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(1), doctor);
 
         when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
 
-        //when
-        //then
+        // Act
+        // Assert
         assertThatThrownBy(() -> underTest.addLeave(1L, toAdd))
                 .isInstanceOf(WrongLeaveException.class)
                 .hasMessage("The beginning of the leave cannot be later than the end");
@@ -85,7 +85,7 @@ class DoctorServiceTest {
 
     @Test
     void shouldMergeLeavesWhenAddingNewLeave() {
-        //given
+        // Arrange
         LocalDateTime now = LocalDateTime.now();
 
         Doctor doctor = new Doctor();
@@ -101,10 +101,10 @@ class DoctorServiceTest {
 
         when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
 
-        //when
+        // Act
         var response = underTest.addLeave(1L, toAdd);
 
-        //then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
         assertEquals(2, doctor.getLeaves().size());
         assertEquals(now.plusDays(1), doctor.getLeaves().get(0).getStartDate());
@@ -116,7 +116,7 @@ class DoctorServiceTest {
 
     @Test
     void shouldReplaceLeavesWithTheSameDatesWhenAddingNewLeave() {
-        //given
+        // Arrange
         LocalDateTime now = LocalDateTime.now();
 
         Doctor doctor = new Doctor();
@@ -132,10 +132,10 @@ class DoctorServiceTest {
 
         when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
 
-        //when
+        // Act
         var response = underTest.addLeave(1L, toAdd);
 
-        //then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
         assertEquals(3, doctor.getLeaves().size());
 
@@ -143,7 +143,7 @@ class DoctorServiceTest {
 
     @Test
     void shouldAddLeaveWithoutMerging() {
-        //given
+        // Arrange
         LocalDateTime now = LocalDateTime.now();
 
         Doctor doctor = new Doctor();
@@ -157,10 +157,10 @@ class DoctorServiceTest {
 
         when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
 
-        //when
+        // Act
         var response = underTest.addLeave(1L, toAdd);
 
-        //then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
         assertEquals(3, doctor.getLeaves().size());
         assertEquals(now.plusDays(3), doctor.getLeaves().get(2).getStartDate());
@@ -170,7 +170,7 @@ class DoctorServiceTest {
 
     @Test
     void shouldFindAllLeavesByDoctorId() {
-        //given
+        // Arrange
         Long doctorId = 1L;
         LocalDateTime now = LocalDateTime.now();
         Leave leave1 = new Leave(1L, now.plusDays(1), now.plusDays(2), null);
@@ -181,10 +181,10 @@ class DoctorServiceTest {
 
         when(leaveRepository.findAllByDoctorId(doctorId, pageable)).thenReturn(leaves);
 
-        //when
+        // Act
         var response = underTest.readAllLeaves(doctorId, pageable);
 
-        //then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         assertEquals(2, response.getBody().getTotalElements());
         assertEquals(2, response.getBody().getContent().get(1).id());
@@ -193,7 +193,7 @@ class DoctorServiceTest {
 
     @Test
     void shouldFindAllReviewsByDoctorId() {
-        //given
+        // Arrange
         Long doctorId = 1L;
         Review review1 = new Review();
         Review review2 = new Review();
@@ -206,10 +206,10 @@ class DoctorServiceTest {
 
         when(reviewRepository.findAllByDoctorId(doctorId, pageable)).thenReturn(reviews);
 
-        //when
+        // Act
         var response = underTest.readAllReviews(doctorId, pageable);
 
-        //then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         assertEquals(2, response.getBody().getTotalElements());
         assertEquals(2, response.getBody().getContent().get(1).id());
@@ -218,7 +218,7 @@ class DoctorServiceTest {
 
     @Test
     void shouldFindAllSpecializationsByDoctorId() {
-        //given
+        // Arrange
         Long doctorId = 1L;
         Doctor doctor = new Doctor();
         Set<Specialization> specializations = Set.of(new Specialization(1, null, null), new Specialization(2, null, null));
@@ -226,10 +226,10 @@ class DoctorServiceTest {
 
         when(repository.findById(doctorId)).thenReturn(Optional.of(doctor));
 
-        //when
+        // Act
         var response = underTest.readAllSpecializations(doctorId);
 
-        //then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         assertEquals(2, response.getBody().size());
         assertEquals(DoctorSpecializationDTO.class, response.getBody().stream().findAny().get().getClass());
@@ -237,7 +237,7 @@ class DoctorServiceTest {
 
     @Test
     void shouldAddAllNewSpecializationsByDoctorId() {
-        //given
+        // Arrange
         Long doctorId = 1L;
         Doctor doctor = spy(new Doctor());
 
@@ -255,10 +255,10 @@ class DoctorServiceTest {
         when(repository.findById(doctorId)).thenReturn(Optional.of(doctor));
         when(specializationRepository.findById(any())).thenAnswer(invocation -> Optional.of(allSpecializations.get((int)invocation.getArgument(0) - 1)));
 
-        //when
+        // Act
         var response = underTest.addSpecializations(doctorId, specializationsToAdd);
 
-        //then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
         assertEquals(4, doctor.getSpecializations().size());
         verify(doctor, times(4)).addSpecialization(any());
@@ -267,7 +267,7 @@ class DoctorServiceTest {
 
     @Test
     void shouldThrowSpecializationNotFoundExceptionWhenTryingToAddNewSet() {
-        //given
+        // Arrange
         Long doctorId = 1L;
         Doctor doctor = new Doctor();
 
@@ -287,8 +287,8 @@ class DoctorServiceTest {
                 Optional.ofNullable((int)invocation.getArgument(0) <= allSpecializations.size() ?
                         allSpecializations.get((int)invocation.getArgument(0) - 1) : null));
 
-        //when
-        //then
+        // Act
+        // Assert
         assertThatThrownBy(() -> underTest.addSpecializations(doctorId, specializationsToAdd))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Specialization with id ");
@@ -298,7 +298,7 @@ class DoctorServiceTest {
 
     @Test
     void shouldThrowWrongSpecializationExceptionWhenTryingToAddNewSet_Max5SpecializationsPerDoctor() {
-        //given
+        // Arrange
         Long doctorId = 1L;
         Doctor doctor = new Doctor();
 
@@ -312,8 +312,8 @@ class DoctorServiceTest {
 
         when(repository.findById(doctorId)).thenReturn(Optional.of(doctor));
 
-        //when
-        //then
+        // Act
+        // Assert
         assertThatThrownBy(() -> underTest.addSpecializations(doctorId, specializationsToAdd))
                 .isInstanceOf(WrongSpecializationException.class)
                 .hasMessageContaining("5 specializations");
@@ -323,7 +323,7 @@ class DoctorServiceTest {
 
     @Test
     void shouldRemoveLeave() {
-        //given
+        // Arrange
         Long leaveId = 2L;
         LocalDateTime now = LocalDateTime.now();
 
@@ -336,10 +336,10 @@ class DoctorServiceTest {
 
         when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
 
-        //when
+        // Act
         var response = underTest.removeLeave(1L, leaveId);
 
-        //then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
         assertEquals(1, doctor.getLeaves().size());
         verify(repository).save(isA(Doctor.class));
@@ -347,7 +347,7 @@ class DoctorServiceTest {
 
     @Test
     void shouldThrowWrongLeaveExceptionWhenRemovingLeave() {
-        //given
+        // Arrange
         Long leaveId = 3L;
         LocalDateTime now = LocalDateTime.now();
 
@@ -360,8 +360,8 @@ class DoctorServiceTest {
 
         when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
 
-        //when
-        //then
+        // Act
+        // Assert
         assertThatThrownBy(() -> underTest.removeLeave(1L, leaveId))
                 .isInstanceOf(WrongLeaveException.class)
                 .hasMessageContaining("Doctor with id = " + 1 + " does not have the specified");
@@ -370,14 +370,14 @@ class DoctorServiceTest {
 
     @Test
     void shouldThrownResourceNotFoundExceptionWhenTryingToRemoveLeave() {
-        //given
+        // Arrange
         Long leaveId = 2L;
         Long doctorId = 2L;
 
         when(repository.findById(anyLong())).thenReturn(Optional.empty());
 
-        //when
-        //then
+        // Act
+        // Assert
         assertThatThrownBy(() -> underTest.removeLeave(doctorId, leaveId))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Doctor with id = " + doctorId) ;
@@ -386,7 +386,7 @@ class DoctorServiceTest {
 
     @Test
     void shouldRemoveSpecialization() {
-        //given
+        // Arrange
         Integer specializationId = 2;
         LocalDateTime now = LocalDateTime.now();
 
@@ -399,10 +399,10 @@ class DoctorServiceTest {
 
         when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
 
-        //when
+        // Act
         var response = underTest.removeSpecialization(1L, specializationId);
 
-        //then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
         assertEquals(1, doctor.getSpecializations().size());
         verify(repository).save(isA(Doctor.class));
@@ -410,7 +410,7 @@ class DoctorServiceTest {
 
     @Test
     void shouldThrowWrongSpecializationExceptionWhenRemovingSpecialization() {
-        //given
+        // Arrange
         Integer specializationId = 3;
         LocalDateTime now = LocalDateTime.now();
 
@@ -423,8 +423,8 @@ class DoctorServiceTest {
 
         when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
 
-        //when
-        //then
+        // Act
+        // Assert
         assertThatThrownBy(() -> underTest.removeSpecialization(1L, specializationId))
                 .isInstanceOf(WrongSpecializationException.class)
                 .hasMessageContaining("Doctor with id = " + 1 + " does not have the specified");
@@ -433,14 +433,14 @@ class DoctorServiceTest {
 
     @Test
     void shouldThrownResourceNotFoundExceptionWhenTryingToRemoveSpecialization() {
-        //given
+        // Arrange
         Integer specializationId = 2;
         Long doctorId = 2L;
 
         when(repository.findById(anyLong())).thenReturn(Optional.empty());
 
-        //when
-        //then
+        // Act
+        // Assert
         assertThatThrownBy(() -> underTest.removeSpecialization(doctorId, specializationId))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Doctor with id = " + doctorId);
@@ -449,7 +449,7 @@ class DoctorServiceTest {
 
     @Test
     void shouldFindDoctorById() {
-        // given
+        // Arrange
         Doctor doctor1 = new Doctor();
         Doctor doctor2 = new Doctor();
         doctor1.setId(1L);
@@ -457,10 +457,10 @@ class DoctorServiceTest {
 
         when(repository.findById(2L)).thenReturn(Optional.of(doctor2));
 
-        // when
+        // Act
         var response = underTest.readById(2L);
 
-        // then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         assertEquals(DoctorDTO.class, response.getBody().getClass());
         assertEquals(2, response.getBody().id());
@@ -468,17 +468,17 @@ class DoctorServiceTest {
 
     @Test
     void shouldCreateNewDoctor() {
-        // given
+        // Arrange
         Doctor doctor = spy(new Doctor());
         doctor.setId(1L);
         doctor.setFirstName("name");
 
         when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        // when
+        // Act
         var response = underTest.createDoctor(doctor);
 
-        // then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(201), response.getStatusCode());
         assertEquals(DoctorDTO.class, response.getBody().getClass());
         assertEquals("name", response.getBody().firstName());
@@ -490,7 +490,7 @@ class DoctorServiceTest {
 
     @Test
     void shouldUpdateDoctor() {
-        // given
+        // Arrange
         Long id = 1L;
         Doctor original = new Doctor();
         original.setId(id);
@@ -498,10 +498,10 @@ class DoctorServiceTest {
 
         when(repository.findById(id)).thenReturn(Optional.of(original));
 
-        // when
+        // Act
         var response = underTest.updateDoctor(id, toUpdate);
 
-        // then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
         ArgumentCaptor<Doctor> doctorCaptor = ArgumentCaptor.forClass(Doctor.class);
         verify(repository).save(doctorCaptor.capture());
@@ -518,7 +518,7 @@ class DoctorServiceTest {
     @Test
     @Disabled
     void shouldFindAllDoctorAvailableByDate() {
-        // given
+        // Arrange
         LocalDateTime date = LocalDateTime.now().plusDays(5);
 
         Doctor doctor1 = new Doctor();
@@ -544,10 +544,10 @@ class DoctorServiceTest {
 
         when(repository.findAll(pageable)).thenReturn(doctors);
 
-        // when
+        // Act
         var response = underTest.readAllAvailableByDate(date, pageable);
 
-        // then
+        // Assert
         assertEquals(1, response.getBody().getTotalElements());
         assertEquals(1, response.getBody().getTotalPages());
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
@@ -557,28 +557,28 @@ class DoctorServiceTest {
 
     @Test
     void shouldDeleteDoctorById() {
-        // given
+        // Arrange
         Long id = 1L;
         Doctor doctor1 = new Doctor();
         doctor1.setId(1L);
         when(repository.findById(id)).thenReturn(Optional.of(doctor1));
 
-        // when
+        // Act
         var response = underTest.deleteDoctor(id);
 
-        // then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
         verify(repository).deleteById(id);
     }
 
     @Test
     void shouldThrowResourceNotFoundExceptionIfDoctorToDeleteNotFound() {
-        // given
+        // Arrange
         Long id = 1L;
         when(repository.findById(id)).thenReturn(Optional.empty());
 
-        // when
-        // then
+        // Act
+        // Assert
         assertThatThrownBy(() -> underTest.deleteDoctor(id))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Doctor with id = " + id) ;
@@ -587,7 +587,7 @@ class DoctorServiceTest {
 
     @Test
     void shouldFindAllDoctors() {
-        // given
+        // Arrange
         Doctor doctor1 = new Doctor();
         Doctor doctor2 = new Doctor();
         doctor1.setId(1L);
@@ -597,10 +597,10 @@ class DoctorServiceTest {
 
         when(repository.findAll(pageable)).thenReturn(doctors);
 
-        // when
+        // Act
         var response = underTest.readAll(pageable);
 
-        // then
+        // Assert
         assertEquals(2, response.getBody().getTotalElements());
         assertEquals(1, response.getBody().getTotalPages());
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
@@ -611,14 +611,14 @@ class DoctorServiceTest {
 
     @Test
     void shouldThrowEmptyPageException() {
-        // given
+        // Arrange
         Page<Doctor> doctors = new PageImpl<>(List.of());
         Pageable pageable = Pageable.ofSize(10).withPage(0);
 
         when(repository.findAll(pageable)).thenReturn(doctors);
 
-        // when
-        // then
+        // Act
+        // Assert
         assertThatThrownBy(() -> underTest.readAll(pageable))
                 .isInstanceOf(EmptyPageException.class)
                 .hasMessage("Page is empty");

@@ -1,8 +1,8 @@
 package com.github.konradcz2001.medicalappointments.client.DTO;
 
 
-import com.github.konradcz2001.medicalappointments.common.DTOMapper;
 import com.github.konradcz2001.medicalappointments.client.Client;
+import com.github.konradcz2001.medicalappointments.common.DTOMapper;
 import com.github.konradcz2001.medicalappointments.review.Review;
 import org.springframework.stereotype.Service;
 

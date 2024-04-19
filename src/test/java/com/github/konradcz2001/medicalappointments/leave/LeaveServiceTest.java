@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatusCode;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,7 +30,7 @@ class LeaveServiceTest {
 
     @Test
     void shouldFindLeaveById() {
-        // given
+        // Arrange
         Leave leave1 = new Leave();
         Leave leave2 = new Leave();
         leave1.setId(1L);
@@ -40,10 +40,10 @@ class LeaveServiceTest {
 
         when(repository.findById(2L)).thenReturn(Optional.of(leave2));
 
-        // when
+        // Act
         var response = underTest.readById(2L);
 
-        // then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         Assertions.assertEquals(LeaveDTO.class, response.getBody().getClass());
         Assertions.assertEquals(2, response.getBody().id());

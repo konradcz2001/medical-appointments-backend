@@ -14,7 +14,7 @@ import org.springframework.http.HttpStatusCode;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -28,7 +28,7 @@ class ReviewServiceTest {
 
     @Test
     void shouldFindReviewById() {
-        // given
+        // Arrange
         Review review2 = new Review();
         review2.setId(2L);
         review2.setDoctor(new Doctor());
@@ -36,10 +36,10 @@ class ReviewServiceTest {
 
         when(repository.findById(2L)).thenReturn(Optional.of(review2));
 
-        // when
+        // Act
         var response = underTest.readById(2L);
 
-        // then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         assertEquals(ReviewDTO.class, response.getBody().getClass());
         assertEquals(2, response.getBody().id());

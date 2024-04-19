@@ -16,7 +16,7 @@ import java.util.HashSet;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
@@ -30,16 +30,16 @@ class SpecializationServiceTest {
 
     @Test
     void shouldFindSpecializationById() {
-        // given
+        // Arrange
         Specialization specialization2 = new Specialization();
         specialization2.setId(2);
 
         when(repository.findById(2)).thenReturn(Optional.of(specialization2));
 
-        // when
+        // Act
         var response = underTest.readById(2);
 
-        // then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         assertEquals(SpecializationDTO.class, response.getBody().getClass());
         assertEquals(2, response.getBody().id());
@@ -47,7 +47,7 @@ class SpecializationServiceTest {
 
     @Test
     void shouldFindSpecializationBySpecialization() {
-        // given
+        // Arrange
         Specialization specialization1 = new Specialization();
         Specialization specialization2 = new Specialization();
         specialization1.setSpecialization("spec1");
@@ -55,10 +55,10 @@ class SpecializationServiceTest {
 
         when(repository.findFirstBySpecialization("spec1")).thenReturn(Optional.of(specialization1));
 
-        // when
+        // Act
         var response = underTest.readBySpecialization("spec1");
 
-        // then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         assertEquals(SpecializationDTO.class, response.getBody().getClass());
         assertEquals("spec1", response.getBody().specialization());
@@ -66,12 +66,12 @@ class SpecializationServiceTest {
 
     @Test
     void shouldThrownWrongSpecializationExceptionThatNotExist() {
-        // given
+        // Arrange
         String spec = "spec8";
         when(repository.findFirstBySpecialization(spec)).thenReturn(Optional.empty());
 
-        // when
-        // then
+        // Act
+        // Assert
         assertThatThrownBy(() -> underTest.readBySpecialization(spec))
                 .isInstanceOf(WrongSpecializationException.class)
                 .hasMessageContaining(spec) ;
@@ -79,7 +79,7 @@ class SpecializationServiceTest {
 
     @Test
     void shouldCreateNewSpecialization() {
-        // given
+        // Arrange
         Specialization specialization = spy(new Specialization());
         specialization.setId(1);
         specialization.setSpecialization("spec");
@@ -88,10 +88,10 @@ class SpecializationServiceTest {
         when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
 
-        // when
+        // Act
         var response = underTest.createSpecialization(specialization);
 
-        // then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(201), response.getStatusCode());
         assertEquals(SpecializationDTO.class, response.getBody().getClass());
         assertEquals("spec", response.getBody().specialization());
@@ -102,13 +102,13 @@ class SpecializationServiceTest {
 
     @Test
     void shouldThrowWrongSpecializationExceptionWhileCreatingNewSpecializationBecauseAlreadyExist() {
-        // given
+        // Arrange
         Specialization specialization = new Specialization();
 
         when(repository.existsBySpecialization(specialization.getSpecialization())).thenReturn(true);
 
-        // when
-        // then
+        // Act
+        // Assert
         assertThatThrownBy(() -> underTest.createSpecialization(specialization))
                 .isInstanceOf(WrongSpecializationException.class)
                 .hasMessageContaining("already exist") ;
@@ -118,7 +118,7 @@ class SpecializationServiceTest {
 
     @Test
     void shouldUpdateSpecializationById() {
-        // given
+        // Arrange
         Integer id = 2;
         Specialization specialization1 = new Specialization();
         Specialization specialization2 = new Specialization();
@@ -129,10 +129,10 @@ class SpecializationServiceTest {
 
         when(repository.findById(id)).thenReturn(Optional.of(specialization2));
 
-        // when
+        // Act
         var response = underTest.updateSpecialization(id, toUpdate);
 
-        // then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
         ArgumentCaptor<Specialization> specCaptor = ArgumentCaptor.forClass(Specialization.class);
         verify(repository).save(specCaptor.capture());
@@ -144,17 +144,17 @@ class SpecializationServiceTest {
 
     @Test
     void shouldDeleteSpecializationById() {
-        // given
+        // Arrange
         Integer id = 1;
         Specialization specialization1 = new Specialization();
         specialization1.setId(1);
 
         when(repository.findById(id)).thenReturn(Optional.of(specialization1));
 
-        // when
+        // Act
         var response = underTest.deleteSpecialization(id);
 
-        // then
+        // Assert
         assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
         verify(repository).deleteById(id);
     }

@@ -2,14 +2,14 @@ package com.github.konradcz2001.medicalappointments.doctor;
 
 
 import com.github.konradcz2001.medicalappointments.doctor.DTO.*;
-import com.github.konradcz2001.medicalappointments.exception.WrongSpecializationException;
-import com.github.konradcz2001.medicalappointments.leave.Leave;
-import com.github.konradcz2001.medicalappointments.leave.LeaveRepository;
-import com.github.konradcz2001.medicalappointments.specialization.SpecializationRepository;
 import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
 import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
 import com.github.konradcz2001.medicalappointments.exception.WrongLeaveException;
+import com.github.konradcz2001.medicalappointments.exception.WrongSpecializationException;
+import com.github.konradcz2001.medicalappointments.leave.Leave;
+import com.github.konradcz2001.medicalappointments.leave.LeaveRepository;
 import com.github.konradcz2001.medicalappointments.review.ReviewRepository;
+import com.github.konradcz2001.medicalappointments.specialization.SpecializationRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -17,11 +17,15 @@ import org.springframework.stereotype.Service;
 
 import java.net.URI;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import static com.github.konradcz2001.medicalappointments.common.Utils.returnResponse;
-import static com.github.konradcz2001.medicalappointments.exception.MessageType.*;
+import static com.github.konradcz2001.medicalappointments.exception.MessageType.DOCTOR;
+import static com.github.konradcz2001.medicalappointments.exception.MessageType.SPECIALIZATION;
 
 /**
  * Service class for managing doctors.

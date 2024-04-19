@@ -1,7 +1,7 @@
 package com.github.konradcz2001.medicalappointments.doctor;
 
-import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorLeaveDTO;
 import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorDTO;
+import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorLeaveDTO;
 import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorReviewDTO;
 import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorSpecializationDTO;
 import com.github.konradcz2001.medicalappointments.leave.Leave;

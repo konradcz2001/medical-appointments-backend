@@ -1,19 +1,6 @@
 package com.github.konradcz2001.medicalappointments.common;
 
-import static com.github.konradcz2001.medicalappointments.common.Utils.returnResponse;
-import static org.assertj.core.api.Assertions.assertThatThrownBy;
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.junit.jupiter.api.Assertions.assertTrue;
-import static org.mockito.ArgumentMatchers.isA;
-import static org.mockito.Mockito.*;
-
 import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
-
-import java.util.ArrayList;
-import java.util.List;
-import java.util.function.Supplier;
-
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
@@ -21,6 +8,17 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.HttpStatusCode;
+
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Supplier;
+
+import static com.github.konradcz2001.medicalappointments.common.Utils.returnResponse;
+import static org.assertj.core.api.Assertions.assertThatThrownBy;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertTrue;
+import static org.mockito.ArgumentMatchers.isA;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 class UtilsTest {
@@ -32,11 +30,11 @@ class UtilsTest {
 
     @Test
     void shouldThrowEmptyPageException() {
-        // given
+        // Arrange
         when(suppliedResources.get()).thenReturn(new PageImpl<>(new ArrayList<>()));
 
-        // when
-        // then
+        // Act
+        // Assert
         assertThatThrownBy(() -> returnResponse(suppliedResources, dtoMapper))
                 .isInstanceOf(EmptyPageException.class)
                 .hasMessage("Page is empty");
@@ -47,16 +45,16 @@ class UtilsTest {
 
     @Test
     void shouldReturnResponseEntityWithContent() {
-        // given
+        // Arrange
         List<Object> content = new ArrayList<>();
         content.add(1);
         when(suppliedResources.get()).thenReturn(new PageImpl<>(content));
         when(dtoMapper.mapToDTO(any())).thenReturn(content.get(0));
 
-        // when
+        // Act
         var response = returnResponse(suppliedResources, dtoMapper);
 
-        // then
+        // Assert
         verify(dtoMapper).mapToDTO(isA(Object.class));
         verify(suppliedResources).get();
         assertEquals(1, response.getBody().toList().size());

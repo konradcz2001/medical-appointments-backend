@@ -4,8 +4,8 @@ package com.github.konradcz2001.medicalappointments.doctor.DTO;
 import com.github.konradcz2001.medicalappointments.common.DTOMapper;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import com.github.konradcz2001.medicalappointments.leave.Leave;
-import com.github.konradcz2001.medicalappointments.specialization.Specialization;
 import com.github.konradcz2001.medicalappointments.review.Review;
+import com.github.konradcz2001.medicalappointments.specialization.Specialization;
 import org.springframework.stereotype.Service;
 
 /**
