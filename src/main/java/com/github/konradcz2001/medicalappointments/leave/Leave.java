@@ -1,6 +1,6 @@
 package com.github.konradcz2001.medicalappointments.leave;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.FutureOrPresent;
@@ -13,6 +13,24 @@ import lombok.experimental.FieldDefaults;
 
 import java.time.LocalDateTime;
 
+
+/**
+ * This code snippet represents the "Leave" class.
+ * <p>
+ * The "Leave" class is an entity class that represents a leave taken by a doctor.
+ * It is mapped to the "leaves" table in the database.
+ * <p>
+ * The class has the following attributes:
+ * - id: The unique identifier for the leave.
+ * - startDate: The start date of the leave.
+ * - endDate: The end date of the leave.
+ * - doctor: The doctor who took the leave.
+ * <p>
+ * The class provides getters and setters for all the attributes.
+ * <p>
+ * Note: The class uses Lombok annotations for generating getters, setters, and default constructor.
+ * It also uses JPA annotations for mapping the class to the database table.
+ */
 @Entity
 @Table(name = "leaves")
 @Data
@@ -33,12 +51,7 @@ public class Leave {
     LocalDateTime endDate;
 
     @ManyToOne
-    @JoinColumn(name="doctor_id", nullable=false)
+    @JoinColumn(name = "doctor_id", nullable = false)
     Doctor doctor;
 
-
-//    public void setDoctor(final Doctor doctor) {
-//        doctor.addLeave(this);
-//        this.doctor = doctor;
-//    }
 }

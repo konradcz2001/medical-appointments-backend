@@ -115,6 +115,33 @@ class DoctorServiceTest {
     }
 
     @Test
+    void shouldReplaceLeavesWithTheSameDatesWhenAddingNewLeave() {
+        //given
+        LocalDateTime now = LocalDateTime.now();
+
+        Doctor doctor = new Doctor();
+        Leave leave1 = new Leave(1L, now.plusDays(1), now.plusDays(3), doctor);
+        Leave leave2 = new Leave(2L, now.plusDays(5), now.plusDays(7), doctor);
+        Leave leave3 = new Leave(3L, now.plusDays(9), now.plusDays(11), doctor);
+
+        doctor.addLeave(leave1);
+        doctor.addLeave(leave2);
+        doctor.addLeave(leave3);
+
+        Leave toAdd = new Leave(4L, now.plusDays(5), now.plusDays(7), null);
+
+        when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
+
+        //when
+        var response = underTest.addLeave(1L, toAdd);
+
+        //then
+        assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
+        assertEquals(3, doctor.getLeaves().size());
+
+    }
+
+    @Test
     void shouldAddLeaveWithoutMerging() {
         //given
         LocalDateTime now = LocalDateTime.now();
