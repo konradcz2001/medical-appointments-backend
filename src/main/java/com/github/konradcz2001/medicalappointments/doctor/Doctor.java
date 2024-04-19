@@ -14,6 +14,24 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+/**
+ * This code snippet represents a Java class named "Doctor" that extends the "User" class.
+ * It is an entity class that is mapped to a database table named "doctors".
+ * <p>
+ * The "Doctor" class has the following attributes:
+ * - address: An embedded object representing the address of the doctor.
+ * - isVerified: A boolean indicating whether the doctor is verified.
+ * - avatar: A byte array representing the avatar of the doctor.
+ * - profileDescription: A string representing the profile description of the doctor.
+ * - reviews: A list of reviews associated with the doctor.
+ * - specializations: A set of specializations that the doctor has.
+ * - leaves: A list of leaves taken by the doctor.
+ * <p>
+ * The class provides methods to add and remove specializations and leaves.
+ * <p>
+ * Note: The class uses Lombok annotations for generating getters, setters, and default constructor.
+ * It also uses JPA annotations for mapping the class to the database table.
+ */
 @Entity
 @Table(name = "doctors")
 @Getter

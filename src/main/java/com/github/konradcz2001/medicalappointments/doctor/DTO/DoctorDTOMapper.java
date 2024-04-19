@@ -8,6 +8,15 @@ import com.github.konradcz2001.medicalappointments.specialization.Specialization
 import com.github.konradcz2001.medicalappointments.review.Review;
 import org.springframework.stereotype.Service;
 
+/**
+ * This code snippet represents a Java class named "DoctorDTOMapper" that implements the "DTOMapper" interface.
+ * It is a service class used for mapping between Doctor and DoctorDTO objects.
+ * <p>
+ * The class provides methods to map a Doctor object to a DoctorDTO object and vice versa.
+ * It also provides additional methods to map Leave, Specialization, and Review objects to their respective DTOs.
+ * <p>
+ * Note: The class is annotated with @Service to indicate that it is a Spring service component.
+ */
 @Service
 public class DoctorDTOMapper implements DTOMapper<DoctorDTO, Doctor> {
 
@@ -37,7 +46,7 @@ public class DoctorDTOMapper implements DTOMapper<DoctorDTO, Doctor> {
         return target;
     }
 
-    public DoctorLeaveDTO applyForLeave(Leave leave) {
+    public DoctorLeaveDTO mapToDoctorLeaveDTO(Leave leave) {
         return new DoctorLeaveDTO(
                 leave.getId(),
                 leave.getStartDate(),
@@ -46,14 +55,14 @@ public class DoctorDTOMapper implements DTOMapper<DoctorDTO, Doctor> {
     }
 
 
-    public DoctorSpecializationDTO applyForSpecialization(Specialization specialization) {
+    public DoctorSpecializationDTO mapToDoctorSpecializationDTO(Specialization specialization) {
         return new DoctorSpecializationDTO(
                 specialization.getId(),
                 specialization.getSpecialization()
         );
     }
 
-    public DoctorReviewDTO applyForReview(Review review) {
+    public DoctorReviewDTO mapToDoctorReviewDTO(Review review) {
         return new DoctorReviewDTO(
                 review.getId(),
                 review.getDate(),

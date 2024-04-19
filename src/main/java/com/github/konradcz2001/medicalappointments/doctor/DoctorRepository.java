@@ -4,12 +4,15 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-//TODO DoctorRepository
+//TODO organize DoctorRepository
+
+@Repository
 public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     Optional<Doctor> findByEmail(String email);
     /*
@@ -66,7 +69,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
             "OR LOWER(country) LIKE '%' || LOWER(?1) || '%' " +
             "OR LOWER(city) LIKE '%' || LOWER(?1) || '%' " +
             "ORDER BY id ",
-            countQuery = " SELECT count(*) FROM doctors ",
+            //countQuery = " SELECT count(*) FROM doctors ",
             nativeQuery = true)
     Page<Doctor> search(String word, Pageable pageable);
 }
