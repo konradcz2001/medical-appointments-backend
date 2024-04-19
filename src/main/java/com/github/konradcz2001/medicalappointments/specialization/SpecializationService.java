@@ -1,7 +1,7 @@
-package com.github.konradcz2001.medicalappointments.specialization.specialization;
+package com.github.konradcz2001.medicalappointments.specialization;
 
-import com.github.konradcz2001.medicalappointments.specialization.specialization.DTO.SpecializationDTOMapper;
-import com.github.konradcz2001.medicalappointments.specialization.specialization.DTO.SpecializationDTO;
+import com.github.konradcz2001.medicalappointments.specialization.DTO.SpecializationDTO;
+import com.github.konradcz2001.medicalappointments.specialization.DTO.SpecializationDTOMapper;
 import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
 import com.github.konradcz2001.medicalappointments.exception.WrongSpecializationException;
 import org.springframework.data.domain.Page;
@@ -10,7 +10,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
-import java.util.ArrayList;
 import java.util.HashSet;
 
 import static com.github.konradcz2001.medicalappointments.common.Utils.returnResponse;
@@ -45,7 +44,7 @@ class SpecializationService {
         return repository.findFirstBySpecialization(specialization)
                 .map(dtoMapper::mapToDTO)
                 .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());//TODO exception
+                .orElseThrow(() -> new WrongSpecializationException("Specialization: " + specialization + "does not exist"));
     }
 
 
@@ -60,11 +59,11 @@ class SpecializationService {
     }
 
 
-    ResponseEntity<SpecializationDTO> updateSpecialization(Integer id, SpecializationDTO toUpdate){
+    ResponseEntity<?> updateSpecialization(Integer id, SpecializationDTO toUpdate){
         return repository.findById(id)
                 .map(spec -> {
-                    Specialization updated = repository.save(dtoMapper.mapFromDTO(toUpdate, spec));
-                    return ResponseEntity.ok(dtoMapper.mapToDTO(updated));
+                    repository.save(dtoMapper.mapFromDTO(toUpdate, spec));
+                    return ResponseEntity.noContent().build();
                 })
                 .orElseThrow(() -> new ResourceNotFoundException(SPECIALIZATION, id.longValue()));
     }
@@ -72,9 +71,7 @@ class SpecializationService {
 
     ResponseEntity<?> deleteSpecialization(Integer id){
         return repository.findById(id)
-                //TODO is it working? - deleteSpecialization
                 .map(spec -> {
-                    //spec.getDoctors().forEach(doctor -> doctor.removeSpecialization(spec));
                     repository.deleteById(id);
                     return ResponseEntity.noContent().build();
                 })

@@ -1,8 +1,8 @@
 package com.github.konradcz2001.medicalappointments.doctor;
 
 import com.github.konradcz2001.medicalappointments.common.User;
-import com.github.konradcz2001.medicalappointments.leave.leave.Leave;
-import com.github.konradcz2001.medicalappointments.specialization.specialization.Specialization;
+import com.github.konradcz2001.medicalappointments.leave.Leave;
+import com.github.konradcz2001.medicalappointments.specialization.Specialization;
 import com.github.konradcz2001.medicalappointments.review.Review;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;

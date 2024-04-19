@@ -1,4 +1,4 @@
-package com.github.konradcz2001.medicalappointments.leave.leave;
+package com.github.konradcz2001.medicalappointments.leave;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;

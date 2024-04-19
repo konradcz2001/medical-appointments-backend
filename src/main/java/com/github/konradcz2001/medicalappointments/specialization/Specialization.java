@@ -1,4 +1,4 @@
-package com.github.konradcz2001.medicalappointments.specialization.specialization;
+package com.github.konradcz2001.medicalappointments.specialization;
 
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import jakarta.persistence.*;

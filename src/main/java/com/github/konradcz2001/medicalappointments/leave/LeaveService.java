@@ -1,7 +1,7 @@
-package com.github.konradcz2001.medicalappointments.leave.leave;
+package com.github.konradcz2001.medicalappointments.leave;
 
-import com.github.konradcz2001.medicalappointments.leave.leave.DTO.LeaveDTOMapper;
-import com.github.konradcz2001.medicalappointments.leave.leave.DTO.LeaveDTO;
+import com.github.konradcz2001.medicalappointments.leave.DTO.LeaveDTOMapper;
+import com.github.konradcz2001.medicalappointments.leave.DTO.LeaveDTO;
 import com.github.konradcz2001.medicalappointments.exception.MessageType;
 import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
 import org.springframework.data.domain.Page;

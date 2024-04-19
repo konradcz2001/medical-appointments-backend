@@ -4,7 +4,7 @@ import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorLeaveDTO;
 import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorDTO;
 import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorReviewDTO;
 import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorSpecializationDTO;
-import com.github.konradcz2001.medicalappointments.leave.leave.Leave;
+import com.github.konradcz2001.medicalappointments.leave.Leave;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -61,7 +61,7 @@ class DoctorController {
 
 
     @PutMapping("/{id}")
-    ResponseEntity<DoctorDTO> updateDoctor(@PathVariable Long id, @Valid @RequestBody DoctorDTO toUpdate){
+    ResponseEntity<?> updateDoctor(@PathVariable Long id, @Valid @RequestBody DoctorDTO toUpdate){
         return service.updateDoctor(id, toUpdate);
     }
 

@@ -3,9 +3,9 @@ package com.github.konradcz2001.medicalappointments.doctor;
 
 import com.github.konradcz2001.medicalappointments.doctor.DTO.*;
 import com.github.konradcz2001.medicalappointments.exception.WrongSpecializationException;
-import com.github.konradcz2001.medicalappointments.leave.leave.Leave;
-import com.github.konradcz2001.medicalappointments.leave.leave.LeaveRepository;
-import com.github.konradcz2001.medicalappointments.specialization.specialization.SpecializationRepository;
+import com.github.konradcz2001.medicalappointments.leave.Leave;
+import com.github.konradcz2001.medicalappointments.leave.LeaveRepository;
+import com.github.konradcz2001.medicalappointments.specialization.SpecializationRepository;
 import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
 import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
 import com.github.konradcz2001.medicalappointments.exception.WrongLeaveException;
@@ -150,11 +150,11 @@ class DoctorService {
         return ResponseEntity.created(URI.create("/" + created.getId())).body(dtoMapper.mapToDTO(created));
     }
 
-    ResponseEntity<DoctorDTO> updateDoctor(Long id, DoctorDTO toUpdate){
+    ResponseEntity<?> updateDoctor(Long id, DoctorDTO toUpdate){
         return repository.findById(id)
                 .map(doctor -> {
-                    Doctor updated = repository.save(dtoMapper.mapFromDTO(toUpdate, doctor));
-                    return ResponseEntity.ok(dtoMapper.mapToDTO(updated));
+                    repository.save(dtoMapper.mapFromDTO(toUpdate, doctor));
+                    return ResponseEntity.noContent().build();
                 })
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
     }

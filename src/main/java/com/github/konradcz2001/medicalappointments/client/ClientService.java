@@ -97,7 +97,7 @@ class ClientService {
 
                     client.getReviews().forEach(review -> {
                         if(review.getClient().getId().equals(clientId) && review.getDoctor().getId().equals(doctorId)){
-                            throw new WrongReviewException("Client with id = " + clientId + " already has a review for doctor with id = " + doctorId);
+                            throw new WrongReviewException("Client with id = " + clientId + " already has a review for doctor with id = " + doctorId + ", id of that review = " + review.getId());
                         }
                     });
 
@@ -117,26 +117,26 @@ class ClientService {
 
     ResponseEntity<?> updateReview(Long clientId, ReviewDTO toUpdate){
         return repository.findById(clientId)
-                .map(client -> reviewRepository.findById(toUpdate.id())
-                        .map(review -> {
-                            reviewRepository.save(reviewDTOMapper.mapFromDTO(toUpdate, review));
-                            return ResponseEntity.noContent().build();
-                        })
-                        .orElse(ResponseEntity.notFound().build()))
+                .map(client -> client.getReviews().stream()
+                                .filter(review -> review.getId().equals(toUpdate.id())).findAny()
+                                .map(review -> {
+                                            reviewRepository.save(reviewDTOMapper.mapFromDTO(toUpdate, review));
+                                            return ResponseEntity.noContent().build();
+                                }).orElseThrow(() -> new WrongReviewException("Client with id = " + clientId + " does not have a review with id = " + toUpdate.id())))
                 .orElseThrow(() -> new ResourceNotFoundException(CLIENT, clientId));
     }
 
-//TODO cascade
     ResponseEntity<?> removeReview(Long clientId, Long reviewId){
         return repository.findById(clientId)
-                .map(client -> reviewRepository.findById(reviewId)
+                .map(client -> client.getReviews().stream()
+                        .filter(review -> review.getId().equals(reviewId)).findAny()
                         .map(review -> {
                             client.removeReview(review);
                             repository.save(client);
                             return ResponseEntity.noContent().build();
                         })
-                        .orElse(ResponseEntity.notFound().build()))
-                .orElse(ResponseEntity.notFound().build());
+                        .orElseThrow(() -> new WrongReviewException("Client with id = " + clientId + " does not have a review with id = " + reviewId)))
+                .orElseThrow(() -> new ResourceNotFoundException(CLIENT, clientId));
     }
 
 

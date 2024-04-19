@@ -6,18 +6,17 @@ import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundExc
 import com.github.konradcz2001.medicalappointments.exception.WrongLeaveException;
 import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
 import com.github.konradcz2001.medicalappointments.exception.WrongSpecializationException;
-import com.github.konradcz2001.medicalappointments.leave.leave.Leave;
-import com.github.konradcz2001.medicalappointments.leave.leave.LeaveRepository;
+import com.github.konradcz2001.medicalappointments.leave.Leave;
+import com.github.konradcz2001.medicalappointments.leave.LeaveRepository;
 import com.github.konradcz2001.medicalappointments.review.Review;
 import com.github.konradcz2001.medicalappointments.review.ReviewRepository;
 import com.github.konradcz2001.medicalappointments.security.Role;
-import com.github.konradcz2001.medicalappointments.specialization.specialization.Specialization;
-import com.github.konradcz2001.medicalappointments.specialization.specialization.SpecializationRepository;
-import org.junit.jupiter.api.AfterEach;
-import org.junit.jupiter.api.BeforeEach;
+import com.github.konradcz2001.medicalappointments.specialization.Specialization;
+import com.github.konradcz2001.medicalappointments.specialization.SpecializationRepository;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.ArgumentCaptor;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Spy;
@@ -51,13 +50,6 @@ class DoctorServiceTest {
     @InjectMocks
     private DoctorService underTest;
 
-    @BeforeEach
-    void setUp() {
-    }
-
-    @AfterEach
-    void tearDown() {
-    }
 
 
     @Test
@@ -134,7 +126,7 @@ class DoctorServiceTest {
         doctor.addLeave(leave1);
         doctor.addLeave(leave2);
 
-        Leave toAdd = new Leave(3L, now.plusDays(3), now.plusDays(4), null);
+        Leave toAdd = spy(new Leave(3L, now.plusDays(3), now.plusDays(4), null));
 
         when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
 
@@ -146,6 +138,7 @@ class DoctorServiceTest {
         assertEquals(3, doctor.getLeaves().size());
         assertEquals(now.plusDays(3), doctor.getLeaves().get(2).getStartDate());
         assertEquals(now.plusDays(4), doctor.getLeaves().get(2).getEndDate());
+        verify(toAdd).setId(null);
     }
 
     @Test
@@ -449,11 +442,11 @@ class DoctorServiceTest {
     @Test
     void shouldCreateNewDoctor() {
         // given
-        Doctor doctor = new Doctor();
+        Doctor doctor = spy(new Doctor());
         doctor.setId(1L);
         doctor.setFirstName("name");
 
-        when(repository.save(doctor)).thenReturn(doctor);
+        when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
         // when
         var response = underTest.createDoctor(doctor);
@@ -461,33 +454,38 @@ class DoctorServiceTest {
         // then
         assertEquals(HttpStatusCode.valueOf(201), response.getStatusCode());
         assertEquals(DoctorDTO.class, response.getBody().getClass());
-        assertNull(response.getBody().id());
         assertEquals("name", response.getBody().firstName());
+        verify(doctor).setId(null);
+        verify(doctor).setSpecializations(new HashSet<>());
+        verify(doctor).setLeaves(new ArrayList<>());
+        verify(doctor).setReviews(new ArrayList<>());
     }
 
     @Test
     void shouldUpdateDoctor() {
         // given
         Long id = 1L;
-        Doctor orginal = new Doctor();
-        orginal.setId(id);
+        Doctor original = new Doctor();
+        original.setId(id);
         DoctorDTO toUpdate = new DoctorDTO(2L, "name2", "lastname2", "email2", Role.CLIENT,true, null, "description2", null);
 
-        when(repository.findById(id)).thenReturn(Optional.of(orginal));
-        when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
+        when(repository.findById(id)).thenReturn(Optional.of(original));
 
         // when
         var response = underTest.updateDoctor(id, toUpdate);
 
         // then
-        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        assertEquals(DoctorDTO.class, response.getBody().getClass());
-        assertEquals(1, response.getBody().id());
-        assertEquals("name2", response.getBody().firstName());
-        assertEquals("description2", response.getBody().profileDescription());
-        assertNull(response.getBody().email());
-        assertNull(response.getBody().role());
-        assertFalse(response.getBody().isVerified());
+        assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
+        ArgumentCaptor<Doctor> doctorCaptor = ArgumentCaptor.forClass(Doctor.class);
+        verify(repository).save(doctorCaptor.capture());
+        Doctor doctor = doctorCaptor.getValue();
+
+        assertEquals(1, doctor.getId());
+        assertEquals("name2", doctor.getFirstName());
+        assertEquals("description2", doctor.getProfileDescription());
+        assertNull(doctor.getEmail());
+        assertNull(doctor.getRole());
+        assertFalse(doctor.isVerified());
     }
 
     @Test

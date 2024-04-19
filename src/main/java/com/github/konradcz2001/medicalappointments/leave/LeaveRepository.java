@@ -1,4 +1,4 @@
-package com.github.konradcz2001.medicalappointments.leave.leave;
+package com.github.konradcz2001.medicalappointments.leave;
 
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;

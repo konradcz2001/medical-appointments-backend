@@ -1,6 +1,6 @@
-package com.github.konradcz2001.medicalappointments.specialization.specialization;
+package com.github.konradcz2001.medicalappointments.specialization;
 
-import com.github.konradcz2001.medicalappointments.specialization.specialization.DTO.SpecializationDTO;
+import com.github.konradcz2001.medicalappointments.specialization.DTO.SpecializationDTO;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -39,7 +39,7 @@ class SpecializationController {
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<SpecializationDTO> updateSpecialization(@PathVariable Integer id, @Valid @RequestBody SpecializationDTO specialization){
+    ResponseEntity<?> updateSpecialization(@PathVariable Integer id, @Valid @RequestBody SpecializationDTO specialization){
         return service.updateSpecialization(id, specialization);
     }
 

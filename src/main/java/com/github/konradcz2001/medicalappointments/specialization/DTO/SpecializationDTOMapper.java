@@ -1,8 +1,8 @@
-package com.github.konradcz2001.medicalappointments.specialization.specialization.DTO;
+package com.github.konradcz2001.medicalappointments.specialization.DTO;
 
 
 import com.github.konradcz2001.medicalappointments.common.DTOMapper;
-import com.github.konradcz2001.medicalappointments.specialization.specialization.Specialization;
+import com.github.konradcz2001.medicalappointments.specialization.Specialization;
 import org.springframework.stereotype.Service;
 
 @Service

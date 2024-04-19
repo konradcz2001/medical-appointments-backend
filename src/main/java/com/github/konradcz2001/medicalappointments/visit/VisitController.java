@@ -66,24 +66,24 @@ class VisitController {
         return service.readAllByPrice(price, pageable);
     }
 
-    @GetMapping(params = "price1")
+    @GetMapping(params = "maxPrice")
     ResponseEntity<Page<VisitDTO>> readAllByPriceLessThan(@RequestParam BigDecimal price, Pageable pageable){
         return service.readAllByPriceLessThan(price, pageable);
     }
 
-    @GetMapping(params = "price2")
+    @GetMapping(params = "minPrice")
     ResponseEntity<Page<VisitDTO>> readAllByPriceGreaterThan(@RequestParam BigDecimal price, Pageable pageable){
         return service.readAllByPriceGreaterThan(price, pageable);
     }
 
 
     @PostMapping
-    ResponseEntity<?> createVisit(@Valid @RequestBody Visit visit){
+    ResponseEntity<VisitDTO> createVisit(@Valid @RequestBody VisitDTO visit){
         return service.createVisit(visit);
     }
 
     @PutMapping("/{id}")
-    ResponseEntity<?> updateVisit(@PathVariable Long id, @Valid @RequestBody Visit visit){
+    ResponseEntity<?> updateVisit(@PathVariable Long id, @Valid @RequestBody VisitDTO visit){
         return service.updateVisit(id, visit);
     }
 

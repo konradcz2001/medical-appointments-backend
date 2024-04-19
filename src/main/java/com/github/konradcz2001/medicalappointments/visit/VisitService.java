@@ -32,27 +32,22 @@ class VisitService {
     }
 
 
-    ResponseEntity<?> createVisit(Visit visit){
-        Long doctorId = visit.getDoctor().getId();
-        Long clientId = visit.getClient().getId();
+    ResponseEntity<VisitDTO> createVisit(VisitDTO visitDTO){
+        Long doctorId = visitDTO.doctorId();
+        Long clientId = visitDTO.clientId();
+        //TODO check if doctor is available
 
-        doctorRepository.findById(doctorId)
-                .ifPresentOrElse(
-                        doctor -> {
-                            visit.setDoctor(doctor);
-                            clientRepository.findById(clientId)
-                                    .ifPresentOrElse(
-                                            visit::setClient,
-                                            () -> {
-                                                throw new ResourceNotFoundException(CLIENT, clientId);
-                                            }
-                                    );
-                        }, () -> {
-                            throw new ResourceNotFoundException(DOCTOR, doctorId);
-                        }
-                );
-        Visit result = repository.save(visit);
-        return ResponseEntity.created(URI.create("/" + result.getId())).body(result);
+        return doctorRepository.findById(doctorId)
+                .map(doctor -> clientRepository.findById(clientId)
+                            .map( client -> {
+                                    Visit visit = new Visit();
+                                    visit.setDoctor(doctor);
+                                    visit.setClient(client);
+                                    Visit result = repository.save(dtoMapper.mapFromDTO(visitDTO, visit));
+                                    return ResponseEntity.created(URI.create("/" + result.getId())).body(dtoMapper.mapToDTO(result));
+                            })
+                            .orElseThrow(() -> new ResourceNotFoundException(CLIENT, clientId)))
+                .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, doctorId));
     }
 
     ResponseEntity<Page<VisitDTO>> readAll(Pageable pageable){
@@ -92,12 +87,11 @@ class VisitService {
     }
 
 
-    ResponseEntity<?> updateVisit(Long id, Visit toUpdate){
+    ResponseEntity<?> updateVisit(Long id, VisitDTO toUpdate){
         return repository.findById(id)
                 .map(visit -> {
-                    toUpdate.setId(id);
-                    //TODO Doctor and Client?
-                    return ResponseEntity.ok(repository.save(toUpdate));
+                    repository.save(dtoMapper.mapFromDTO(toUpdate, visit));
+                    return ResponseEntity.noContent().build();
                 })
                 .orElseThrow(() -> new ResourceNotFoundException(VISIT, id));
     }
@@ -105,7 +99,6 @@ class VisitService {
     ResponseEntity<?> deleteVisit(Long id){
         return repository.findById(id)
                 .map(visit -> {
-                    //TODO cascade type?
                     repository.deleteById(id);
                     return ResponseEntity.noContent().build();
                 })
