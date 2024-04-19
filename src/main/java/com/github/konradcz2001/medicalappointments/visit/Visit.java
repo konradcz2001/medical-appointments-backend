@@ -15,6 +15,20 @@ import lombok.experimental.FieldDefaults;
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
+/**
+ * This code snippet represents a Java class called Visit.
+ * <p>
+ * The Visit class has the following properties:
+ * - id: a unique identifier for the visit
+ * - date: the date of the visit
+ * - type: the type of the visit
+ * - notes: additional notes for the visit
+ * - price: the price of the visit
+ * - doctor: the doctor associated with the visit
+ * - client: the client associated with the visit
+ * <p>
+ * Note: The Visit class is annotated with JPA annotations for persistence and validation.
+ */
 @Entity
 @Table(name = "visits")
 @Getter
