@@ -18,6 +18,16 @@ import org.springframework.security.core.userdetails.UserDetails;
 import java.util.Collection;
 import java.util.List;
 
+/**
+ * This code snippet represents a Java class named "User" that implements the "UserDetails" interface.
+ * It is a mapped superclass with fields representing user information such as id, first name, last name, email, password, and role.
+ * The class provides getter and setter methods for these fields.
+ * The "User" class also overrides methods from the "UserDetails" interface to provide user authentication and authorization functionality.
+ * The "getAuthorities" method returns a collection of granted authorities based on the user's role.
+ * The "getPassword" method returns the user's password.
+ * The "getUsername" method returns the user's email.
+ * The "isAccountNonExpired", "isAccountNonLocked", "isCredentialsNonExpired", and "isEnabled" methods return true to indicate that the user's account is active and valid.
+ */
 @MappedSuperclass
 @Getter
 @Setter
