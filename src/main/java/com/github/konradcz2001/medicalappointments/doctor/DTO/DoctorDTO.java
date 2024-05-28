@@ -33,7 +33,7 @@ public record DoctorDTO(Long id,
                         String lastName,
                         @NotBlank(message = "Email must not be empty")
                         @Size(max = 255, message = "Maximum length is 255")
-                        @Email
+                        @Email(message = "The email must be in email format")
                         String email,
                         @NotNull(message = "Role must not be empty")
                         Role role,

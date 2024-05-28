@@ -23,14 +23,14 @@ public class UserDetailsServiceImp implements UserDetailsService {
     }
 
     @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        Optional<Client> client = clientRepository.findByEmail(email);
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        Optional<Client> client = clientRepository.findByEmail(username);
         if (client.isPresent())
             return client.get();
-        Optional<Doctor> doctor = doctorRepository.findByEmail(email);
+        Optional<Doctor> doctor = doctorRepository.findByEmail(username);
         if (doctor.isPresent())
             return doctor.get();
 
-        throw new UsernameNotFoundException(email);
+        throw new UsernameNotFoundException(username);
     }
 }

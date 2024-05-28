@@ -48,7 +48,7 @@ public class User implements UserDetails {
     @Column(name = "email", unique = true, nullable = false)
     @NotBlank(message = "Email must not be empty")
     @Size(max = 100, message = "Maximum length is 100 characters")
-    @Email
+    @Email(message = "The email must be in email format")
     String email;
     @Column(name = "password", nullable = false)
     String password;

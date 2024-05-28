@@ -24,7 +24,7 @@ public record ClientDTO(Long id,
                         String lastName,
                         @NotBlank(message = "Email must not be empty")
                         @Size(max = 100, message = "Maximum length is 100 characters")
-                        @Email
+                        @Email(message = "The email must be in email format")
                         String email,
                         @NotNull(message = "Role must not be empty")
                         Role role) {
