@@ -1,5 +1,8 @@
 package com.github.konradcz2001.medicalappointments.leave.DTO;
 
+import jakarta.validation.constraints.FutureOrPresent;
+import jakarta.validation.constraints.NotNull;
+
 import java.time.LocalDateTime;
 
 /**
@@ -13,7 +16,12 @@ import java.time.LocalDateTime;
  * - doctorId: The unique identifier of the doctor associated with the Leave.
  */
 public record LeaveDTO(Long id,
+                       @NotNull(message = "Start date must not be empty")
+                       @FutureOrPresent(message = "Start date must not be in the past")
                        LocalDateTime startDate,
+                       @NotNull(message = "End date must not be empty")
+                       @FutureOrPresent(message = "End date must not be in the past")
                        LocalDateTime endDate,
+                       @NotNull(message = "Doctor id must not be empty")
                        Long doctorId){
 }

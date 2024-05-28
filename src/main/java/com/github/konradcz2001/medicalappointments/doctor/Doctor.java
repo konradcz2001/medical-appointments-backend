@@ -6,6 +6,7 @@ import com.github.konradcz2001.medicalappointments.review.Review;
 import com.github.konradcz2001.medicalappointments.specialization.Specialization;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -45,11 +46,12 @@ public class Doctor extends User {
     @Embedded
     Address address;
     @Column(name = "is_verified", nullable = false)
-    @NotNull
+    @NotNull(message = "Verification must not be empty")
     boolean isVerified;
     @Column(name = "avatar")
     byte[] avatar;
     @Column(name = "profile_description")
+    @Size(max = 10000, message = "Maximum length is 10000 characters")
     String profileDescription;
 
     @OneToMany(mappedBy = "doctor")

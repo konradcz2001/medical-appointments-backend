@@ -42,16 +42,17 @@ public class Leave {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @Column(name = "start_date", nullable = false)
-    @NotNull
-    @FutureOrPresent
+    @NotNull(message = "Start date must not be empty")
+    @FutureOrPresent(message = "Start date must not be in the past")
     LocalDateTime startDate;
     @Column(name = "end_date", nullable = false)
-    @NotNull
-    @FutureOrPresent
+    @NotNull(message = "End date must not be empty")
+    @FutureOrPresent(message = "End date must not be in the past")
     LocalDateTime endDate;
 
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
+    @NotNull(message = "Doctor must not be empty")
     Doctor doctor;
 
 }

@@ -1,9 +1,6 @@
 package com.github.konradcz2001.medicalappointments.visit.DTO;
 
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -18,11 +15,21 @@ import java.time.LocalDateTime;
  * The doctor ID and client ID are optional.
  */
 public record VisitDTO(Long id,
-                       @NotBlank @FutureOrPresent LocalDateTime date,
-                       @NotBlank String type,
+                       @NotNull(message = "Date must not be empty")
+                       @FutureOrPresent(message = "Date must not be in the past")
+                       LocalDateTime date,
+                       @NotBlank(message = "Type must not be empty")
+                       @Size(max = 100, message = "Maximum length is 100 characters")
+                       String type,
+                       @Size(max = 500, message = "Maximum length is 500 characters")
                        String notes,
-                       @NotNull @Min(0) BigDecimal price,
+                       @NotNull(message = "Price must not be empty")
+                       @DecimalMin(value = "0.0", message = "Minimum price is zero")
+                       @DecimalMax(value = "1000000000.0", message = "Maximum price is 1000000000")
+                       BigDecimal price,
+                       @NotNull(message = "Doctor id must not be empty")
                        Long doctorId,
+                       @NotNull(message = "Client must not be empty")
                        Long clientId
                                 ) {
 }

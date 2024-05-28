@@ -3,10 +3,7 @@ package com.github.konradcz2001.medicalappointments.visit;
 import com.github.konradcz2001.medicalappointments.client.Client;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.FutureOrPresent;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.*;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.Setter;
@@ -39,25 +36,28 @@ public class Visit {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @Column(name = "date", nullable = false)
-    @FutureOrPresent
-    @NotBlank
+    @NotNull(message = "Date must not be empty")
+    @FutureOrPresent(message = "Date must not be in the past")
     LocalDateTime date;
     @Column(name = "type", nullable = false)
-    @NotBlank
+    @NotBlank(message = "Type must not be empty")
+    @Size(max = 100, message = "Maximum length is 100 characters")
     String type;
     @Column(name = "notes")
+    @Size(max = 500, message = "Maximum length is 500 characters")
     String notes;
     @Column(name = "price", nullable = false)
-    @NotNull
-    @Min(0)
+    @NotNull(message = "Price must not be empty")
+    @DecimalMin(value = "0.0", message = "Minimum price is zero")
+    @DecimalMax(value = "1000000000.0", message = "Maximum price is 1000000000")
     BigDecimal price;
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
-    @NotNull
+    @NotNull(message = "Doctor must not be empty")
     Doctor doctor;
     @ManyToOne
     @JoinColumn(name = "client_id", nullable = false)
-    @NotNull
+    @NotNull(message = "Client must not be empty")
     Client client;
 
 }

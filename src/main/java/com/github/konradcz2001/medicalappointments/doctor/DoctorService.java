@@ -355,4 +355,10 @@ class DoctorService {
 
         return ResponseEntity.ok(doctors);
     }
+
+    ResponseEntity<Page<DoctorDTO>> searchDoctors(String word, String specialization, Pageable pageable) {
+        if (specialization == null)
+            return returnResponse(() -> repository.search(word, pageable), dtoMapper);
+        return returnResponse(() -> repository.searchWithSpecialization(word, specialization, pageable), dtoMapper);
+    }
 }

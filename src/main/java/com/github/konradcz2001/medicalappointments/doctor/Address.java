@@ -2,6 +2,7 @@ package com.github.konradcz2001.medicalappointments.doctor;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Embeddable;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -21,15 +22,21 @@ import lombok.experimental.FieldDefaults;
 @AllArgsConstructor
 public class Address {
     @Column(name = "country")
+    @Size(max = 100, message = "Maximum length is 100 characters")
     String country;
     @Column(name = "state")
+    @Size(max = 100, message = "Maximum length is 100 characters")
     String state;   // voivodeship, ...
     @Column(name = "city")
+    @Size(max = 100, message = "Maximum length is 100 characters")
     String city;
     @Column(name = "street")
+    @Size(max = 100, message = "Maximum length is 100 characters")
     String street;
     @Column(name = "house_number")
+    @Size(max = 10, message = "Maximum length is 10 characters")
     String houseNumber;  // apartment number
     @Column(name = "zip_code")
+    @Size(max = 10, message = "Maximum length is 10 characters")
     String zipCode;
 }

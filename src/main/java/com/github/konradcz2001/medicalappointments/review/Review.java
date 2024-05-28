@@ -4,6 +4,7 @@ import com.github.konradcz2001.medicalappointments.client.Client;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 import lombok.*;
 import lombok.experimental.FieldDefaults;
 
@@ -40,18 +41,19 @@ public class Review {
     @Column(name = "date", nullable = false)
     LocalDateTime date = LocalDateTime.now();
     @Column(name = "rating", nullable = false)
-    @NotNull
+    @NotNull(message = "Rating must not be empty")
     Rating rating; // 1-5 stars
     @Column(name = "description")
+    @Size(max = 500, message = "Maximum length is 500 characters")
     String description;
 
     @ManyToOne
     @JoinColumn(name = "doctor_id")
-    @NotNull
+    @NotNull(message = "Doctor must not be empty")
     Doctor doctor;
 
     @ManyToOne
     @JoinColumn(name = "client_id")
-    @NotNull
+    @NotNull(message = "Client must not be empty")
     Client client;
 }

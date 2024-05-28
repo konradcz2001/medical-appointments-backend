@@ -1,6 +1,8 @@
 package com.github.konradcz2001.medicalappointments.doctor.DTO;
 
 import com.github.konradcz2001.medicalappointments.review.Rating;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 import java.time.LocalDateTime;
 
@@ -11,8 +13,11 @@ import java.time.LocalDateTime;
  */
 public record DoctorReviewDTO(Long id,
                               LocalDateTime date,
+                              @NotNull(message = "Rating must not be empty")
                               Rating rating,
+                              @Size(max = 500, message = "Maximum length is 500 characters")
                               String description,
+                              @NotNull(message = "Client id must not be empty")
                               Long clientId
                                       ){
 }

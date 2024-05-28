@@ -1,7 +1,10 @@
 package com.github.konradcz2001.medicalappointments.client.DTO;
 
 import com.github.konradcz2001.medicalappointments.security.Role;
+import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.Size;
 
 /**
  * Represents a data transfer object for a client.
@@ -13,8 +16,16 @@ import jakarta.validation.constraints.NotBlank;
  * @param role The role of the client.
  */
 public record ClientDTO(Long id,
-                        @NotBlank String firstName,
-                        @NotBlank String lastName,
+                        @NotBlank(message = "First name must not be empty")
+                        @Size(max = 100, message = "Maximum length is 100 characters")
+                        String firstName,
+                        @NotBlank(message = "Last name must not be empty")
+                        @Size(max = 100, message = "Maximum length is 100 characters")
+                        String lastName,
+                        @NotBlank(message = "Email must not be empty")
+                        @Size(max = 100, message = "Maximum length is 100 characters")
+                        @Email
                         String email,
+                        @NotNull(message = "Role must not be empty")
                         Role role) {
 }

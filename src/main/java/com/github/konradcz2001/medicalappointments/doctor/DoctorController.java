@@ -220,4 +220,9 @@ class DoctorController {
         return service.readAllReviews(id, pageable);
     }
 
+    @GetMapping(path = "/search", params = "word")
+    ResponseEntity<Page<DoctorDTO>> searchDoctors(@RequestParam String word, @RequestParam(required = false) String specialization, Pageable pageable){
+        return service.searchDoctors(word, specialization, pageable);
+    }
+
 }

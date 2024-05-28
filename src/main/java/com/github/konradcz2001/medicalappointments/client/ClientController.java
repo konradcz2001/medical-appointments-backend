@@ -91,7 +91,7 @@ class ClientController {
      * @return a ResponseEntity indicating the success or failure of the update operation
      */
     @PutMapping("/{id}")
-    ResponseEntity<?> updateClient(@PathVariable Long id, @RequestBody ClientDTO client){
+    ResponseEntity<?> updateClient(@PathVariable Long id, @Valid @RequestBody ClientDTO client){
         return service.updateClient(id, client);
     }
 

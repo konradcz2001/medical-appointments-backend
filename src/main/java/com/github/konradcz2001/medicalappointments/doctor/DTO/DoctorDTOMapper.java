@@ -5,8 +5,11 @@ import com.github.konradcz2001.medicalappointments.common.DTOMapper;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import com.github.konradcz2001.medicalappointments.leave.Leave;
 import com.github.konradcz2001.medicalappointments.review.Review;
+import com.github.konradcz2001.medicalappointments.specialization.DTO.SpecializationDTO;
 import com.github.konradcz2001.medicalappointments.specialization.Specialization;
 import org.springframework.stereotype.Service;
+
+import java.util.stream.Collectors;
 
 /**
  * This code snippet represents a Java class named "DoctorDTOMapper" that implements the "DTOMapper" interface.
@@ -31,6 +34,9 @@ public class DoctorDTOMapper implements DTOMapper<DoctorDTO, Doctor> {
                 source.isVerified(),
                 source.getAvatar(),
                 source.getProfileDescription(),
+                source.getSpecializations().stream().map(specialization ->
+                        new SpecializationDTO(specialization.getId(), specialization.getSpecialization()))
+                        .collect(Collectors.toSet()),
                 source.getAddress()
         );
     }

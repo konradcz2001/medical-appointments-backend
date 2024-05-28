@@ -3,6 +3,7 @@ package com.github.konradcz2001.medicalappointments.specialization;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Data;
@@ -39,7 +40,8 @@ public class Specialization {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Integer id;
     @Column(name = "specialization", unique = true, nullable = false)
-    @NotBlank
+    @NotBlank(message = "Specialization must not be empty")
+    @Size(max = 100, message = "Maximum length is 100 characters")
     String specialization;
 
     //@JsonIgnore

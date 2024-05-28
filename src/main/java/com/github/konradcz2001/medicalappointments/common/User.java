@@ -5,7 +5,7 @@ import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Pattern;
+import jakarta.validation.constraints.Size;
 import lombok.AccessLevel;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -38,22 +38,23 @@ public class User implements UserDetails {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
     @Column(name = "first_name", nullable = false)
-    @NotBlank
+    @NotBlank(message = "First name must not be empty")
+    @Size(max = 100, message = "Maximum length is 100 characters")
     String firstName;
     @Column(name = "last_name", nullable = false)
-    @NotBlank
+    @NotBlank(message = "Last name must not be empty")
+    @Size(max = 100, message = "Maximum length is 100 characters")
     String lastName;
     @Column(name = "email", unique = true, nullable = false)
-    @NotBlank
+    @NotBlank(message = "Email must not be empty")
+    @Size(max = 100, message = "Maximum length is 100 characters")
     @Email
     String email;
     @Column(name = "password", nullable = false)
-    @NotBlank
-    @Pattern(regexp = "^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,}$", message = "Password must be at least 8 characters long and contain at least one uppercase letter, one lowercase letter, and one digit")
     String password;
     @Enumerated(EnumType.STRING)
     @Column(name = "role", nullable = false)
-    @NotNull
+    @NotNull(message = "Role must not be empty")
     Role role;
 
 

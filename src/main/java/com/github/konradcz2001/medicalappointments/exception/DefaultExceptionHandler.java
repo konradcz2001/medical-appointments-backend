@@ -5,6 +5,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 
@@ -33,6 +34,7 @@ public class DefaultExceptionHandler {
     @ExceptionHandler({ResourceNotFoundException.class, EmptyPageException.class})
     public ResponseEntity<ApiError> handleNotFoundException(RuntimeException ex, HttpServletRequest request){
         ApiError apiError = new ApiError(
+                request.getClass().getSimpleName(),
                 request.getRequestURI(),
                 ex.getMessage(),
                 NOT_FOUND.value(),
@@ -45,6 +47,7 @@ public class DefaultExceptionHandler {
             WrongReviewException.class, ConstraintViolationException.class})
     public ResponseEntity<ApiError> handleWrongDataException(RuntimeException ex, HttpServletRequest request){
         ApiError apiError = new ApiError(
+                request.getClass().getSimpleName(),
                 request.getRequestURI(),
                 ex.getMessage(),
                 BAD_REQUEST.value(),
@@ -56,6 +59,7 @@ public class DefaultExceptionHandler {
     @ExceptionHandler(InsufficientAuthenticationException.class)
     public ResponseEntity<ApiError> handleAuthenticationException(InsufficientAuthenticationException ex, HttpServletRequest request){
         ApiError apiError = new ApiError(
+                request.getClass().getSimpleName(),
                 request.getRequestURI(),
                 ex.getMessage(),
                 FORBIDDEN.value(),
@@ -64,9 +68,10 @@ public class DefaultExceptionHandler {
         return new ResponseEntity<>(apiError, FORBIDDEN);
     }
 
-    @ExceptionHandler(BadCredentialsException.class)
+    @ExceptionHandler({BadCredentialsException.class, WrongRoleException.class, DuplicateEmailException.class})
     public ResponseEntity<ApiError> handleAuthorizationException(BadCredentialsException ex, HttpServletRequest request){
         ApiError apiError = new ApiError(
+                request.getClass().getSimpleName(),
                 request.getRequestURI(),
                 ex.getMessage(),
                 UNAUTHORIZED.value(),
@@ -75,17 +80,30 @@ public class DefaultExceptionHandler {
         return new ResponseEntity<>(apiError, UNAUTHORIZED);
     }
 
-
-    @ExceptionHandler(Exception.class)
-    public ResponseEntity<ApiError> handleException(Exception ex, HttpServletRequest request){
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ApiError> handleValidationException(MethodArgumentNotValidException ex, HttpServletRequest request) {
+        String errorMessage = ex.getBindingResult().getFieldErrors().get(0).getDefaultMessage();
         ApiError apiError = new ApiError(
+                request.getClass().getSimpleName(),
                 request.getRequestURI(),
-                ex.getMessage(),
-                INTERNAL_SERVER_ERROR.value(),
+                errorMessage,
+                BAD_REQUEST.value(),
                 LocalDateTime.now());
-
-        return new ResponseEntity<>(apiError, INTERNAL_SERVER_ERROR);
+        return new ResponseEntity<>(apiError, BAD_REQUEST);
     }
+
+
+//    @ExceptionHandler(Exception.class)
+//    public ResponseEntity<ApiError> handleException(Exception ex, HttpServletRequest request){
+//        ApiError apiError = new ApiError(
+//                request.getClass().getSimpleName(),
+//                request.getRequestURI(),
+//                ex.getMessage(),
+//                INTERNAL_SERVER_ERROR.value(),
+//                LocalDateTime.now());
+//
+//        return new ResponseEntity<>(apiError, INTERNAL_SERVER_ERROR);
+//    }
 
 
 }

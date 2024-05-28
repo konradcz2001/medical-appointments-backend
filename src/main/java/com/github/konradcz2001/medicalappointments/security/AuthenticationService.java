@@ -5,7 +5,9 @@ import com.github.konradcz2001.medicalappointments.client.ClientRepository;
 import com.github.konradcz2001.medicalappointments.common.User;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import com.github.konradcz2001.medicalappointments.doctor.DoctorRepository;
+import com.github.konradcz2001.medicalappointments.exception.DuplicateEmailException;
 import com.github.konradcz2001.medicalappointments.exception.WrongRoleException;
+import com.github.konradcz2001.medicalappointments.security.DTO.UserRegisterDTO;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -30,15 +32,22 @@ public class AuthenticationService {
         this.authenticationManager = authenticationManager;
     }
 
-    public AuthenticationResponse register(User request){
-        if(request.getRole() == Role.CLIENT){
+    public AuthenticationResponse register(UserRegisterDTO request){
+
+        if(request.role() == Role.CLIENT){
+            if(clientRepository.existsByEmail(request.email()))
+                throw new DuplicateEmailException("Client");
+
             Client client = (Client)createUser(request, new Client());
             clientRepository.save(client);
 
             String token = jwtService.generateToken(client);
             return new AuthenticationResponse(token);
         }
-        else if(request.getRole() == Role.DOCTOR){
+        else if(request.role() == Role.DOCTOR){
+            if(doctorRepository.existsByEmail(request.email()))
+                throw new DuplicateEmailException("Doctor");
+
             Doctor doctor = (Doctor)createUser(request, new Doctor());
             doctorRepository.save(doctor);
 
@@ -69,12 +78,13 @@ public class AuthenticationService {
         throw new WrongRoleException();//TODO other exception
     }
 
-    private User createUser(User request, User user) {
-        user.setFirstName(request.getFirstName());
-        user.setLastName(request.getLastName());
-        user.setEmail(request.getEmail());
-        user.setPassword(passwordEncoder.encode(request.getPassword()));
-        user.setRole(request.getRole());
+    private User createUser(UserRegisterDTO request, User user) {
+        user.setId(null);
+        user.setFirstName(request.firstName());
+        user.setLastName(request.lastName());
+        user.setEmail(request.email());
+        user.setPassword(passwordEncoder.encode(request.password()));
+        user.setRole(request.role());
         return user;
     }
 
