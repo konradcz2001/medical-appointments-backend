@@ -20,6 +20,7 @@ import lombok.experimental.FieldDefaults;
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 public class Address {
     @Column(name = "country")
     @Size(max = 100, message = "Maximum length is 100 characters")

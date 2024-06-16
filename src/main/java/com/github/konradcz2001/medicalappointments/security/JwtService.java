@@ -16,7 +16,7 @@ import java.util.function.Function;
 public class JwtService {
 
     private static final String SECRET_KEY = "5db15da2640f2432c13037b9df2470381ba2147416280249227bd2da4f2ff15d";
-    private static final int EXPIRATION_TIME = 24 * 60 * 60 * 1000;
+    private static final int EXPIRATION_TIME = 60 * 60 * 1000; //an hour
 
 
     public String extractUsername(String token) {
@@ -52,6 +52,8 @@ public class JwtService {
     public String generateToken(User user) {
         return Jwts.builder()
                 .subject(user.getUsername())
+                .claim("role", user.getRole())
+                .claim("id", user.getId())
                 .issuedAt(new Date(System.currentTimeMillis()))
                 .expiration(new Date(System.currentTimeMillis() + EXPIRATION_TIME))
                 .signWith(getSingInKey())

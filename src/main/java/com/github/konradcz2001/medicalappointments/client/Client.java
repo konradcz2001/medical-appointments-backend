@@ -43,7 +43,7 @@ import java.util.List;
 @NoArgsConstructor
 public class Client extends User {
 
-    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "client", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Review> reviews = new ArrayList<>();
 
 

@@ -8,6 +8,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
 import java.util.HashSet;
@@ -99,6 +100,7 @@ class SpecializationService {
      * @return a ResponseEntity containing the created specialization as a SpecializationDTO object
      * @throws WrongSpecializationException if the specialization already exists
      */
+    @Transactional
     ResponseEntity<SpecializationDTO> createSpecialization(Specialization specialization){
         if(repository.existsBySpecialization(specialization.getSpecialization()))
             throw new WrongSpecializationException("Specialization: " + specialization.getSpecialization() + " already exist");
@@ -117,6 +119,7 @@ class SpecializationService {
      * @return a ResponseEntity with no content if the specialization is successfully updated
      * @throws ResourceNotFoundException if the specialization with the given ID is not found
      */
+    @Transactional
     ResponseEntity<?> updateSpecialization(Integer id, SpecializationDTO toUpdate){
         return repository.findById(id)
                 .map(spec -> {
@@ -133,6 +136,7 @@ class SpecializationService {
      * @return a ResponseEntity with no content if the specialization is successfully deleted
      * @throws ResourceNotFoundException if the specialization with the given ID is not found
      */
+    @Transactional
     ResponseEntity<?> deleteSpecialization(Integer id){
         return repository.findById(id)
                 .map(spec -> {

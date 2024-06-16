@@ -6,6 +6,7 @@ import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
 import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
 import com.github.konradcz2001.medicalappointments.exception.WrongLeaveException;
 import com.github.konradcz2001.medicalappointments.exception.WrongSpecializationException;
+import com.github.konradcz2001.medicalappointments.leave.DTO.LeaveDTO;
 import com.github.konradcz2001.medicalappointments.leave.Leave;
 import com.github.konradcz2001.medicalappointments.leave.LeaveRepository;
 import com.github.konradcz2001.medicalappointments.review.Review;
@@ -60,7 +61,7 @@ class DoctorServiceTest {
         // Act
         // Assert
         verify(repository, never()).save(any());
-        assertThatThrownBy(() -> underTest.addLeave(1L, new Leave()))
+        assertThatThrownBy(() -> underTest.addLeave(1L, new DoctorLeaveDTO(null, null, null)))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("Doctor with id = 1");
 
@@ -71,7 +72,7 @@ class DoctorServiceTest {
     void shouldThrownExceptionThatStartDateIsAfterEndDate() {
         // Arrange
         Doctor doctor = new Doctor();
-        Leave toAdd = new Leave(1L, LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(1), doctor);
+        DoctorLeaveDTO toAdd = new DoctorLeaveDTO(1L, LocalDateTime.now().plusDays(3), LocalDateTime.now().plusDays(1));
 
         when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
 
@@ -97,7 +98,7 @@ class DoctorServiceTest {
         doctor.addLeave(leave2);
         doctor.addLeave(leave3);
 
-        Leave toAdd = new Leave(4L, now.plusDays(6), now.plusDays(10), null);
+        DoctorLeaveDTO toAdd = new DoctorLeaveDTO(4L, now.plusDays(6), now.plusDays(10));
 
         when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
 
@@ -128,7 +129,7 @@ class DoctorServiceTest {
         doctor.addLeave(leave2);
         doctor.addLeave(leave3);
 
-        Leave toAdd = new Leave(4L, now.plusDays(5), now.plusDays(7), null);
+        DoctorLeaveDTO toAdd = new DoctorLeaveDTO(4L, now.plusDays(5), now.plusDays(7));
 
         when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
 
@@ -153,7 +154,7 @@ class DoctorServiceTest {
         doctor.addLeave(leave1);
         doctor.addLeave(leave2);
 
-        Leave toAdd = spy(new Leave(3L, now.plusDays(3), now.plusDays(4), null));
+        DoctorLeaveDTO toAdd = spy(new DoctorLeaveDTO(3L, now.plusDays(3), now.plusDays(4)));
 
         when(repository.findById(anyLong())).thenReturn(Optional.of(doctor));
 
@@ -165,7 +166,6 @@ class DoctorServiceTest {
         assertEquals(3, doctor.getLeaves().size());
         assertEquals(now.plusDays(3), doctor.getLeaves().get(2).getStartDate());
         assertEquals(now.plusDays(4), doctor.getLeaves().get(2).getEndDate());
-        verify(toAdd).setId(null);
     }
 
     @Test
@@ -494,7 +494,7 @@ class DoctorServiceTest {
         Long id = 1L;
         Doctor original = new Doctor();
         original.setId(id);
-        DoctorDTO toUpdate = new DoctorDTO(2L, "name2", "lastname2", "email2", Role.CLIENT,true, null, "description2", null);
+        DoctorDTO toUpdate = new DoctorDTO(2L, "name2", "lastname2", "email2", Role.DOCTOR,true, null, "description2", null, null, null);
 
         when(repository.findById(id)).thenReturn(Optional.of(original));
 

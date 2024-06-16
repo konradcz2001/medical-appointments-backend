@@ -40,7 +40,7 @@ class VisitServiceTest {
     @Test
     void shouldCreateVisit() {
         // Arrange
-        VisitDTO visit = spy(new VisitDTO(null, null, "consultation", null, null, null, null));
+        VisitDTO visit = spy(new VisitDTO(null, null, "consultation", null, false, null));
 
 
         when(doctorRepository.findById(any())).thenReturn(Optional.of(new Doctor()));
@@ -53,12 +53,11 @@ class VisitServiceTest {
         // Assert
         assertEquals(HttpStatusCode.valueOf(201), response.getStatusCode());
         assertEquals(VisitDTO.class, response.getBody().getClass());
-        assertEquals("consultation", response.getBody().type());
+        assertEquals("consultation", response.getBody().notes());
 
         ArgumentCaptor<Visit> visitCaptor = ArgumentCaptor.forClass(Visit.class);
         verify(repository).save(visitCaptor.capture());
         assertNull(visitCaptor.getValue().getId());
-        assertEquals(Doctor.class, visitCaptor.getValue().getDoctor().getClass());
         assertEquals(Client.class, visitCaptor.getValue().getClient().getClass());
 
     }
@@ -68,7 +67,6 @@ class VisitServiceTest {
         // Arrange
         Visit visit2 = new Visit();
         visit2.setId(2L);
-        visit2.setDoctor(new Doctor());
         visit2.setClient(new Client());
 
         when(repository.findById(2L)).thenReturn(Optional.of(visit2));
@@ -88,9 +86,8 @@ class VisitServiceTest {
         Long id = 1L;
         Visit original = new Visit();
         original.setId(id);
-        original.setDoctor(new Doctor());
         original.setClient(new Client());
-        VisitDTO toUpdate = new VisitDTO(2L, LocalDateTime.now(), "consultation", "notes", BigDecimal.valueOf(1d), 1L, 1L);
+        VisitDTO toUpdate = new VisitDTO(2L, LocalDateTime.now(), "consultation", null, true, 1L);
 
         when(repository.findById(id)).thenReturn(Optional.of(original));
         when(repository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
@@ -105,10 +102,9 @@ class VisitServiceTest {
         Visit visit = visitCaptor.getValue();
 
         assertEquals(1, visit.getId());
-        assertEquals("consultation", visit.getType());
-        assertEquals("notes", visit.getNotes());
-        assertEquals(BigDecimal.valueOf(1d), visit.getPrice());
-        assertNull(visit.getDoctor().getId());
+        assertEquals("consultation", visit.getNotes());
+        assertFalse(visit.isCancelled());
+        assertEquals(1L, visit.getId());
         assertNull(visit.getClient().getId());
         assertNotNull(visit.getDate());
     }

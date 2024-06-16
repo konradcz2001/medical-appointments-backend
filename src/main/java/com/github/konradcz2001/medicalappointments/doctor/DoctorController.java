@@ -1,10 +1,6 @@
 package com.github.konradcz2001.medicalappointments.doctor;
 
-import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorDTO;
-import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorLeaveDTO;
-import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorReviewDTO;
-import com.github.konradcz2001.medicalappointments.doctor.DTO.DoctorSpecializationDTO;
-import com.github.konradcz2001.medicalappointments.leave.Leave;
+import com.github.konradcz2001.medicalappointments.doctor.DTO.*;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -122,6 +118,7 @@ class DoctorController {
      */
     @PutMapping("/{id}")
     ResponseEntity<?> updateDoctor(@PathVariable Long id, @Valid @RequestBody DoctorDTO toUpdate){
+        System.out.println(toUpdate.toString());
         return service.updateDoctor(id, toUpdate);
     }
 
@@ -144,7 +141,7 @@ class DoctorController {
      * @return a ResponseEntity representing the result of the operation
      */
     @PatchMapping("/{id}/add-leave")
-    ResponseEntity<?> addLeave(@PathVariable Long id, @Valid @RequestBody Leave leave){
+    ResponseEntity<?> addLeave(@PathVariable Long id, @Valid @RequestBody DoctorLeaveDTO leave){
         return service.addLeave(id, leave);
     }
 
@@ -220,9 +217,35 @@ class DoctorController {
         return service.readAllReviews(id, pageable);
     }
 
+    /**
+     * Search for doctors based on a given keyword and optional specialization.
+     *
+     * @param word The keyword to search for in doctor's information.
+     * @param specialization The optional specialization to filter the search results.
+     * @param pageable The pagination information for the search results.
+     * @return A ResponseEntity containing a Page of DoctorDTO objects matching the search criteria.
+     */
     @GetMapping(path = "/search", params = "word")
     ResponseEntity<Page<DoctorDTO>> searchDoctors(@RequestParam String word, @RequestParam(required = false) String specialization, Pageable pageable){
         return service.searchDoctors(word, specialization, pageable);
+    }
+
+
+    @PatchMapping("/{id}/add-type-of-visit")
+    ResponseEntity<?> addTypeOfVisit(@PathVariable Long id, @RequestBody DoctorTypeOfVisitDTO typeOfVisit){
+        return service.addTypeOfVisit(id, typeOfVisit);
+    }
+
+
+    @PatchMapping(value = "/{doctorId}/remove-type-of-visit", params = "id")
+    ResponseEntity<?> removeTypeOfVisit(@PathVariable Long doctorId, @RequestParam Long id){
+        return service.removeTypeOfVisit(doctorId, id);
+    }
+
+
+    @GetMapping("/{id}/types-of-visits")
+    ResponseEntity<Page<DoctorTypeOfVisitDTO>> readAllTypesOfVisits(@PathVariable Long id, Pageable pageable){
+        return service.readAllTypesOfVisits(id, pageable);
     }
 
 }

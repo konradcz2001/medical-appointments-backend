@@ -104,9 +104,9 @@ class VisitController {
     }
 
     /**
-     * Retrieves all visits associated with the specified doctor ID.
+     * Retrieves all visits with a doctor ID matching the specified ID.
      *
-     * @param doctorId the ID of the doctor
+     * @param doctorId       the ID of the doctor
      * @param pageable the pagination information
      * @return a ResponseEntity containing a Page of VisitDTO objects with a success status code if the visits are retrieved successfully,
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
@@ -204,6 +204,12 @@ class VisitController {
     @DeleteMapping("/{id}")
     ResponseEntity<?> deleteVisit(@PathVariable Long id){
         return service.deleteVisit(id);
+    }
+
+
+    @PatchMapping("/{id}")
+    ResponseEntity<?> cancelVisit(@PathVariable Long id){
+        return service.cancelVisit(id);
     }
 
 }

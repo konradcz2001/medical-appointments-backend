@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.Timestamp;
 import java.time.LocalDateTime;
+import java.util.List;
 import java.util.Optional;
 
 //TODO organize DoctorRepository
@@ -63,12 +64,14 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
             "JOIN doctor_specialization ON doctor_id = doctors.id " +
             "JOIN specializations ON specialization_id = specializations.id " +
             "WHERE UPPER(specialization) LIKE '%' || UPPER(?1) || '%' " +
-            "ORDER BY doctors.id ",
+            "ORDER BY first_name ",
             nativeQuery = true)
     Page<Doctor> findAllByAnySpecializationContainingIgnoreCase(String specialization, Pageable pageable);
 
-    @Query(value = " SELECT DISTINCT id, first_name, last_name, email, password, role, country, state, city, " +
+    @Query(value = " SELECT DISTINCT doctors.id, first_name, last_name, email, password, role, country, state, city, " +
             "street, house_number, zip_code, avatar, is_verified, profile_description FROM doctors " +
+            "LEFT JOIN doctor_specialization ON doctor_id = doctors.id " +
+            "LEFT JOIN specializations ON specialization_id = specializations.id " +
             "WHERE (LOWER(first_name) LIKE '%' || LOWER(?1) || '%' " +
             "OR LOWER(last_name) LIKE '%' || LOWER(?1) || '%' " +
             "OR LOWER(country) LIKE '%' || LOWER(?1) || '%' " +
@@ -76,15 +79,14 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
             "OR LOWER(city) LIKE '%' || LOWER(?1) || '%' " +
             "OR LOWER(zip_code) LIKE '%' || LOWER(?1) || '%' " +
             "OR LOWER(street) LIKE '%' || LOWER(?1) || '%' " +
-            "OR LOWER(house_number) LIKE '%' || LOWER(?1) || '%') " +
-            "ORDER BY id ",
+            "OR LOWER(house_number) LIKE '%' || LOWER(?1) || '%') ",
             nativeQuery = true)
-    Page<Doctor> search(String word, Pageable pageable);
+    List<Doctor> search(String word);
 
     @Query(value = " SELECT DISTINCT doctors.id, first_name, last_name, email, password, role, country, state, city, " +
             "street, house_number, zip_code, avatar, is_verified, profile_description FROM doctors " +
-            "JOIN doctor_specialization ON doctor_id = doctors.id " +
-            "JOIN specializations ON specialization_id = specializations.id " +
+            "LEFT JOIN doctor_specialization ON doctor_id = doctors.id " +
+            "LEFT JOIN specializations ON specialization_id = specializations.id " +
             "WHERE UPPER(specialization) LIKE UPPER(?2) " +
             "AND (LOWER(first_name) LIKE '%' || LOWER(?1) || '%' " +
             "OR LOWER(last_name) LIKE '%' || LOWER(?1) || '%' " +
@@ -93,10 +95,9 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
             "OR LOWER(city) LIKE '%' || LOWER(?1) || '%' " +
             "OR LOWER(zip_code) LIKE '%' || LOWER(?1) || '%' " +
             "OR LOWER(street) LIKE '%' || LOWER(?1) || '%' " +
-            "OR LOWER(house_number) LIKE '%' || LOWER(?1) || '%') " +
-            "ORDER BY id ",
+            "OR LOWER(house_number) LIKE '%' || LOWER(?1) || '%') ",
             //countQuery = " SELECT count(*) FROM doctors ",
             nativeQuery = true)
-    Page<Doctor> searchWithSpecialization(String word, String specialization, Pageable pageable);
+    List<Doctor> searchWithSpecialization(String word, String specialization);
 
 }

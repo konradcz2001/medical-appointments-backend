@@ -5,10 +5,12 @@ import com.github.konradcz2001.medicalappointments.doctor.DoctorRepository;
 import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
 import com.github.konradcz2001.medicalappointments.visit.DTO.VisitDTO;
 import com.github.konradcz2001.medicalappointments.visit.DTO.VisitDTOMapper;
+import com.github.konradcz2001.medicalappointments.visit.type.TypeOfVisit;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.net.URI;
@@ -44,8 +46,9 @@ class VisitService {
      * @return A ResponseEntity containing the created VisitDTO object.
      * @throws ResourceNotFoundException if the doctor or client with the specified IDs are not found.
      */
+    @Transactional
     ResponseEntity<VisitDTO> createVisit(VisitDTO visitDTO){
-        Long doctorId = visitDTO.doctorId();
+        Long doctorId = visitDTO.typeOfVisit().doctorId();
         Long clientId = visitDTO.clientId();
         //TODO check if doctor is available
 
@@ -53,8 +56,10 @@ class VisitService {
                 .map(doctor -> clientRepository.findById(clientId)
                             .map( client -> {
                                     Visit visit = new Visit();
-                                    visit.setDoctor(doctor);
                                     visit.setClient(client);
+                                    TypeOfVisit typeOfVisit = new TypeOfVisit();
+                                    typeOfVisit.setDoctor(doctor);
+                                    visit.setTypeOfVisit(typeOfVisit);
                                     Visit result = repository.save(dtoMapper.mapFromDTO(visitDTO, visit));
                                     return ResponseEntity.created(URI.create("/" + result.getId())).body(dtoMapper.mapToDTO(result));
                             })
@@ -94,7 +99,7 @@ class VisitService {
      * @return a ResponseEntity containing a Page of VisitDTO objects representing the visits
      */
     ResponseEntity<Page<VisitDTO>> readAllByTypeOfVisit(String type, Pageable pageable){
-        return returnResponse(() -> repository.findAllByTypeContainingIgnoreCase(type, pageable), dtoMapper);
+        return returnResponse(() -> repository.findAllByTypeOfVisitTypeContainingIgnoreCase(type, pageable), dtoMapper);
     }
 
     /**
@@ -133,14 +138,14 @@ class VisitService {
 
 
     /**
-     * Retrieves all visits associated with the specified doctor ID.
+     * Retrieves all visits with a doctor of visit ID matching the specified ID.
      *
-     * @param doctorId the ID of the doctor
+     * @param doctorId       the ID of the doctor of visit to search for
      * @param pageable the pagination information
      * @return a ResponseEntity containing a Page of VisitDTO objects representing the visits
      */
     ResponseEntity<Page<VisitDTO>> readAllByDoctorId(Long doctorId, Pageable pageable){
-        return returnResponse(() -> repository.findAllByDoctorId(doctorId, pageable), dtoMapper);
+        return returnResponse(() -> repository.findAllByTypeOfVisit_Doctor_Id(doctorId, pageable), dtoMapper);
     }
 
     /**
@@ -162,6 +167,7 @@ class VisitService {
      * @return a ResponseEntity with no content if the visit is successfully updated
      * @throws ResourceNotFoundException if the visit with the specified ID is not found
      */
+    @Transactional
     ResponseEntity<?> updateVisit(Long id, VisitDTO toUpdate){
         return repository.findById(id)
                 .map(visit -> {
@@ -178,10 +184,30 @@ class VisitService {
      * @return a ResponseEntity with no content if the visit is successfully deleted
      * @throws ResourceNotFoundException if the visit with the specified ID is not found
      */
+    @Transactional
     ResponseEntity<?> deleteVisit(Long id){
         return repository.findById(id)
                 .map(visit -> {
                     repository.deleteById(id);
+                    return ResponseEntity.noContent().build();
+                })
+                .orElseThrow(() -> new ResourceNotFoundException(VISIT, id));
+
+    }
+
+    /**
+     * Cancels a visit with the specified ID by setting the 'cancelled' flag to true.
+     *
+     * @param id the ID of the visit to cancel
+     * @return a ResponseEntity with no content if the visit is successfully canceled
+     * @throws ResourceNotFoundException if the visit with the specified ID is not found
+     */
+    @Transactional
+    ResponseEntity<?> cancelVisit(Long id){
+        return repository.findById(id)
+                .map(visit -> {
+                    visit.setCancelled(true);
+                    repository.save(visit);
                     return ResponseEntity.noContent().build();
                 })
                 .orElseThrow(() -> new ResourceNotFoundException(VISIT, id));
@@ -197,7 +223,7 @@ class VisitService {
      * @return a ResponseEntity containing a Page of VisitDTO objects representing the visits
      */
     ResponseEntity<Page<VisitDTO>> readAllByPrice(BigDecimal price, Pageable pageable) {
-        return returnResponse(() -> repository.findAllByPrice(price, pageable), dtoMapper);
+        return returnResponse(() -> repository.findAllByTypeOfVisitPrice(price, pageable), dtoMapper);
     }
 
     /**
@@ -208,7 +234,7 @@ class VisitService {
      * @return a ResponseEntity containing a Page of VisitDTO objects representing the visits
      */
     ResponseEntity<Page<VisitDTO>> readAllByPriceLessThan(BigDecimal price, Pageable pageable) {
-        return returnResponse(() -> repository.findAllByPriceLessThanEqual(price, pageable), dtoMapper);
+        return returnResponse(() -> repository.findAllByTypeOfVisitPriceLessThanEqual(price, pageable), dtoMapper);
     }
 
     /**
@@ -219,6 +245,6 @@ class VisitService {
      * @return a ResponseEntity containing a Page of VisitDTO objects representing the visits
      */
     ResponseEntity<Page<VisitDTO>> readAllByPriceGreaterThan(BigDecimal price, Pageable pageable) {
-        return returnResponse(() -> repository.findAllByPriceGreaterThanEqual(price, pageable), dtoMapper);
+        return returnResponse(() -> repository.findAllByTypeOfVisitPriceGreaterThanEqual(price, pageable), dtoMapper);
     }
 }

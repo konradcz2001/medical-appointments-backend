@@ -2,12 +2,10 @@ package com.github.konradcz2001.medicalappointments.doctor.DTO;
 
 import com.github.konradcz2001.medicalappointments.doctor.Address;
 import com.github.konradcz2001.medicalappointments.security.Role;
-import com.github.konradcz2001.medicalappointments.specialization.DTO.SpecializationDTO;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
+import java.util.List;
 import java.util.Set;
 
 /**
@@ -31,17 +29,13 @@ public record DoctorDTO(Long id,
                         @NotBlank(message = "Last name must not be empty")
                         @Size(max = 255, message = "Maximum length is 255")
                         String lastName,
-                        @NotBlank(message = "Email must not be empty")
-                        @Size(max = 255, message = "Maximum length is 255")
-                        @Email(message = "The email must be in email format")
                         String email,
-                        @NotNull(message = "Role must not be empty")
                         Role role,
-                        @NotNull(message = "Verification must not be empty")
                         boolean isVerified,
                         byte[] avatar,
                         @Size(max = 10000, message = "Maximum length is 10000 characters")
                         String profileDescription,
-                        Set<SpecializationDTO> specializations,
-                        Address address) {
+                        Set<DoctorSpecializationDTO> specializations,
+                        Address address,
+                        List<DoctorTypeOfVisitDTO> typesOfVisits) {
 }

@@ -2,25 +2,23 @@ package com.github.konradcz2001.medicalappointments.doctor;
 
 
 import com.github.konradcz2001.medicalappointments.doctor.DTO.*;
-import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
-import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
-import com.github.konradcz2001.medicalappointments.exception.WrongLeaveException;
-import com.github.konradcz2001.medicalappointments.exception.WrongSpecializationException;
+import com.github.konradcz2001.medicalappointments.exception.*;
 import com.github.konradcz2001.medicalappointments.leave.Leave;
 import com.github.konradcz2001.medicalappointments.leave.LeaveRepository;
 import com.github.konradcz2001.medicalappointments.review.ReviewRepository;
 import com.github.konradcz2001.medicalappointments.specialization.SpecializationRepository;
+import com.github.konradcz2001.medicalappointments.visit.type.TypeOfVisit;
+import com.github.konradcz2001.medicalappointments.visit.type.TypeOfVisitRepository;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 import java.util.stream.Collectors;
 
 import static com.github.konradcz2001.medicalappointments.common.Utils.returnResponse;
@@ -40,14 +38,16 @@ class DoctorService {
     private final SpecializationRepository specializationRepository;
     private final ReviewRepository reviewRepository;
     private final LeaveRepository leaveRepository;
+    private final TypeOfVisitRepository typeOfVisitRepository;
     private final DoctorDTOMapper dtoMapper;
 
     DoctorService(final DoctorRepository repository, final SpecializationRepository specializationRepository,
-                  final ReviewRepository reviewRepository, final LeaveRepository leaveRepository, DoctorDTOMapper dtoMapper) {
+                  final ReviewRepository reviewRepository, final LeaveRepository leaveRepository, final TypeOfVisitRepository typeOfVisitRepository, final DoctorDTOMapper dtoMapper) {
         this.repository = repository;
         this.specializationRepository = specializationRepository;
         this.reviewRepository = reviewRepository;
         this.leaveRepository = leaveRepository;
+        this.typeOfVisitRepository = typeOfVisitRepository;
         this.dtoMapper = dtoMapper;
     }
 
@@ -117,6 +117,7 @@ class DoctorService {
      * @return a ResponseEntity with no content if the doctor is successfully deleted
      * @throws ResourceNotFoundException if the doctor with the specified ID is not found
      */
+    @Transactional
     ResponseEntity<?> deleteDoctor(Long id){
         return repository.findById(id)
                 .map(doctor -> {
@@ -128,34 +129,23 @@ class DoctorService {
 
 
     /**
-     * Adds a leave for a doctor.
-     * <p>
-     * This method adds a leave for the doctor with the specified ID. The leave is provided as a parameter.
-     * The method performs the following steps:
-     * 1. Retrieves the doctor with the specified ID from the repository.
-     * 2. Checks if the start date of the leave is after the end date. If so, throws a WrongLeaveException with an appropriate message.
-     * 3. Sets the ID of the leave to null.
-     * 4. Iterates through the existing leaves of the doctor and checks if the new leave overlaps with any of them.
-     *    If an overlap is found, adjusts the start and end dates of the new leave to cover the overlapping period and adds the existing leave to a list of leaves to remove.
-     * 5. Removes all leaves from the doctor that are in the list of leaves to remove.
-     * 6. Adds the new leave to the doctor.
-     * 7. Saves the doctor in the repository.
-     * 8. Returns a ResponseEntity with a status of "No Content".
+     * Adds a leave for the doctor with the specified ID.
      *
-     * @param id    the ID of the doctor
-     * @param leave the leave to be added
-     * @return a ResponseEntity with a status of "No Content"
-     * @throws ResourceNotFoundException if the doctor with the specified ID is not found in the repository
-     * @throws WrongLeaveException       if the start date of the leave is later than the end date
+     * @param id The ID of the doctor to add the leave for
+     * @param leaveDTO The DTO containing the leave information
+     * @return ResponseEntity representing the result of the operation
+     * @throws ResourceNotFoundException if the doctor with the specified ID is not found
+     * @throws WrongLeaveException if the start date of the leave is later than the end date
      */
-    ResponseEntity<?> addLeave(Long id, Leave leave) {
+    @Transactional
+    ResponseEntity<?> addLeave(Long id, DoctorLeaveDTO leaveDTO) {
         Doctor doctor = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
 
+        Leave leave = dtoMapper.mapFromDoctorLeaveDTO(leaveDTO, new Leave());
+
         if (leave.getStartDate().isAfter(leave.getEndDate()))
             throw new WrongLeaveException("The beginning of the leave cannot be later than the end");
-
-        leave.setId(null);
 
         List<Leave> leavesToRemove = new ArrayList<>();
 
@@ -170,6 +160,7 @@ class DoctorService {
             }
         }
 
+        leave.setDoctor(doctor);
         doctor.getLeaves().removeAll(leavesToRemove);
         doctor.addLeave(leave);
 
@@ -187,6 +178,7 @@ class DoctorService {
      * @throws ResourceNotFoundException if the doctor with the specified ID is not found
      * @throws WrongLeaveException if the doctor with the specified ID does not have the specified leave
      */
+    @Transactional
     ResponseEntity<?> removeLeave(Long doctorId, Long leaveId){
         return repository.findById(doctorId)
                 .map(doctor -> doctor.getLeaves().stream()
@@ -209,6 +201,7 @@ class DoctorService {
      * @throws ResourceNotFoundException If the doctor with the specified ID is not found.
      * @throws WrongSpecializationException If the doctor does not have the specified specialization.
      */
+    @Transactional
     ResponseEntity<?> removeSpecialization(Long doctorId, Integer specializationId){
         return repository.findById(doctorId)
                 .map(doctor -> doctor.getSpecializations().stream()
@@ -248,6 +241,7 @@ class DoctorService {
      * @param doctor The doctor object containing the information of the new doctor to be created.
      * @return A ResponseEntity containing the created doctor's DTO and a status code of 201 (Created).
      */
+    @Transactional
     ResponseEntity<DoctorDTO> createDoctor(Doctor doctor){
         doctor.setId(null);
         doctor.setSpecializations(new HashSet<>());
@@ -265,6 +259,7 @@ class DoctorService {
      * @return A ResponseEntity with a status of 204 No Content if the doctor is successfully updated.
      * @throws ResourceNotFoundException If the doctor with the specified ID is not found.
      */
+    @Transactional
     ResponseEntity<?> updateDoctor(Long id, DoctorDTO toUpdate){
         return repository.findById(id)
                 .map(doctor -> {
@@ -323,13 +318,18 @@ class DoctorService {
      * @throws ResourceNotFoundException If the doctor with the given ID is not found.
      * @throws WrongSpecializationException If the total number of specializations after adding the new ones exceeds 5.
      */
+    @Transactional
     ResponseEntity<?> addSpecializations(Long doctorId, Set<Integer> specializationIds) {
         return repository.findById(doctorId)
                 .map(doctor -> {
                     if((doctor.getSpecializations().size() + specializationIds.size()) > 5)
-                        throw new WrongSpecializationException("Doctor with id = " + doctorId + " can not have more than 5 specializations, he has already " + specializationIds.size() + " specializations and in request there are next " + specializationIds.size() + " specializations");
+                        throw new WrongSpecializationException("Doctor with id = " + doctorId + " can not has more than 5 specializations, he has already " + specializationIds.size() + " specializations and in request there are next " + specializationIds.size() + " specializations");
                     specializationIds.forEach(id -> specializationRepository.findById(id)
-                            .ifPresentOrElse(doctor::addSpecialization,
+                            .ifPresentOrElse(spec -> {
+                                        if(doctor.getSpecializations().contains(spec))
+                                            throw new WrongSpecializationException("Doctor with id = " + doctorId + " already has a specialization with id = " + spec.getId());
+                                        doctor.addSpecialization(spec);
+                                    },
                                     () -> {throw new ResourceNotFoundException(SPECIALIZATION, id.longValue());}
                             ));
 
@@ -356,9 +356,116 @@ class DoctorService {
         return ResponseEntity.ok(doctors);
     }
 
-    ResponseEntity<Page<DoctorDTO>> searchDoctors(String word, String specialization, Pageable pageable) {
-        if (specialization == null)
-            return returnResponse(() -> repository.search(word, pageable), dtoMapper);
-        return returnResponse(() -> repository.searchWithSpecialization(word, specialization, pageable), dtoMapper);
+
+//    ResponseEntity<Page<DoctorDTO>> searchDoctors(String word, String specialization, Pageable pageable) {
+//
+//        if (specialization == null)
+//            return returnResponse(() -> repository.search(word, pageable), dtoMapper);
+//        return returnResponse(() -> repository.searchWithSpecialization(word, specialization, pageable), dtoMapper);
+//    }
+
+    //TODO searchDoctors tests
+
+    /**
+     * Searches for doctors based on the given search word and specialization.
+     *
+     * @param word The search word to look for in the doctor's information.
+     * @param specialization The specialization to filter the search results, can be null.
+     * @param pageable The pagination information for the search results.
+     * @return A ResponseEntity containing a Page of DoctorDTO objects matching the search criteria.
+     * @throws EmptyPageException if the search word is empty or no results are found.
+     */
+     ResponseEntity<Page<DoctorDTO>> searchDoctors(String word, String specialization, Pageable pageable) {
+        String[] parts = word.split(" ");
+        List<String> stringsList = Arrays.stream(parts)
+                .filter(part -> !part.isEmpty())
+                .toList();
+
+        if (stringsList.isEmpty())
+            throw new EmptyPageException();
+
+        List<Set<Doctor>> resultList = new ArrayList<>();
+
+        for (String wordPart : stringsList) {
+            List<Doctor> doctorsList;
+
+            if (specialization == null)
+                doctorsList = repository.search(wordPart);
+            else
+                doctorsList = repository.searchWithSpecialization(wordPart, specialization);
+
+            resultList.add(new HashSet<>(doctorsList));
+        }
+
+        Set<Doctor> commonDoctors = findCommonElements(resultList);
+
+        List<Doctor> commonDoctorList = new ArrayList<>(commonDoctors);
+        commonDoctorList.sort(Comparator.comparing(Doctor::getFirstName));
+
+        int start = (int) pageable.getOffset();
+        int end = Math.min((start + pageable.getPageSize()), commonDoctorList.size());
+        Page<Doctor> doctorPage = new PageImpl<>(commonDoctorList.subList(start, end), pageable, commonDoctorList.size());
+
+        return returnResponse(() -> doctorPage, dtoMapper);
+    }
+
+
+    /**
+     * Finds the common elements among the list of sets of Doctors.
+     *
+     * @param resultList the list of sets of Doctors to find common elements from
+     * @return a set of Doctors that are common among all sets in the input list
+     */
+    private Set<Doctor> findCommonElements(List<Set<Doctor>> resultList) {
+        if (resultList.isEmpty()) return Collections.emptySet();
+
+        Set<Doctor> commonDoctors = new HashSet<>(resultList.get(0));
+        for (Set<Doctor> set : resultList) {
+            commonDoctors.retainAll(set);
+        }
+        return commonDoctors;
+    }
+
+
+    //TODO readAllTypesOfVisits tests
+    ResponseEntity<Page<DoctorTypeOfVisitDTO>> readAllTypesOfVisits(Long id, Pageable pageable) {
+        var doctors = typeOfVisitRepository.findAllByDoctorId(id, pageable)
+                .map(dtoMapper::mapToDoctorTypeOfVisitDTO);
+        if(doctors.isEmpty())
+            throw new EmptyPageException();
+
+        return ResponseEntity.ok(doctors);
+    }
+
+    //TODO removeTypeOfVisit tests
+    @Transactional
+    ResponseEntity<?> removeTypeOfVisit(Long doctorId, Long typeOfVisitId){
+        return repository.findById(doctorId)
+                .map(doctor -> doctor.getTypesOfVisits().stream()
+                        .filter(type -> type.getId().equals(typeOfVisitId)).findAny()
+                        .map(type -> {
+                            doctor.removeTypeOfVisit(type);
+                            repository.save(doctor);
+                            return ResponseEntity.noContent().build();
+                        })
+                        .orElseThrow(() -> new WrongTypeOfVisitException("Doctor with id = " + doctorId + " does not have the specified type of visit with id = " + typeOfVisitId)))
+                .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, doctorId));
+    }
+
+
+    //TODO addTypeOfVisit tests
+    @Transactional
+    ResponseEntity<?> addTypeOfVisit(Long id, DoctorTypeOfVisitDTO typeOfVisitDTO) {
+        Doctor doctor = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
+
+        TypeOfVisit typeOfVisit = new TypeOfVisit();
+        typeOfVisit.setDoctor(doctor);
+        typeOfVisit = dtoMapper.mapFromDoctorTypeOfVisitDTO(typeOfVisitDTO, typeOfVisit);
+
+        doctor.addTypeOfVisit(typeOfVisit);
+        repository.save(doctor);
+
+        return ResponseEntity.noContent().build();
     }
 }

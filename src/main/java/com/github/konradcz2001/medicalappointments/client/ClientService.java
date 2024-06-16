@@ -16,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.net.URI;
 import java.time.LocalDateTime;
@@ -139,6 +140,7 @@ class ClientService {
      * @param client the Client object representing the client to be created
      * @return a ResponseEntity containing the created ClientDTO object
      */
+    @Transactional
     ResponseEntity<ClientDTO> createClient(Client client){
         client.setId(null);
         client.setReviews(new ArrayList<>());
@@ -159,6 +161,7 @@ class ClientService {
      * @return a ResponseEntity with a status of 204 No Content
      * @throws ResourceNotFoundException if the client is not found in the repository
      */
+    @Transactional
     ResponseEntity<?> updateClient(Long id, ClientDTO toUpdate){
         return repository.findById(id)
                 .map(client -> {
@@ -179,6 +182,7 @@ class ClientService {
      * @return a ResponseEntity with a status of 204 No Content
      * @throws ResourceNotFoundException if the client is not found in the repository
      */
+    @Transactional
     ResponseEntity<?> deleteClient(Long id){
         return repository.findById(id)
                 .map(client -> {
@@ -204,6 +208,7 @@ class ClientService {
      * @throws ResourceNotFoundException if the client or doctor is not found in the repository
      * @throws WrongReviewException if the client already has a review for the same doctor
      */
+    @Transactional
     ResponseEntity<?> addReview(Long clientId, ReviewDTO toAdd){
         return repository.findById(clientId)
                 .map(client -> {
@@ -246,6 +251,7 @@ class ClientService {
      * @throws WrongReviewException If the client does not have a review with the specified review ID.
      * @throws ResourceNotFoundException If the client with the specified client ID is not found.
      */
+    @Transactional
     ResponseEntity<?> updateReview(Long clientId, ReviewDTO toUpdate){
         return repository.findById(clientId)
                 .map(client -> client.getReviews().stream()
@@ -272,6 +278,7 @@ class ClientService {
      * @throws WrongReviewException if the client does not have a review with the given review ID
      * @throws ResourceNotFoundException if the client with the given client ID is not found
      */
+    @Transactional
     ResponseEntity<?> removeReview(Long clientId, Long reviewId){
         return repository.findById(clientId)
                 .map(client -> client.getReviews().stream()

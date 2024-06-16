@@ -4,6 +4,7 @@ import com.github.konradcz2001.medicalappointments.common.User;
 import com.github.konradcz2001.medicalappointments.leave.Leave;
 import com.github.konradcz2001.medicalappointments.review.Review;
 import com.github.konradcz2001.medicalappointments.specialization.Specialization;
+import com.github.konradcz2001.medicalappointments.visit.type.TypeOfVisit;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
@@ -65,10 +66,12 @@ public class Doctor extends User {
     )
     Set<Specialization> specializations = new HashSet<>();
 
-    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
     List<Leave> leaves = new ArrayList<>();
 
 
+    @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
+    List<TypeOfVisit> typesOfVisits = new ArrayList<>();
 
     void addSpecialization(Specialization spec) {
         specializations.add(spec);
@@ -81,6 +84,12 @@ public class Doctor extends User {
     }
     void removeLeave(Leave leave){
         leaves.remove(leave);
+    }
+    public void addTypeOfVisit(TypeOfVisit type) {
+        typesOfVisits.add(type);
+    }
+    void removeTypeOfVisit(TypeOfVisit type){
+        typesOfVisits.remove(type);
     }
 
 

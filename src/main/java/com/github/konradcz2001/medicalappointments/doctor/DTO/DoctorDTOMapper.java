@@ -7,6 +7,7 @@ import com.github.konradcz2001.medicalappointments.leave.Leave;
 import com.github.konradcz2001.medicalappointments.review.Review;
 import com.github.konradcz2001.medicalappointments.specialization.DTO.SpecializationDTO;
 import com.github.konradcz2001.medicalappointments.specialization.Specialization;
+import com.github.konradcz2001.medicalappointments.visit.type.TypeOfVisit;
 import org.springframework.stereotype.Service;
 
 import java.util.stream.Collectors;
@@ -16,7 +17,7 @@ import java.util.stream.Collectors;
  * It is a service class used for mapping between Doctor and DoctorDTO objects.
  * <p>
  * The class provides methods to map a Doctor object to a DoctorDTO object and vice versa.
- * It also provides additional methods to map Leave, Specialization, and Review objects to their respective DTOs.
+ * It also provides additional methods to map Leave, Specialization, TypeOfVisit and Review objects to their respective DTOs.
  * <p>
  * Note: The class is annotated with @Service to indicate that it is a Spring service component.
  */
@@ -35,9 +36,12 @@ public class DoctorDTOMapper implements DTOMapper<DoctorDTO, Doctor> {
                 source.getAvatar(),
                 source.getProfileDescription(),
                 source.getSpecializations().stream().map(specialization ->
-                        new SpecializationDTO(specialization.getId(), specialization.getSpecialization()))
+                        new DoctorSpecializationDTO(specialization.getId(), specialization.getSpecialization()))
                         .collect(Collectors.toSet()),
-                source.getAddress()
+                source.getAddress(),
+                source.getTypesOfVisits().stream().map(type ->
+                                new DoctorTypeOfVisitDTO(type.getId(), type.getType(), type.getPrice(), type.getCurrency()))
+                        .collect(Collectors.toList())
         );
     }
 
@@ -60,6 +64,13 @@ public class DoctorDTOMapper implements DTOMapper<DoctorDTO, Doctor> {
         );
     }
 
+    public Leave mapFromDoctorLeaveDTO(DoctorLeaveDTO sourceDTO, Leave target) {
+        target.setStartDate(sourceDTO.startDate());
+        target.setEndDate(sourceDTO.endDate());
+
+        return target;
+    }
+
 
     public DoctorSpecializationDTO mapToDoctorSpecializationDTO(Specialization specialization) {
         return new DoctorSpecializationDTO(
@@ -76,5 +87,22 @@ public class DoctorDTOMapper implements DTOMapper<DoctorDTO, Doctor> {
                 review.getDescription(),
                 review.getClient().getId()
                 );
+    }
+
+    public DoctorTypeOfVisitDTO mapToDoctorTypeOfVisitDTO(TypeOfVisit type) {
+        return new DoctorTypeOfVisitDTO(
+                type.getId(),
+                type.getType(),
+                type.getPrice(),
+                type.getCurrency()
+        );
+    }
+
+    public TypeOfVisit mapFromDoctorTypeOfVisitDTO(DoctorTypeOfVisitDTO sourceDTO, TypeOfVisit target) {
+        target.setType(sourceDTO.type());
+        target.setPrice(sourceDTO.price());
+        target.setCurrency(sourceDTO.currency());
+
+        return target;
     }
 }
