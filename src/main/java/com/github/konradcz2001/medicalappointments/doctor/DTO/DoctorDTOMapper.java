@@ -40,7 +40,7 @@ public class DoctorDTOMapper implements DTOMapper<DoctorDTO, Doctor> {
                         .collect(Collectors.toSet()),
                 source.getAddress(),
                 source.getTypesOfVisits().stream().map(type ->
-                                new DoctorTypeOfVisitDTO(type.getId(), type.getType(), type.getPrice(), type.getCurrency()))
+                                new DoctorTypeOfVisitDTO(type.getId(), type.getType(), type.getPrice(), type.getCurrency(), type.getDuration()))
                         .collect(Collectors.toList())
         );
     }
@@ -94,7 +94,8 @@ public class DoctorDTOMapper implements DTOMapper<DoctorDTO, Doctor> {
                 type.getId(),
                 type.getType(),
                 type.getPrice(),
-                type.getCurrency()
+                type.getCurrency(),
+                type.getDuration()
         );
     }
 

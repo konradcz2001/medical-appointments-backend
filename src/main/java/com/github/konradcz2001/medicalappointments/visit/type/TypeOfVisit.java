@@ -8,6 +8,22 @@ import lombok.experimental.FieldDefaults;
 
 import java.math.BigDecimal;
 
+
+/**
+ * Represents a type of visit in the medical appointments system.
+ * This class defines the attributes of a type of visit, including:
+ * - id: The unique identifier of the type of visit.
+ * - type: The type of visit.
+ * - price: The price of the visit.
+ * - currency: The currency in which the price is specified.
+ * - duration: The duration of the visit in minutes.
+ * - doctor: The doctor associated with this type of visit.
+ * <p>
+ * The class provides getters and setters for all attributes, as well as constructors for creating instances of the class.
+ * <p>
+ * Note: This class uses Lombok annotations for generating getters, setters, and constructors.
+ * It also uses JPA annotations for mapping the class to the database table.
+ */
 @Entity
 @Table(name = "types_of_visits")
 @Getter
@@ -36,6 +52,11 @@ public class TypeOfVisit {
     @NotBlank(message = "Currency must not be empty")
     @Size(max = 5, message = "Maximum length is 5 characters")
     String currency;
+
+    @Column(name = "duration", nullable = false)
+    @NotNull(message = "Duration must not be empty")
+    @Min(value = 0, message = "Minimum duration is zero")
+    Integer duration;   //Duration in minutes
 
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)

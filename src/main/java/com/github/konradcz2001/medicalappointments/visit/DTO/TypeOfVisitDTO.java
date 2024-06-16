@@ -11,6 +11,7 @@ import java.math.BigDecimal;
  *  type: the name of the visit type
  *  price: the amount of money
  *  currency: the short of currency name
+ *  duration: duration of the visit in minutes
  *  doctorId: the id of doctor
  */
 public record TypeOfVisitDTO(Long id,
@@ -24,6 +25,9 @@ public record TypeOfVisitDTO(Long id,
                              @NotBlank(message = "Currency must not be empty")
                              @Size(max = 5, message = "Maximum length is 5 characters")
                              String currency,
+                             @NotNull(message = "Duration must not be empty")
+                             @Min(value = 0, message = "Minimum duration is zero")
+                             Integer duration,   //Duration in minutes
                              @NotNull(message = "Doctor id must not be empty")
                              Long doctorId){
 }
