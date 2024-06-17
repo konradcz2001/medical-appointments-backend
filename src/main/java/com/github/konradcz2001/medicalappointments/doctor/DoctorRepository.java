@@ -69,7 +69,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     Page<Doctor> findAllByAnySpecializationContainingIgnoreCase(String specialization, Pageable pageable);
 
     @Query(value = " SELECT DISTINCT doctors.id, first_name, last_name, email, password, role, country, state, city, " +
-            "street, house_number, zip_code, avatar, is_verified, profile_description FROM doctors " +
+            "street, house_number, zip_code, avatar, is_verified, schedule_id, profile_description FROM doctors " +
             "LEFT JOIN doctor_specialization ON doctor_id = doctors.id " +
             "LEFT JOIN specializations ON specialization_id = specializations.id " +
             "WHERE (LOWER(first_name) LIKE '%' || LOWER(?1) || '%' " +
@@ -84,7 +84,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     List<Doctor> search(String word);
 
     @Query(value = " SELECT DISTINCT doctors.id, first_name, last_name, email, password, role, country, state, city, " +
-            "street, house_number, zip_code, avatar, is_verified, profile_description FROM doctors " +
+            "street, house_number, zip_code, avatar, is_verified, schedule_id, profile_description FROM doctors " +
             "LEFT JOIN doctor_specialization ON doctor_id = doctors.id " +
             "LEFT JOIN specializations ON specialization_id = specializations.id " +
             "WHERE UPPER(specialization) LIKE UPPER(?2) " +

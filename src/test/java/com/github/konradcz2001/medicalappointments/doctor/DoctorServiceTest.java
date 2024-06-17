@@ -493,7 +493,7 @@ class DoctorServiceTest {
         Long id = 1L;
         Doctor original = new Doctor();
         original.setId(id);
-        DoctorDTO toUpdate = new DoctorDTO(2L, "name2", "lastname2", "email2", Role.DOCTOR,true, null, "description2", null, null, null);
+        DoctorDTO toUpdate = new DoctorDTO(2L, "name2", "lastname2", "email2", Role.DOCTOR,true, null, "description2", null, null, null, null);
 
         when(repository.findById(id)).thenReturn(Optional.of(original));
 

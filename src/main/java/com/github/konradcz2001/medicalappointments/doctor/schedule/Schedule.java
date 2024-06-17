@@ -1,6 +1,7 @@
 package com.github.konradcz2001.medicalappointments.doctor.schedule;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
@@ -10,6 +11,7 @@ import lombok.Setter;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalTime;
+import java.util.List;
 
 
 @Entity
@@ -65,6 +67,20 @@ public class Schedule {
     @Column(name = "sunday_end")
     LocalTime sundayEnd;
 
+    @JsonIgnore
     @OneToOne(mappedBy = "schedule")
     Doctor doctor;
+
+    @JsonIgnore
+    public List<WeekDay> getListOfDays(){
+        return List.of(
+                new WeekDay(mondayStart, mondayEnd),
+                new WeekDay(tuesdayStart, tuesdayEnd),
+                new WeekDay(wednesdayStart, wednesdayEnd),
+                new WeekDay(thursdayStart, thursdayEnd),
+                new WeekDay(fridayStart, fridayEnd),
+                new WeekDay(saturdayStart, saturdayEnd),
+                new WeekDay(sundayStart, sundayEnd)
+                );
+    }
 }

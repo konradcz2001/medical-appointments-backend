@@ -3,6 +3,7 @@ package com.github.konradcz2001.medicalappointments.doctor;
 
 import com.github.konradcz2001.medicalappointments.doctor.DTO.*;
 import com.github.konradcz2001.medicalappointments.doctor.schedule.Schedule;
+import com.github.konradcz2001.medicalappointments.doctor.schedule.WeekDay;
 import com.github.konradcz2001.medicalappointments.exception.exceptions.*;
 import com.github.konradcz2001.medicalappointments.leave.Leave;
 import com.github.konradcz2001.medicalappointments.leave.LeaveRepository;
@@ -477,20 +478,18 @@ class DoctorService {
         Doctor doctor = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
 
-        if(schedule.getMondayStart().isAfter(schedule.getMondayEnd()))
-            throw new WrongScheduleException("Monday");
-        if (schedule.getTuesdayStart().isAfter(schedule.getTuesdayEnd()))
-            throw new WrongScheduleException("Tuesday");
-        if (schedule.getWednesdayStart().isAfter(schedule.getWednesdayEnd()))
-            throw new WrongScheduleException("Wednesday");
-        if (schedule.getThursdayStart().isAfter(schedule.getThursdayEnd()))
-            throw new WrongScheduleException("Thursday");
-        if (schedule.getFridayStart().isAfter(schedule.getFridayEnd()))
-            throw new WrongScheduleException("Friday");
-        if (schedule.getSaturdayStart().isAfter(schedule.getSaturdayEnd()))
-            throw new WrongScheduleException("Saturday");
-        if (schedule.getSundayStart().isAfter(schedule.getSundayEnd()))
-            throw new WrongScheduleException("Sunday");
+        List<WeekDay> days = schedule.getListOfDays();
+        for(int i = 0; i < days.size(); i++){
+            WeekDay day = days.get(i);
+
+            if((day.getStart() == null && day.getEnd() != null) || (day.getStart() != null && day.getEnd() == null))
+                throw new WrongScheduleException(i, false);
+            if(day.getStart() != null && day.getStart().isAfter(day.getEnd()))
+                throw new WrongScheduleException(i, true);
+        }
+
+        if(doctor.getSchedule() != null)
+            schedule.setId(doctor.getSchedule().getId());
 
         doctor.setSchedule(schedule);
         repository.save(doctor);
