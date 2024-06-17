@@ -149,6 +149,18 @@ class VisitService {
     }
 
     /**
+     * Retrieves all visits with a doctor ID matching the specified ID and cancellation status matching the provided boolean value.
+     *
+     * @param doctorId the ID of the doctor to search for in the visits
+     * @param isCancelled the cancellation status to filter the visits
+     * @param pageable the pagination information
+     * @return a ResponseEntity containing a Page of VisitDTO objects representing the visits
+     */
+    ResponseEntity<Page<VisitDTO>> readAllByDoctorIdAndCancellationStatus(Long doctorId, boolean isCancelled, Pageable pageable){
+        return returnResponse(() -> repository.findAllByTypeOfVisit_Doctor_IdAndIsCancelled(doctorId, isCancelled, pageable), dtoMapper);
+    }
+
+    /**
      * Retrieves all visits associated with the specified client ID.
      *
      * @param clientId the ID of the client
@@ -157,6 +169,18 @@ class VisitService {
      */
     ResponseEntity<Page<VisitDTO>> readAllByClientId(Long clientId, Pageable pageable){
         return returnResponse(() -> repository.findAllByClientId(clientId, pageable), dtoMapper);
+    }
+
+    /**
+     * Retrieves all visits associated with the specified client ID and cancellation status.
+     *
+     * @param clientId the ID of the client
+     * @param isCancelled the cancellation status to filter the visits
+     * @param pageable the pagination information
+     * @return a ResponseEntity containing a Page of VisitDTO objects representing the visits
+     */
+    ResponseEntity<Page<VisitDTO>> readAllByClientIdAndCancellationStatus(Long clientId, boolean isCancelled, Pageable pageable){
+        return returnResponse(() -> repository.findAllByClientIdAndIsCancelled(clientId, isCancelled, pageable), dtoMapper);
     }
 
     /**

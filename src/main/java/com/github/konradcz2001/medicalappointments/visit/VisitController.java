@@ -117,6 +117,20 @@ class VisitController {
     }
 
     /**
+     * Retrieves all visits with a doctor ID matching the specified ID and a cancellation status matching the specified status.
+     *
+     * @param doctorId       the ID of the doctor
+     * @param isCancelled    the cancellation status to filter by
+     * @param pageable       the pagination information
+     * @return a ResponseEntity containing a Page of VisitDTO objects with a success status code if the visits are retrieved successfully,
+     *         or a ResponseEntity with an error status code if the visits cannot be retrieved
+     */
+    @GetMapping(params = {"doctorId", "isCancelled"})
+    ResponseEntity<Page<VisitDTO>> readAllByDoctorIdAndCancellationStatus(@RequestParam Long doctorId, @RequestParam boolean isCancelled, Pageable pageable){
+        return service.readAllByDoctorIdAndCancellationStatus(doctorId, isCancelled, pageable);
+    }
+
+    /**
      * Retrieves all visits associated with the specified client ID.
      *
      * @param clientId the ID of the client
@@ -127,6 +141,20 @@ class VisitController {
     @GetMapping(params = "clientId")
     ResponseEntity<Page<VisitDTO>> readAllByClientId(@RequestParam Long clientId, Pageable pageable){
         return service.readAllByClientId(clientId, pageable);
+    }
+
+    /**
+     * Retrieves all visits associated with the specified client ID and cancellation status.
+     *
+     * @param clientId the ID of the client
+     * @param isCancelled the cancellation status to filter by
+     * @param pageable the pagination information
+     * @return a ResponseEntity containing a Page of VisitDTO objects with a success status code if the visits are retrieved successfully,
+     *         or a ResponseEntity with an error status code if the visits cannot be retrieved
+     */
+    @GetMapping(params = {"clientId", "isCancelled"})
+    ResponseEntity<Page<VisitDTO>> readAllByClientIdAndCancellationStatus(@RequestParam Long clientId, @RequestParam boolean isCancelled, Pageable pageable){
+        return service.readAllByClientIdAndCancellationStatus(clientId, isCancelled, pageable);
     }
 
     /**

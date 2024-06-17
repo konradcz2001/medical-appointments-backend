@@ -17,7 +17,9 @@ import java.time.LocalDateTime;
  * - findAllByDateAfterAndDateBefore: Retrieves all Visit entities with a date between the specified LocalDateTime values.
  * - findAllByTypeOfVisitTypeContainingIgnoreCase: Retrieves all Visit entities with a type containing the specified case-insensitive string.
  * - findAllByTypeOfVisit_Doctor_Id: Retrieves all Visit entities with a doctor ID matching the specified Long value.
+ * - findAllByTypeOfVisit_Doctor_IdAndIsCancelled: Retrieves all Visit entities with a doctor ID matching the specified Long value and cancellation status matching boolean value.
  * - findAllByClientId: Retrieves all Visit entities with a client ID matching the specified Long value.
+ * - findAllByClientIdAndIsCancelled: Retrieves all Visit entities with a client ID matching the specified Long value and cancellation status matching boolean value.
  * - findAllByPrice: Retrieves all Visit entities with a price matching the specified BigDecimal value.
  * - findAllByTypeOfVisitPriceLessThanEqual: Retrieves all Visit entities with a price less than or equal to the specified BigDecimal value.
  * - findAllByTypeOfVisitPriceGreaterThanEqual: Retrieves all Visit entities with a price greater than or equal to the specified BigDecimal value.
@@ -29,7 +31,9 @@ interface VisitRepository extends JpaRepository<Visit, Long> {
     Page<Visit> findAllByDateAfterAndDateBefore(LocalDateTime after, LocalDateTime before, Pageable pageable);
     Page<Visit> findAllByTypeOfVisitTypeContainingIgnoreCase(String type, Pageable pageable);
     Page<Visit> findAllByTypeOfVisit_Doctor_Id(Long doctorId, Pageable pageable);
+    Page<Visit> findAllByTypeOfVisit_Doctor_IdAndIsCancelled(Long doctorId, boolean isCancelled, Pageable pageable);
     Page<Visit> findAllByClientId(Long client, Pageable pageable);
+    Page<Visit> findAllByClientIdAndIsCancelled(Long clientId, boolean isCancelled, Pageable pageable);
     Page<Visit> findAllByTypeOfVisitPrice(BigDecimal price, Pageable pageable);
     Page<Visit> findAllByTypeOfVisitPriceLessThanEqual(BigDecimal price, Pageable pageable);
     Page<Visit> findAllByTypeOfVisitPriceGreaterThanEqual(BigDecimal price, Pageable pageable);

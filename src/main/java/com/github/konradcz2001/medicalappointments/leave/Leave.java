@@ -43,7 +43,6 @@ public class Leave {
     Long id;
     @Column(name = "start_date", nullable = false)
     @NotNull(message = "Start date must not be empty")
-    @FutureOrPresent(message = "Start date must not be in the past")
     LocalDateTime startDate;
     @Column(name = "end_date", nullable = false)
     @NotNull(message = "End date must not be empty")

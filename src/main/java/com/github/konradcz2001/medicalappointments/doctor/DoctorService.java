@@ -139,6 +139,7 @@ class DoctorService {
      */
     @Transactional
     ResponseEntity<?> addLeave(Long id, DoctorLeaveDTO leaveDTO) {
+        System.out.println(LocalDateTime.now());
         Doctor doctor = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
 
