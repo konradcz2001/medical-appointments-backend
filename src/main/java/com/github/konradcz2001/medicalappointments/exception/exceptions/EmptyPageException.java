@@ -1,4 +1,4 @@
-package com.github.konradcz2001.medicalappointments.exception;
+package com.github.konradcz2001.medicalappointments.exception.exceptions;
 
 /**
  * Represents a custom exception that is thrown when a page is empty.

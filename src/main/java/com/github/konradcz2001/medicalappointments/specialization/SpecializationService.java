@@ -1,7 +1,7 @@
 package com.github.konradcz2001.medicalappointments.specialization;
 
-import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
-import com.github.konradcz2001.medicalappointments.exception.WrongSpecializationException;
+import com.github.konradcz2001.medicalappointments.exception.exceptions.ResourceNotFoundException;
+import com.github.konradcz2001.medicalappointments.exception.exceptions.WrongSpecializationException;
 import com.github.konradcz2001.medicalappointments.specialization.DTO.SpecializationDTO;
 import com.github.konradcz2001.medicalappointments.specialization.DTO.SpecializationDTOMapper;
 import org.springframework.data.domain.Page;

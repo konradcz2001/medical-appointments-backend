@@ -1,6 +1,6 @@
 package com.github.konradcz2001.medicalappointments.common;
 
-import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
+import com.github.konradcz2001.medicalappointments.exception.exceptions.EmptyPageException;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;

@@ -2,7 +2,8 @@ package com.github.konradcz2001.medicalappointments.doctor;
 
 
 import com.github.konradcz2001.medicalappointments.doctor.DTO.*;
-import com.github.konradcz2001.medicalappointments.exception.*;
+import com.github.konradcz2001.medicalappointments.doctor.schedule.Schedule;
+import com.github.konradcz2001.medicalappointments.exception.exceptions.*;
 import com.github.konradcz2001.medicalappointments.leave.Leave;
 import com.github.konradcz2001.medicalappointments.leave.LeaveRepository;
 import com.github.konradcz2001.medicalappointments.review.ReviewRepository;
@@ -467,6 +468,32 @@ class DoctorService {
         doctor.addTypeOfVisit(typeOfVisit);
         repository.save(doctor);
 
+        return ResponseEntity.noContent().build();
+    }
+
+    //TODO updateSchedule tests
+    @Transactional
+    ResponseEntity<?> updateSchedule(Long id, Schedule schedule){
+        Doctor doctor = repository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
+
+        if(schedule.getMondayStart().isAfter(schedule.getMondayEnd()))
+            throw new WrongScheduleException("Monday");
+        if (schedule.getTuesdayStart().isAfter(schedule.getTuesdayEnd()))
+            throw new WrongScheduleException("Tuesday");
+        if (schedule.getWednesdayStart().isAfter(schedule.getWednesdayEnd()))
+            throw new WrongScheduleException("Wednesday");
+        if (schedule.getThursdayStart().isAfter(schedule.getThursdayEnd()))
+            throw new WrongScheduleException("Thursday");
+        if (schedule.getFridayStart().isAfter(schedule.getFridayEnd()))
+            throw new WrongScheduleException("Friday");
+        if (schedule.getSaturdayStart().isAfter(schedule.getSaturdayEnd()))
+            throw new WrongScheduleException("Saturday");
+        if (schedule.getSundayStart().isAfter(schedule.getSundayEnd()))
+            throw new WrongScheduleException("Sunday");
+
+        doctor.setSchedule(schedule);
+        repository.save(doctor);
         return ResponseEntity.noContent().build();
     }
 }

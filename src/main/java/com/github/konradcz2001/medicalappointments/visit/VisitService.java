@@ -2,7 +2,7 @@ package com.github.konradcz2001.medicalappointments.visit;
 
 import com.github.konradcz2001.medicalappointments.client.ClientRepository;
 import com.github.konradcz2001.medicalappointments.doctor.DoctorRepository;
-import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
+import com.github.konradcz2001.medicalappointments.exception.exceptions.ResourceNotFoundException;
 import com.github.konradcz2001.medicalappointments.visit.DTO.VisitDTO;
 import com.github.konradcz2001.medicalappointments.visit.DTO.VisitDTOMapper;
 import com.github.konradcz2001.medicalappointments.visit.type.TypeOfVisit;

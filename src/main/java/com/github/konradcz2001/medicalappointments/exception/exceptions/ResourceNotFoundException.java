@@ -1,4 +1,6 @@
-package com.github.konradcz2001.medicalappointments.exception;
+package com.github.konradcz2001.medicalappointments.exception.exceptions;
+
+import com.github.konradcz2001.medicalappointments.exception.MessageType;
 
 /**
  * This code snippet represents a class named ResourceNotFoundException.

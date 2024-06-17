@@ -41,7 +41,8 @@ public class DoctorDTOMapper implements DTOMapper<DoctorDTO, Doctor> {
                 source.getAddress(),
                 source.getTypesOfVisits().stream().map(type ->
                                 new DoctorTypeOfVisitDTO(type.getId(), type.getType(), type.getPrice(), type.getCurrency(), type.getDuration()))
-                        .collect(Collectors.toList())
+                        .collect(Collectors.toList()),
+                source.getSchedule()
         );
     }
 

@@ -1,6 +1,7 @@
 package com.github.konradcz2001.medicalappointments.doctor;
 
 import com.github.konradcz2001.medicalappointments.doctor.DTO.*;
+import com.github.konradcz2001.medicalappointments.doctor.schedule.Schedule;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -231,21 +232,54 @@ class DoctorController {
     }
 
 
+    /**
+     * Adds a type of visit to a specific doctor.
+     *
+     * @param id The ID of the doctor to add the type of visit to.
+     * @param typeOfVisit The DoctorTypeOfVisitDTO object containing the information of the type of visit to add.
+     * @return A ResponseEntity indicating the success or failure of the operation.
+     */
     @PatchMapping("/{id}/add-type-of-visit")
-    ResponseEntity<?> addTypeOfVisit(@PathVariable Long id, @RequestBody DoctorTypeOfVisitDTO typeOfVisit){
+    ResponseEntity<?> addTypeOfVisit(@PathVariable Long id, @Valid @RequestBody DoctorTypeOfVisitDTO typeOfVisit){
         return service.addTypeOfVisit(id, typeOfVisit);
     }
 
 
+    /**
+     * Removes a type of visit from a specific doctor.
+     *
+     * @param doctorId the ID of the doctor
+     * @param id the ID of the type of visit to be removed
+     * @return a ResponseEntity indicating the success or failure of the operation
+     */
     @PatchMapping(value = "/{doctorId}/remove-type-of-visit", params = "id")
     ResponseEntity<?> removeTypeOfVisit(@PathVariable Long doctorId, @RequestParam Long id){
         return service.removeTypeOfVisit(doctorId, id);
     }
 
 
+    /**
+     * Retrieves all types of visits for a specific doctor.
+     *
+     * @param id the ID of the doctor
+     * @param pageable the pageable object for pagination
+     * @return a ResponseEntity containing a Page of DoctorTypeOfVisitDTO objects representing the types of visits
+     */
     @GetMapping("/{id}/types-of-visits")
     ResponseEntity<Page<DoctorTypeOfVisitDTO>> readAllTypesOfVisits(@PathVariable Long id, Pageable pageable){
         return service.readAllTypesOfVisits(id, pageable);
+    }
+
+    /**
+     * Updates the schedule for a specific doctor.
+     *
+     * @param id The ID of the doctor whose schedule is being updated.
+     * @param schedule The new schedule information to be set for the doctor.
+     * @return A ResponseEntity indicating the success or failure of the operation.
+     */
+    @PatchMapping("/{id}/schedule")
+    ResponseEntity<?> updateSchedule(@PathVariable Long id, @RequestBody Schedule schedule){
+        return service.updateSchedule(id, schedule);
     }
 
 }

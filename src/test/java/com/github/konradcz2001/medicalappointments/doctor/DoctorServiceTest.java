@@ -2,11 +2,10 @@ package com.github.konradcz2001.medicalappointments.doctor;
 
 import com.github.konradcz2001.medicalappointments.client.Client;
 import com.github.konradcz2001.medicalappointments.doctor.DTO.*;
-import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
-import com.github.konradcz2001.medicalappointments.exception.ResourceNotFoundException;
-import com.github.konradcz2001.medicalappointments.exception.WrongLeaveException;
-import com.github.konradcz2001.medicalappointments.exception.WrongSpecializationException;
-import com.github.konradcz2001.medicalappointments.leave.DTO.LeaveDTO;
+import com.github.konradcz2001.medicalappointments.exception.exceptions.EmptyPageException;
+import com.github.konradcz2001.medicalappointments.exception.exceptions.ResourceNotFoundException;
+import com.github.konradcz2001.medicalappointments.exception.exceptions.WrongLeaveException;
+import com.github.konradcz2001.medicalappointments.exception.exceptions.WrongSpecializationException;
 import com.github.konradcz2001.medicalappointments.leave.Leave;
 import com.github.konradcz2001.medicalappointments.leave.LeaveRepository;
 import com.github.konradcz2001.medicalappointments.review.Review;

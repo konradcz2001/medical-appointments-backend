@@ -1,4 +1,4 @@
-package com.github.konradcz2001.medicalappointments.exception;
+package com.github.konradcz2001.medicalappointments.exception.exceptions;
 
 
 /**

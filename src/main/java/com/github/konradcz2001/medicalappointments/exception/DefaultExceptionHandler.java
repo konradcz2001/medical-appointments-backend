@@ -1,5 +1,6 @@
 package com.github.konradcz2001.medicalappointments.exception;
 
+import com.github.konradcz2001.medicalappointments.exception.exceptions.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
@@ -43,7 +44,7 @@ public class DefaultExceptionHandler {
         return new ResponseEntity<>(apiError, NOT_FOUND);
     }
 
-    @ExceptionHandler({WrongLeaveException.class, WrongSpecializationException.class,
+    @ExceptionHandler({WrongLeaveException.class, WrongSpecializationException.class, WrongScheduleException.class,
             WrongReviewException.class, ConstraintViolationException.class, WrongTypeOfVisitException.class})
     public ResponseEntity<ApiError> handleWrongDataException(RuntimeException ex, HttpServletRequest request){
         ApiError apiError = new ApiError(
@@ -93,17 +94,17 @@ public class DefaultExceptionHandler {
     }
 
 
-//    @ExceptionHandler(Exception.class)
-//    public ResponseEntity<ApiError> handleException(Exception ex, HttpServletRequest request){
-//        ApiError apiError = new ApiError(
-//                request.getClass().getSimpleName(),
-//                request.getRequestURI(),
-//                ex.getMessage(),
-//                INTERNAL_SERVER_ERROR.value(),
-//                LocalDateTime.now());
-//
-//        return new ResponseEntity<>(apiError, INTERNAL_SERVER_ERROR);
-//    }
+    @ExceptionHandler(Exception.class)
+    public ResponseEntity<ApiError> handleException(Exception ex, HttpServletRequest request){
+        ApiError apiError = new ApiError(
+                request.getClass().getSimpleName(),
+                request.getRequestURI(),
+                ex.getMessage(),
+                INTERNAL_SERVER_ERROR.value(),
+                LocalDateTime.now());
+
+        return new ResponseEntity<>(apiError, INTERNAL_SERVER_ERROR);
+    }
 
 
 }

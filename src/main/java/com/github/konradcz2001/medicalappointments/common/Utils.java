@@ -1,6 +1,6 @@
 package com.github.konradcz2001.medicalappointments.common;
 
-import com.github.konradcz2001.medicalappointments.exception.EmptyPageException;
+import com.github.konradcz2001.medicalappointments.exception.exceptions.EmptyPageException;
 import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 
