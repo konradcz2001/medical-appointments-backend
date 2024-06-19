@@ -5,6 +5,8 @@ target/
 !**/src/test/**/target/
 db.mv.db
 db.trace.db
+.env
+application-dev.properties
 
 ### STS ###
 .apt_generated

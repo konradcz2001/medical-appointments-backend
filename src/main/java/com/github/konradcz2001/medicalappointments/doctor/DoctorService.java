@@ -141,6 +141,7 @@ class DoctorService {
      * @throws ResourceNotFoundException if the doctor with the specified ID is not found
      * @throws WrongLeaveException if the start date of the leave is later than the end date
      */
+    //TODO check if there are some visits
     @Transactional
     ResponseEntity<?> addLeave(Long id, DoctorLeaveDTO leaveDTO) {
         System.out.println(LocalDateTime.now());
