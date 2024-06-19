@@ -46,7 +46,7 @@ class SpecializationController {
      *         If the specialization is not found, it throws a ResourceNotFoundException.
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<SpecializationDTO> readById(@PathVariable Integer id){
         return service.readById(id);
     }
@@ -61,7 +61,7 @@ class SpecializationController {
      *         If the specialization is not found, it throws a WrongSpecializationException.
      */
     @GetMapping(params = "specialization")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<SpecializationDTO> readBySpecialization(@RequestParam String specialization){
         return service.readBySpecialization(specialization);
     }
@@ -76,7 +76,7 @@ class SpecializationController {
      *         If the specialization already exists, it throws a WrongSpecializationException.
      */
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<SpecializationDTO> createSpecialization(@Valid @RequestBody Specialization specialization){
         return service.createSpecialization(specialization);
     }
@@ -91,7 +91,7 @@ class SpecializationController {
      *         If the specialization with the given ID is not found, it throws a ResourceNotFoundException.
      */
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<?> updateSpecialization(@PathVariable Integer id, @Valid @RequestBody SpecializationDTO specialization){
         return service.updateSpecialization(id, specialization);
     }
@@ -105,7 +105,7 @@ class SpecializationController {
      *         If the specialization with the given ID is not found, it throws a ResourceNotFoundException.
      */
     @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<?> deleteSpecialization(@PathVariable Integer id){
         return service.deleteSpecialization(id);
     }

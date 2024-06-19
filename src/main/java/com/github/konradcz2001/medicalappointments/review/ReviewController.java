@@ -31,7 +31,7 @@ class ReviewController {
      * @return a ResponseEntity containing a Page of ReviewDTO objects
      */
     @GetMapping
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<ReviewDTO>> readAll(Pageable pageable){
         return service.readAll(pageable);
     }
@@ -43,7 +43,7 @@ class ReviewController {
      * @return a ResponseEntity containing the ReviewDTO object
      */
     @GetMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<ReviewDTO> readById(@PathVariable Long id){
         return service.readById(id);
     }
@@ -58,7 +58,7 @@ class ReviewController {
      * @return a ResponseEntity containing a Page of ReviewDTO objects
      */
     @GetMapping("/between")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<ReviewDTO>> readAllBetween(@RequestParam LocalDateTime after, @RequestParam LocalDateTime before, Pageable pageable){
         return service.readAllBetween(after, before, pageable);
     }
@@ -71,7 +71,7 @@ class ReviewController {
      * @return a ResponseEntity containing a Page of ReviewDTO objects
      */
     @GetMapping("/after")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<ReviewDTO>> readAllAfter(@RequestParam LocalDateTime after, Pageable pageable){
         return service.readAllAfter(after, pageable);
     }
@@ -84,7 +84,7 @@ class ReviewController {
      * @return a ResponseEntity containing a Page of ReviewDTO objects
      */
     @GetMapping("/before")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<ReviewDTO>> readAllBefore(@RequestParam LocalDateTime before, Pageable pageable){
         return service.readAllBefore(before, pageable);
     }
@@ -97,7 +97,7 @@ class ReviewController {
      * @return a ResponseEntity containing a Page of ReviewDTO objects
      */
     @GetMapping("/rating")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<ReviewDTO>> readAllByRating(@RequestParam Rating rating, Pageable pageable){
         return service.readAllByRating(rating, pageable);
     }
@@ -110,7 +110,7 @@ class ReviewController {
      * @return a ResponseEntity containing a Page of ReviewDTO objects
      */
     @GetMapping("/rating-less-than")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<ReviewDTO>> readAllByRatingLessThan(@RequestParam Rating rating, Pageable pageable){
         return service.readAllByRatingLessThan(rating, pageable);
     }
@@ -123,7 +123,7 @@ class ReviewController {
      * @return a ResponseEntity containing a Page of ReviewDTO objects
      */
     @GetMapping("/rating-greater-than")
-    @PreAuthorize("hasRole('ADMIN')")
+    @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<ReviewDTO>> readAllByRatingGreaterThan(@RequestParam Rating rating, Pageable pageable){
         return service.readAllByRatingGreaterThan(rating, pageable);
     }
