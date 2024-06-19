@@ -58,14 +58,13 @@ class VisitServiceTest {
         Long doctorId = 1L;
         Long clientId = 2L;
         TypeOfVisitDTO typeOfVisitDTO = new TypeOfVisitDTO(1L, "consultation", BigDecimal.TEN, "USD", 30, true, doctorId);
-        VisitDTO visitDTO = new VisitDTO(null, LocalDateTime.now(), "consultation", typeOfVisitDTO, false, clientId);
+        VisitDTO visitDTO = new VisitDTO(null, LocalDateTime.of(3000,1,1,10,1,1), "consultation", typeOfVisitDTO, false, clientId);
         Doctor doctor = new Doctor();
         doctor.setId(doctorId);
         doctor.setLeaves(List.of());
         doctor.setSchedule(new Schedule(LocalTime.of(9, 0), LocalTime.of(17, 0)));
         Client client = new Client();
         client.setId(clientId);
-        TypeOfVisit typeOfVisit = new TypeOfVisit(1L, "consultation", BigDecimal.TEN, "USD", 30, true, doctor);
 
         when(doctorRepository.findById(doctorId)).thenReturn(Optional.of(doctor));
         when(clientRepository.findById(clientId)).thenReturn(Optional.of(client));

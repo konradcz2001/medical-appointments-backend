@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatusCode;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -41,7 +42,7 @@ class SpecializationServiceTest {
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        assertEquals(SpecializationDTO.class, response.getBody().getClass());
+        assertEquals(SpecializationDTO.class, Objects.requireNonNull(response.getBody()).getClass());
         assertEquals(2, response.getBody().id());
     }
 
@@ -60,7 +61,7 @@ class SpecializationServiceTest {
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        assertEquals(SpecializationDTO.class, response.getBody().getClass());
+        assertEquals(SpecializationDTO.class, Objects.requireNonNull(response.getBody()).getClass());
         assertEquals("spec1", response.getBody().specialization());
     }
 
@@ -93,7 +94,7 @@ class SpecializationServiceTest {
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(201), response.getStatusCode());
-        assertEquals(SpecializationDTO.class, response.getBody().getClass());
+        assertEquals(SpecializationDTO.class, Objects.requireNonNull(response.getBody()).getClass());
         assertEquals("spec", response.getBody().specialization());
         verify(specialization).setId(null);
         verify(specialization).setDoctors(new HashSet<>());

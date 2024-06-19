@@ -11,6 +11,7 @@ import org.springframework.http.HttpStatusCode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Supplier;
 
 import static com.github.konradcz2001.medicalappointments.common.Utils.returnResponse;
@@ -57,7 +58,7 @@ class UtilsTest {
         // Assert
         verify(dtoMapper).mapToDTO(isA(Object.class));
         verify(suppliedResources).get();
-        assertEquals(1, response.getBody().toList().size());
+        assertEquals(1, Objects.requireNonNull(response.getBody()).toList().size());
         assertEquals(content.get(0), response.getBody().toList().get(0));
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         assertTrue(response.hasBody());

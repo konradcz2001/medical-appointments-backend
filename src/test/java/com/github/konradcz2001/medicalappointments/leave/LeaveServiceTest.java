@@ -12,6 +12,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatusCode;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -45,7 +46,7 @@ class LeaveServiceTest {
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        Assertions.assertEquals(LeaveDTO.class, response.getBody().getClass());
+        Assertions.assertEquals(LeaveDTO.class, Objects.requireNonNull(response.getBody()).getClass());
         Assertions.assertEquals(2, response.getBody().id());
     }
 

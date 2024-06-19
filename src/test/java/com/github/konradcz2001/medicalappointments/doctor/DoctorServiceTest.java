@@ -190,7 +190,7 @@ class DoctorServiceTest {
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        assertEquals(2, response.getBody().getTotalElements());
+        assertEquals(2, Objects.requireNonNull(response.getBody()).getTotalElements());
         assertEquals(2, response.getBody().getContent().get(1).id());
         assertEquals(DoctorLeaveDTO.class, response.getBody().getContent().get(1).getClass());
     }
@@ -202,7 +202,9 @@ class DoctorServiceTest {
         Review review1 = new Review();
         Review review2 = new Review();
         review1.setClient(new Client());
+        review1.setDoctor(new Doctor());
         review2.setClient(new Client());
+        review2.setDoctor(new Doctor());
         review2.setId(2L);
 
         Page<Review> reviews = new PageImpl<>(List.of(review1, review2));
@@ -215,7 +217,7 @@ class DoctorServiceTest {
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        assertEquals(2, response.getBody().getTotalElements());
+        assertEquals(2, Objects.requireNonNull(response.getBody()).getTotalElements());
         assertEquals(2, response.getBody().getContent().get(1).id());
         assertEquals(DoctorReviewDTO.class, response.getBody().getContent().get(1).getClass());
     }
@@ -235,7 +237,7 @@ class DoctorServiceTest {
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        assertEquals(2, response.getBody().size());
+        assertEquals(2, Objects.requireNonNull(response.getBody()).size());
         assertEquals(DoctorSpecializationDTO.class, response.getBody().stream().findAny().get().getClass());
     }
 
@@ -392,7 +394,6 @@ class DoctorServiceTest {
     void shouldRemoveSpecialization() {
         // Arrange
         Integer specializationId = 2;
-        LocalDateTime now = LocalDateTime.now();
 
         Doctor doctor = new Doctor();
         Specialization specialization1 = new Specialization(1, "spec1", Set.of(doctor));
@@ -416,7 +417,6 @@ class DoctorServiceTest {
     void shouldThrowWrongSpecializationExceptionWhenRemovingSpecialization() {
         // Arrange
         Integer specializationId = 3;
-        LocalDateTime now = LocalDateTime.now();
 
         Doctor doctor = new Doctor();
         Specialization specialization1 = new Specialization(1, "spec1", Set.of(doctor));
@@ -466,7 +466,7 @@ class DoctorServiceTest {
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        assertEquals(DoctorDTO.class, response.getBody().getClass());
+        assertEquals(DoctorDTO.class, Objects.requireNonNull(response.getBody()).getClass());
         assertEquals(2, response.getBody().id());
     }
 
@@ -484,7 +484,7 @@ class DoctorServiceTest {
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(201), response.getStatusCode());
-        assertEquals(DoctorDTO.class, response.getBody().getClass());
+        assertEquals(DoctorDTO.class, Objects.requireNonNull(response.getBody()).getClass());
         assertEquals("name", response.getBody().firstName());
         verify(doctor).setId(null);
         verify(doctor).setSpecializations(new HashSet<>());
@@ -552,7 +552,7 @@ class DoctorServiceTest {
         var response = underTest.readAllAvailableByDate(date, pageable);
 
         // Assert
-        assertEquals(1, response.getBody().getTotalElements());
+        assertEquals(1, Objects.requireNonNull(response.getBody()).getTotalElements());
         assertEquals(1, response.getBody().getTotalPages());
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         assertEquals(DoctorDTO.class, response.getBody().getContent().get(0).getClass());
@@ -605,7 +605,7 @@ class DoctorServiceTest {
         var response = underTest.readAll(pageable);
 
         // Assert
-        assertEquals(2, response.getBody().getTotalElements());
+        assertEquals(2, Objects.requireNonNull(response.getBody()).getTotalElements());
         assertEquals(1, response.getBody().getTotalPages());
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
         assertEquals(DoctorDTO.class, response.getBody().getContent().get(0).getClass());
@@ -644,7 +644,7 @@ class DoctorServiceTest {
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        assertEquals(2, response.getBody().getTotalElements());
+        assertEquals(2, Objects.requireNonNull(response.getBody()).getTotalElements());
         assertEquals(DoctorTypeOfVisitDTO.class, response.getBody().getContent().get(0).getClass());
     }
 
@@ -748,7 +748,6 @@ class DoctorServiceTest {
         doctor1.setFirstName("Amy");
         Doctor doctor2 = new Doctor();
         doctor2.setFirstName("Bob");
-        Page<Doctor> doctors = new PageImpl<>(List.of(doctor1, doctor2));
 
         when(repository.searchWithSpecialization(word, specialization)).thenReturn(List.of(doctor1, doctor2));
 
@@ -757,7 +756,7 @@ class DoctorServiceTest {
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        assertEquals(2, response.getBody().getTotalElements());
+        assertEquals(2, Objects.requireNonNull(response.getBody()).getTotalElements());
         assertEquals(DoctorDTO.class, response.getBody().getContent().get(0).getClass());
     }
 
@@ -770,7 +769,6 @@ class DoctorServiceTest {
         doctor1.setFirstName("Amy");
         Doctor doctor2 = new Doctor();
         doctor2.setFirstName("Bob");
-        Page<Doctor> doctors = new PageImpl<>(List.of(doctor1, doctor2));
 
         when(repository.search(word)).thenReturn(List.of(doctor1, doctor2));
 
@@ -779,7 +777,7 @@ class DoctorServiceTest {
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        assertEquals(2, response.getBody().getTotalElements());
+        assertEquals(2, Objects.requireNonNull(response.getBody()).getTotalElements());
         assertEquals(DoctorDTO.class, response.getBody().getContent().get(0).getClass());
     }
 }

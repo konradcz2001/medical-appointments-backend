@@ -12,6 +12,7 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.HttpStatusCode;
 
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
@@ -41,7 +42,7 @@ class ReviewServiceTest {
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        assertEquals(ReviewDTO.class, response.getBody().getClass());
+        assertEquals(ReviewDTO.class, Objects.requireNonNull(response.getBody()).getClass());
         assertEquals(2, response.getBody().id());
     }
 

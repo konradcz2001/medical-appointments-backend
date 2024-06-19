@@ -27,6 +27,7 @@ import org.springframework.http.HttpStatusCode;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -63,7 +64,7 @@ class ClientServiceTest {
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        assertEquals(ClientDTO.class, response.getBody().getClass());
+        assertEquals(ClientDTO.class, Objects.requireNonNull(response.getBody()).getClass());
         assertEquals(2, response.getBody().id());
     }
 
@@ -82,7 +83,7 @@ class ClientServiceTest {
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(201), response.getStatusCode());
-        assertEquals(ClientDTO.class, response.getBody().getClass());
+        assertEquals(ClientDTO.class, Objects.requireNonNull(response.getBody()).getClass());
         assertEquals("name", response.getBody().firstName());
         verify(client).setReviews(new ArrayList<>());
         verify(client).setId(null);
@@ -147,7 +148,7 @@ class ClientServiceTest {
 
         Review review1 = new Review(1L, null, null, null, doctor1, client);
         Review review2 = new Review(2L, null, null, null, doctor2, client);
-        ReviewDTO toAdd = new ReviewDTO(1L, null, null, null, 3L, 1L);
+        ReviewDTO toAdd = new ReviewDTO(1L, null, null, null, 3L, 1L, null, null, null);
 
         client.addReview(review1);
         client.addReview(review2);
@@ -187,7 +188,7 @@ class ClientServiceTest {
 
         Review review1 = new Review(1L, null, null, null, doctor1, client);
         Review review2 = new Review(2L, null, null, null, doctor2, client);
-        ReviewDTO toAdd = new ReviewDTO(1L, null, null, null, 2L, 1L);
+        ReviewDTO toAdd = new ReviewDTO(1L, null, null, null, 2L, 1L, null, null, null);
 
         client.addReview(review1);
         client.addReview(review2);
@@ -208,7 +209,7 @@ class ClientServiceTest {
         // Arrange
         Long clientId = 1L;
         Client client = spy(new Client());
-        ReviewDTO toAdd = new ReviewDTO(1L, null, null, null, 2L, 1L);
+        ReviewDTO toAdd = new ReviewDTO(1L, null, null, null, 2L, 1L, null, null, null);
 
         when(repository.findById(clientId)).thenReturn(Optional.of(client));
         when(doctorRepository.findById(2L)).thenReturn(Optional.empty());
@@ -225,7 +226,7 @@ class ClientServiceTest {
     void shouldThrowClientNotFoundExceptionWhileAddingNewReviewToClient() {
         // Arrange
         Long clientId = 1L;
-        ReviewDTO toAdd = new ReviewDTO(1L, null, null, null, 2L, 2L);
+        ReviewDTO toAdd = new ReviewDTO(1L, null, null, null, 2L, 2L, null, null, null);
 
         when(repository.findById(clientId)).thenReturn(Optional.empty());
 
@@ -250,7 +251,7 @@ class ClientServiceTest {
         client.setId(clientId);
         client.addReview(original);
 
-        ReviewDTO toUpdate = new ReviewDTO(1L, null, Rating.FIVE_STARS, "description", 5L, 3L);
+        ReviewDTO toUpdate = new ReviewDTO(1L, null, Rating.FIVE_STARS, "description", 5L, 3L, null, null, null);
 
         when(repository.findById(clientId)).thenReturn(Optional.of(client));
 
@@ -284,7 +285,7 @@ class ClientServiceTest {
         client.setId(clientId);
         client.addReview(original);
 
-        ReviewDTO toUpdate = new ReviewDTO(2L, null, Rating.FIVE_STARS, "description", 5L, 3L);
+        ReviewDTO toUpdate = new ReviewDTO(2L, null, Rating.FIVE_STARS, "description", 5L, 3L, null, null, null);
 
         when(repository.findById(clientId)).thenReturn(Optional.of(client));
 
@@ -345,7 +346,7 @@ class ClientServiceTest {
 
         // Assert
         assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
-        assertEquals(2, response.getBody().getTotalElements());
+        assertEquals(2, Objects.requireNonNull(response.getBody()).getTotalElements());
         assertEquals(ClientReviewDTO.class, response.getBody().getContent().get(0).getClass());
     }
 
