@@ -45,17 +45,15 @@ class DoctorService {
     private final LeaveRepository leaveRepository;
     private final TypeOfVisitRepository typeOfVisitRepository;
     private final DoctorDTOMapper dtoMapper;
-    private final VisitRepository visitRepository;
 
     DoctorService(final DoctorRepository repository, final SpecializationRepository specializationRepository,
-                  final ReviewRepository reviewRepository, final LeaveRepository leaveRepository, final TypeOfVisitRepository typeOfVisitRepository, final DoctorDTOMapper dtoMapper, final VisitRepository visitRepository) {
+                  final ReviewRepository reviewRepository, final LeaveRepository leaveRepository, final TypeOfVisitRepository typeOfVisitRepository, final DoctorDTOMapper dtoMapper) {
         this.repository = repository;
         this.specializationRepository = specializationRepository;
         this.reviewRepository = reviewRepository;
         this.leaveRepository = leaveRepository;
         this.typeOfVisitRepository = typeOfVisitRepository;
         this.dtoMapper = dtoMapper;
-        this.visitRepository = visitRepository;
     }
 
 

@@ -2,10 +2,8 @@ package com.github.konradcz2001.medicalappointments.doctor;
 
 import com.github.konradcz2001.medicalappointments.client.Client;
 import com.github.konradcz2001.medicalappointments.doctor.DTO.*;
-import com.github.konradcz2001.medicalappointments.exception.exceptions.EmptyPageException;
-import com.github.konradcz2001.medicalappointments.exception.exceptions.ResourceNotFoundException;
-import com.github.konradcz2001.medicalappointments.exception.exceptions.WrongLeaveException;
-import com.github.konradcz2001.medicalappointments.exception.exceptions.WrongSpecializationException;
+import com.github.konradcz2001.medicalappointments.doctor.schedule.Schedule;
+import com.github.konradcz2001.medicalappointments.exception.exceptions.*;
 import com.github.konradcz2001.medicalappointments.leave.Leave;
 import com.github.konradcz2001.medicalappointments.leave.LeaveRepository;
 import com.github.konradcz2001.medicalappointments.review.Review;
@@ -13,6 +11,8 @@ import com.github.konradcz2001.medicalappointments.review.ReviewRepository;
 import com.github.konradcz2001.medicalappointments.security.Role;
 import com.github.konradcz2001.medicalappointments.specialization.Specialization;
 import com.github.konradcz2001.medicalappointments.specialization.SpecializationRepository;
+import com.github.konradcz2001.medicalappointments.visit.type.TypeOfVisit;
+import com.github.konradcz2001.medicalappointments.visit.type.TypeOfVisitRepository;
 import org.junit.jupiter.api.Disabled;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -23,10 +23,13 @@ import org.mockito.Spy;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatusCode;
 
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.*;
 
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -44,6 +47,8 @@ class DoctorServiceTest {
     private ReviewRepository reviewRepository;
     @Mock
     private LeaveRepository leaveRepository;
+    @Mock
+    private TypeOfVisitRepository typeOfVisitRepository;
     @Spy
     private DoctorDTOMapper dtoMapper;
 
@@ -621,5 +626,160 @@ class DoctorServiceTest {
         assertThatThrownBy(() -> underTest.readAll(pageable))
                 .isInstanceOf(EmptyPageException.class)
                 .hasMessage("Page is empty");
+    }
+
+    @Test
+    void shouldReadAllTypesOfVisits() {
+        // Arrange
+        Long doctorId = 1L;
+        Pageable pageable = PageRequest.of(0, 10);
+        TypeOfVisit type1 = new TypeOfVisit(1L, "Consultation", BigDecimal.TEN, "USD", 30, true, new Doctor());
+        TypeOfVisit type2 = new TypeOfVisit(2L, "Surgery", BigDecimal.valueOf(100), "USD", 60, true, new Doctor());
+        Page<TypeOfVisit> types = new PageImpl<>(List.of(type1, type2));
+
+        when(typeOfVisitRepository.findAllByDoctorIdAndIsActive(doctorId, true, pageable)).thenReturn(types);
+
+        // Act
+        var response = underTest.readAllTypesOfVisits(doctorId, pageable);
+
+        // Assert
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+        assertEquals(2, response.getBody().getTotalElements());
+        assertEquals(DoctorTypeOfVisitDTO.class, response.getBody().getContent().get(0).getClass());
+    }
+
+    @Test
+    void shouldRemoveTypeOfVisit() {
+        // Arrange
+        Long doctorId = 1L;
+        Long typeOfVisitId = 1L;
+        Doctor doctor = new Doctor();
+        TypeOfVisit type = new TypeOfVisit(typeOfVisitId, "Consultation", BigDecimal.TEN, "USD", 30, true, doctor);
+        doctor.addTypeOfVisit(type);
+
+        when(repository.findById(doctorId)).thenReturn(Optional.of(doctor));
+
+        // Act
+        var response = underTest.removeTypeOfVisit(doctorId, typeOfVisitId);
+
+        // Assert
+        assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
+        assertFalse(type.isActive());
+        verify(repository).save(doctor);
+    }
+
+    @Test
+    void shouldAddTypeOfVisit() {
+        // Arrange
+        Long doctorId = 1L;
+        DoctorTypeOfVisitDTO dto = new DoctorTypeOfVisitDTO(1L, "Consultation", BigDecimal.TEN, "USD", 30, true);
+        Doctor doctor = new Doctor();
+
+        when(repository.findById(doctorId)).thenReturn(Optional.of(doctor));
+
+        // Act
+        var response = underTest.addTypeOfVisit(doctorId, dto);
+
+        // Assert
+        assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
+        assertEquals(1, doctor.getTypesOfVisits().size());
+        verify(repository).save(doctor);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenAddingTypeOfVisitExceedsLimit() {
+        // Arrange
+        Long doctorId = 1L;
+        DoctorTypeOfVisitDTO dto = new DoctorTypeOfVisitDTO(1L, "Consultation", BigDecimal.TEN, "USD", 30, true);
+        Doctor doctor = new Doctor();
+        for (int i = 0; i < 30; i++) {
+            doctor.addTypeOfVisit(new TypeOfVisit());
+        }
+
+        when(repository.findById(doctorId)).thenReturn(Optional.of(doctor));
+
+        // Act & Assert
+        assertThatThrownBy(() -> underTest.addTypeOfVisit(doctorId, dto))
+                .isInstanceOf(WrongTypeOfVisitException.class)
+                .hasMessageContaining("has reached the maximum number of types");
+    }
+
+    @Test
+    void shouldUpdateSchedule() {
+        // Arrange
+        Long doctorId = 1L;
+        Doctor doctor = new Doctor();
+        Schedule schedule = new Schedule(LocalTime.of(8, 0), LocalTime.of(16, 0));
+        doctor.setSchedule(schedule);
+
+        when(repository.findById(doctorId)).thenReturn(Optional.of(doctor));
+
+        // Act
+        var response = underTest.updateSchedule(doctorId, schedule);
+
+        // Assert
+        assertEquals(HttpStatusCode.valueOf(204), response.getStatusCode());
+        verify(repository).save(doctor);
+    }
+
+    @Test
+    void shouldThrowExceptionWhenUpdatingScheduleWithInvalidTimes() {
+        // Arrange
+        Long doctorId = 1L;
+        Doctor doctor = new Doctor();
+        Schedule schedule = new Schedule(LocalTime.of(16, 0), LocalTime.of(8, 0));
+        doctor.setSchedule(schedule);
+
+        when(repository.findById(doctorId)).thenReturn(Optional.of(doctor));
+
+        // Act & Assert
+        assertThatThrownBy(() -> underTest.updateSchedule(doctorId, schedule))
+                .isInstanceOf(WrongScheduleException.class)
+                .hasMessageContaining("start time can not be after end time");
+    }
+
+    @Test
+    void shouldSearchDoctorsBySpecialization() {
+        // Arrange
+        String word = "John";
+        String specialization = "Cardiology";
+        Pageable pageable = PageRequest.of(0, 10);
+        Doctor doctor1 = new Doctor();
+        doctor1.setFirstName("Amy");
+        Doctor doctor2 = new Doctor();
+        doctor2.setFirstName("Bob");
+        Page<Doctor> doctors = new PageImpl<>(List.of(doctor1, doctor2));
+
+        when(repository.searchWithSpecialization(word, specialization)).thenReturn(List.of(doctor1, doctor2));
+
+        // Act
+        var response = underTest.searchDoctors(word, specialization, pageable);
+
+        // Assert
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+        assertEquals(2, response.getBody().getTotalElements());
+        assertEquals(DoctorDTO.class, response.getBody().getContent().get(0).getClass());
+    }
+
+    @Test
+    void shouldSearchDoctorsWithoutSpecialization() {
+        // Arrange
+        String word = "John";
+        Pageable pageable = PageRequest.of(0, 10);
+        Doctor doctor1 = new Doctor();
+        doctor1.setFirstName("Amy");
+        Doctor doctor2 = new Doctor();
+        doctor2.setFirstName("Bob");
+        Page<Doctor> doctors = new PageImpl<>(List.of(doctor1, doctor2));
+
+        when(repository.search(word)).thenReturn(List.of(doctor1, doctor2));
+
+        // Act
+        var response = underTest.searchDoctors(word, null, pageable);
+
+        // Assert
+        assertEquals(HttpStatusCode.valueOf(200), response.getStatusCode());
+        assertEquals(2, response.getBody().getTotalElements());
+        assertEquals(DoctorDTO.class, response.getBody().getContent().get(0).getClass());
     }
 }

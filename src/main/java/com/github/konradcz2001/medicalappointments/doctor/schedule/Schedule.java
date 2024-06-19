@@ -4,10 +4,7 @@ package com.github.konradcz2001.medicalappointments.doctor.schedule;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import jakarta.persistence.*;
-import lombok.AccessLevel;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import lombok.experimental.FieldDefaults;
 
 import java.time.LocalTime;
@@ -20,6 +17,7 @@ import java.util.List;
 @Setter
 @FieldDefaults(level = AccessLevel.PRIVATE)
 @NoArgsConstructor
+@AllArgsConstructor
 public class Schedule {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -70,6 +68,24 @@ public class Schedule {
     @JsonIgnore
     @OneToOne(mappedBy = "schedule")
     Doctor doctor;
+
+    public Schedule(LocalTime start, LocalTime end) {
+        mondayStart = start;
+        mondayEnd = end;
+        tuesdayStart = start;
+        tuesdayEnd = end;
+        wednesdayStart = start;
+        wednesdayEnd = end;
+        thursdayStart = start;
+        thursdayEnd = end;
+        fridayStart = start;
+        fridayEnd = end;
+        saturdayStart = start;
+        saturdayEnd = end;
+        sundayStart = start;
+        sundayEnd = end;
+    }
+
 
     @JsonIgnore
     public List<WeekDay> getListOfDays(){
