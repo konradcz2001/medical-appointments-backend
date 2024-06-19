@@ -2,10 +2,12 @@ package com.github.konradcz2001.medicalappointments.doctor;
 
 import com.github.konradcz2001.medicalappointments.doctor.DTO.*;
 import com.github.konradcz2001.medicalappointments.doctor.schedule.Schedule;
+import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -34,6 +36,7 @@ class DoctorController {
      * @return the ResponseEntity with the page of DoctorDTOs
      */
     @GetMapping
+    @PermitAll
     ResponseEntity<Page<DoctorDTO>> readAll(Pageable pageable){
         return service.readAll(pageable);
     }
@@ -45,6 +48,7 @@ class DoctorController {
      * @return a ResponseEntity containing the DoctorDTO of the retrieved doctor, if found
      */
     @GetMapping("/{id}")
+    @PermitAll
     ResponseEntity<DoctorDTO> readById(@PathVariable Long id){
         return service.readById(id);
     }
@@ -57,6 +61,7 @@ class DoctorController {
      * @return a ResponseEntity containing a Page of DoctorDTO objects
      */
     @GetMapping(params = "firstName")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<DoctorDTO>> readAllByFirstName(@RequestParam String firstName, Pageable pageable){
         return service.readAllByFirstName(firstName, pageable);
     }
@@ -69,6 +74,7 @@ class DoctorController {
      * @return a ResponseEntity containing a page of DoctorDTO objects
      */
     @GetMapping(params = "lastName")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<DoctorDTO>> readAllByLastName(@RequestParam String lastName, Pageable pageable){
         return service.readAllByLastName(lastName, pageable);
     }
@@ -81,6 +87,7 @@ class DoctorController {
      * @return a ResponseEntity containing a page of DoctorDTO objects
      */
     @GetMapping(params = "specialization")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<DoctorDTO>> readAllBySpecialization(@RequestParam String specialization, Pageable pageable){
         return service.readAllBySpecialization(specialization, pageable);
     }
@@ -93,6 +100,7 @@ class DoctorController {
      * @return A ResponseEntity containing a Page of DoctorDTO objects representing the available doctors.
      */
     @GetMapping(path = "/available", params = "date")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<DoctorDTO>> readAllAvailableByDate(@RequestParam LocalDateTime date, Pageable pageable){
         return service.readAllAvailableByDate(date, pageable);
     }
@@ -104,6 +112,7 @@ class DoctorController {
      * @return ResponseEntity containing the created doctor DTO
      */
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<DoctorDTO> createDoctor(@Valid @RequestBody Doctor doctor){
         return service.createDoctor(doctor);
     }
@@ -118,6 +127,7 @@ class DoctorController {
      *         If the doctor with the specified ID is not found, throws a ResourceNotFoundException.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN')")
     ResponseEntity<?> updateDoctor(@PathVariable Long id, @Valid @RequestBody DoctorDTO toUpdate){
         System.out.println(toUpdate.toString());
         return service.updateDoctor(id, toUpdate);
@@ -130,6 +140,7 @@ class DoctorController {
      * @return a ResponseEntity indicating the success or failure of the operation
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<?> deleteDoctor(@PathVariable Long id){
         return service.deleteDoctor(id);
     }
@@ -142,6 +153,7 @@ class DoctorController {
      * @return a ResponseEntity representing the result of the operation
      */
     @PatchMapping("/{id}/add-leave")
+    @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN')")
     ResponseEntity<?> addLeave(@PathVariable Long id, @Valid @RequestBody DoctorLeaveDTO leave){
         return service.addLeave(id, leave);
     }
@@ -153,6 +165,7 @@ class DoctorController {
      * @param id       the ID of the leave to be removed
      * @return a ResponseEntity indicating the success or failure of the operation
      */
+    @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN')")
     @PatchMapping(value = "/{doctorId}/remove-leave", params = "id")
     ResponseEntity<?> removeLeave(@PathVariable Long doctorId, @RequestParam Long id){
         return service.removeLeave(doctorId, id);
@@ -167,6 +180,7 @@ class DoctorController {
      * @return a ResponseEntity containing a Page of DoctorLeaveDTO objects
      */
     @GetMapping("/{id}/leaves")
+    @PermitAll
     ResponseEntity<Page<DoctorLeaveDTO>> readAllLeaves(@PathVariable Long id, Pageable pageable){
         return service.readAllLeaves(id, pageable);
     }
@@ -179,6 +193,7 @@ class DoctorController {
      * @return a ResponseEntity indicating the success or failure of the operation
      */
     @PatchMapping("/{id}/add-specializations")
+    @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN')")
     ResponseEntity<?> addSpecializations(@PathVariable Long id, @RequestBody Set<Integer> specializationIds){
         return service.addSpecializations(id, specializationIds);
     }
@@ -191,6 +206,7 @@ class DoctorController {
      * @return a ResponseEntity indicating the success or failure of the operation
      */
     @PatchMapping(value = "/{doctorId}/remove-specialization", params = "id")
+    @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN')")
     ResponseEntity<?> removeSpecialization(@PathVariable Long doctorId, @RequestParam Integer id){
         return service.removeSpecialization(doctorId, id);
     }
@@ -202,6 +218,7 @@ class DoctorController {
      * @return a ResponseEntity containing a Set of DoctorSpecializationDTO objects
      */
     @GetMapping("/{id}/specializations")
+    @PermitAll
     ResponseEntity<Set<DoctorSpecializationDTO>> readAllSpecializations(@PathVariable Long id){
         return service.readAllSpecializations(id);
     }
@@ -214,6 +231,7 @@ class DoctorController {
      * @return a ResponseEntity containing a Page of DoctorReviewDTO objects
      */
     @GetMapping("/{id}/reviews")
+    @PermitAll
     ResponseEntity<Page<DoctorReviewDTO>> readAllReviews(@PathVariable Long id, Pageable pageable){
         return service.readAllReviews(id, pageable);
     }
@@ -227,6 +245,7 @@ class DoctorController {
      * @return A ResponseEntity containing a Page of DoctorDTO objects matching the search criteria.
      */
     @GetMapping(path = "/search", params = "word")
+    @PermitAll
     ResponseEntity<Page<DoctorDTO>> searchDoctors(@RequestParam String word, @RequestParam(required = false) String specialization, Pageable pageable){
         return service.searchDoctors(word, specialization, pageable);
     }
@@ -240,6 +259,7 @@ class DoctorController {
      * @return A ResponseEntity indicating the success or failure of the operation.
      */
     @PatchMapping("/{id}/add-type-of-visit")
+    @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN')")
     ResponseEntity<?> addTypeOfVisit(@PathVariable Long id, @Valid @RequestBody DoctorTypeOfVisitDTO typeOfVisit){
         return service.addTypeOfVisit(id, typeOfVisit);
     }
@@ -253,6 +273,7 @@ class DoctorController {
      * @return a ResponseEntity indicating the success or failure of the operation
      */
     @PatchMapping(value = "/{doctorId}/remove-type-of-visit", params = "id")
+    @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN')")
     ResponseEntity<?> removeTypeOfVisit(@PathVariable Long doctorId, @RequestParam Long id){
         return service.removeTypeOfVisit(doctorId, id);
     }
@@ -266,6 +287,7 @@ class DoctorController {
      * @return a ResponseEntity containing a Page of DoctorTypeOfVisitDTO objects representing the types of visits
      */
     @GetMapping("/{id}/types-of-visits")
+    @PermitAll
     ResponseEntity<Page<DoctorTypeOfVisitDTO>> readAllTypesOfVisits(@PathVariable Long id, Pageable pageable){
         return service.readAllTypesOfVisits(id, pageable);
     }
@@ -278,6 +300,7 @@ class DoctorController {
      * @return A ResponseEntity indicating the success or failure of the operation.
      */
     @PatchMapping("/{id}/schedule")
+    @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN')")
     ResponseEntity<?> updateSchedule(@PathVariable Long id, @RequestBody Schedule schedule){
         return service.updateSchedule(id, schedule);
     }

@@ -1,10 +1,12 @@
 package com.github.konradcz2001.medicalappointments.specialization;
 
 import com.github.konradcz2001.medicalappointments.specialization.DTO.SpecializationDTO;
+import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -30,6 +32,7 @@ class SpecializationController {
      *         and a Page object containing the retrieved specialization DTOs in the response body.
      */
     @GetMapping
+    @PermitAll
     ResponseEntity<Page<SpecializationDTO>> readAll(Pageable pageable){
         return service.readAll(pageable);
     }
@@ -44,6 +47,7 @@ class SpecializationController {
      *         If the specialization is not found, it throws a ResourceNotFoundException.
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<SpecializationDTO> readById(@PathVariable Integer id){
         return service.readById(id);
     }
@@ -58,6 +62,7 @@ class SpecializationController {
      *         If the specialization is not found, it throws a WrongSpecializationException.
      */
     @GetMapping(params = "specialization")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<SpecializationDTO> readBySpecialization(@RequestParam String specialization){
         return service.readBySpecialization(specialization);
     }
@@ -72,6 +77,7 @@ class SpecializationController {
      *         If the specialization already exists, it throws a WrongSpecializationException.
      */
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<SpecializationDTO> createSpecialization(@Valid @RequestBody Specialization specialization){
         return service.createSpecialization(specialization);
     }
@@ -86,6 +92,7 @@ class SpecializationController {
      *         If the specialization with the given ID is not found, it throws a ResourceNotFoundException.
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<?> updateSpecialization(@PathVariable Integer id, @Valid @RequestBody SpecializationDTO specialization){
         return service.updateSpecialization(id, specialization);
     }
@@ -99,6 +106,7 @@ class SpecializationController {
      *         If the specialization with the given ID is not found, it throws a ResourceNotFoundException.
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<?> deleteSpecialization(@PathVariable Integer id){
         return service.deleteSpecialization(id);
     }

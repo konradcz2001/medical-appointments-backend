@@ -45,7 +45,7 @@ class VisitService {
     }
 
 
-    //TODO createVisit tests (there already are some, update)
+
     @Transactional
     ResponseEntity<VisitDTO> createVisit(VisitDTO visitDTO){
         Long doctorId = visitDTO.typeOfVisit().doctorId();

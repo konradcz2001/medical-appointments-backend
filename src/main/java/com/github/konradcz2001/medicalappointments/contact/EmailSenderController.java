@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 @RestController
-@RequestMapping("/mail")
+@RequestMapping("/email")
 @CrossOrigin
 @RequiredArgsConstructor
 public class EmailSenderController {

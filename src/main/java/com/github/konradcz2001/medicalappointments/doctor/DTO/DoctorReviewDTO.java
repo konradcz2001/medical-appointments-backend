@@ -18,7 +18,10 @@ public record DoctorReviewDTO(Long id,
                               @Size(max = 500, message = "Maximum length is 500 characters")
                               String description,
                               @NotNull(message = "Client id must not be empty")
-                              Long clientId
+                              Long clientId,
+                              String clientFirstName,
+                              String doctorFirstName,
+                              String doctorLastName
                                       ){
 }
 

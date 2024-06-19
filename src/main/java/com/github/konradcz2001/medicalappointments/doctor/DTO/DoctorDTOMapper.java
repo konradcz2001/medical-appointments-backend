@@ -85,7 +85,10 @@ public class DoctorDTOMapper implements DTOMapper<DoctorDTO, Doctor> {
                 review.getDate(),
                 review.getRating(),
                 review.getDescription(),
-                review.getClient().getId()
+                review.getClient().getId(),
+                review.getClient().getFirstName(),
+                review.getDoctor().getFirstName(),
+                review.getDoctor().getLastName()
                 );
     }
 

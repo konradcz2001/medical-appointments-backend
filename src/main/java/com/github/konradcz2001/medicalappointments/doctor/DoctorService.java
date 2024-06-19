@@ -9,7 +9,6 @@ import com.github.konradcz2001.medicalappointments.leave.Leave;
 import com.github.konradcz2001.medicalappointments.leave.LeaveRepository;
 import com.github.konradcz2001.medicalappointments.review.ReviewRepository;
 import com.github.konradcz2001.medicalappointments.specialization.SpecializationRepository;
-import com.github.konradcz2001.medicalappointments.visit.VisitRepository;
 import com.github.konradcz2001.medicalappointments.visit.type.TypeOfVisit;
 import com.github.konradcz2001.medicalappointments.visit.type.TypeOfVisitRepository;
 import org.springframework.data.domain.Page;
@@ -221,7 +220,6 @@ class DoctorService {
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, doctorId));
     }
 
-    //TODO finish readAllAvailableByDate()
     /**
      * Retrieves all available doctors based on the specified date.
      *
@@ -370,7 +368,6 @@ class DoctorService {
 //        return returnResponse(() -> repository.searchWithSpecialization(word, specialization, pageable), dtoMapper);
 //    }
 
-    //TODO searchDoctors tests
 
     /**
      * Searches for doctors based on the given search word and specialization.
@@ -433,7 +430,6 @@ class DoctorService {
     }
 
 
-    //TODO readAllTypesOfVisits tests
     ResponseEntity<Page<DoctorTypeOfVisitDTO>> readAllTypesOfVisits(Long id, Pageable pageable) {
         var doctors = typeOfVisitRepository.findAllByDoctorIdAndIsActive(id, true, pageable)
                 .map(dtoMapper::mapToDoctorTypeOfVisitDTO);
@@ -443,7 +439,6 @@ class DoctorService {
         return ResponseEntity.ok(doctors);
     }
 
-    //TODO removeTypeOfVisit tests
     @Transactional
     ResponseEntity<?> removeTypeOfVisit(Long doctorId, Long typeOfVisitId){
         return repository.findById(doctorId)
@@ -459,7 +454,6 @@ class DoctorService {
     }
 
 
-    //TODO addTypeOfVisit tests
     @Transactional
     ResponseEntity<?> addTypeOfVisit(Long id, DoctorTypeOfVisitDTO typeOfVisitDTO) {
         Doctor doctor = repository.findById(id)
@@ -478,7 +472,6 @@ class DoctorService {
         return ResponseEntity.noContent().build();
     }
 
-    //TODO updateSchedule tests
     @Transactional
     ResponseEntity<?> updateSchedule(Long id, Schedule schedule){
         Doctor doctor = repository.findById(id)

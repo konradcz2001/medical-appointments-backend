@@ -7,6 +7,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 /**
@@ -33,6 +34,7 @@ class ClientController {
      * @return a ResponseEntity containing a Page of ClientDTO objects
      */
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<ClientDTO>> readAll(Pageable pageable){
         return service.readAll(pageable);
     }
@@ -56,6 +58,7 @@ class ClientController {
      * @return a ResponseEntity containing a Page of ClientDTO objects
      */
     @GetMapping(params = "firstName")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<ClientDTO>> readAllByFirstName(@RequestParam String firstName, Pageable pageable){
         return service.readAllByFirstName(firstName, pageable);
     }
@@ -68,6 +71,7 @@ class ClientController {
      * @return a ResponseEntity containing a Page of ClientDTO objects
      */
     @GetMapping(params = "lastName")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<ClientDTO>> readAllByLastName(@RequestParam String lastName, Pageable pageable){
         return service.readAllByLastName(lastName, pageable);
     }
@@ -79,6 +83,7 @@ class ClientController {
      * @return a ResponseEntity containing the created ClientDTO object
      */
     @PostMapping
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<ClientDTO> createClient(@Valid @RequestBody Client client){
         return service.createClient(client);
     }
@@ -91,6 +96,7 @@ class ClientController {
      * @return a ResponseEntity indicating the success or failure of the update operation
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('CLIENT') or hasRole('ADMIN')")
     ResponseEntity<?> updateClient(@PathVariable Long id, @Valid @RequestBody ClientDTO client){
         return service.updateClient(id, client);
     }
@@ -102,6 +108,7 @@ class ClientController {
      * @return a ResponseEntity indicating the success or failure of the delete operation
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<?> deleteClient(@PathVariable Long id){
         return service.deleteClient(id);
     }
@@ -114,6 +121,7 @@ class ClientController {
      * @return a ResponseEntity indicating the success or failure of the operation
      */
     @PatchMapping("/{clientId}/add-review")
+    @PreAuthorize("hasRole('CLIENT') or hasRole('ADMIN')")
     ResponseEntity<?> addReview(@PathVariable Long clientId, @Valid @RequestBody ReviewDTO review){
         return service.addReview(clientId, review);
     }
@@ -126,6 +134,7 @@ class ClientController {
      * @return a ResponseEntity indicating the success or failure of the operation
      */
     @PatchMapping(value = "/{clientId}/remove-review")
+    @PreAuthorize("hasRole('CLIENT') or hasRole('ADMIN')")
     ResponseEntity<?> removeReview(@PathVariable Long clientId, @RequestParam Long reviewId){
         return service.removeReview(clientId, reviewId);
     }
@@ -138,6 +147,7 @@ class ClientController {
      * @return a ResponseEntity indicating the success or failure of the update operation
      */
     @PatchMapping(value = "/{clientId}/update-review")
+    @PreAuthorize("hasRole('CLIENT') or hasRole('ADMIN')")
     ResponseEntity<?> updateReview(@PathVariable Long clientId, @Valid @RequestBody ReviewDTO review){
         return service.updateReview(clientId, review);
     }
@@ -150,6 +160,7 @@ class ClientController {
      * @return a ResponseEntity containing a Page of ClientReviewDTO objects
      */
     @GetMapping("/{clientId}/reviews")
+    @PreAuthorize("hasRole('CLIENT') or hasRole('ADMIN')")
     ResponseEntity<Page<ClientReviewDTO>> readAllReviews(@PathVariable Long clientId, Pageable pageable){
         return service.readAllReviews(clientId, pageable);
     }

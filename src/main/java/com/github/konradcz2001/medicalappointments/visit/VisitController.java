@@ -5,6 +5,7 @@ import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.math.BigDecimal;
@@ -34,6 +35,7 @@ class VisitController {
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAll(Pageable pageable){
         return service.readAll(pageable);
     }
@@ -46,6 +48,7 @@ class VisitController {
      *         or a ResponseEntity with an error status code if the visit cannot be retrieved
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<VisitDTO> readById(@PathVariable Long id){
         return service.readById(id);
     }
@@ -59,6 +62,7 @@ class VisitController {
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
     @GetMapping(params = "type")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByTypeOfVisit(@RequestParam String type, Pageable pageable){
         return service.readAllByTypeOfVisit(type, pageable);
     }
@@ -72,6 +76,7 @@ class VisitController {
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
     @GetMapping(params = "after")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByDateOfVisitAfter(@RequestParam LocalDateTime after, Pageable pageable){
         return service.readAllByDateOfVisitAfter(after, pageable);
     }
@@ -85,6 +90,7 @@ class VisitController {
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
     @GetMapping(params = "before")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByDateOfVisitBefore(@RequestParam LocalDateTime before, Pageable pageable){
         return service.readAllByDateOfVisitBefore(before, pageable);
     }
@@ -99,6 +105,7 @@ class VisitController {
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
     @GetMapping("/between")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByDateOfVisitBetween(@RequestParam LocalDateTime after, @RequestParam LocalDateTime before, Pageable pageable){
         return service.readAllByDateOfVisitBetween(after, before, pageable);
     }
@@ -112,6 +119,7 @@ class VisitController {
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
     @GetMapping(params = "doctorId")
+    @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByDoctorId(@RequestParam Long doctorId, Pageable pageable){
         return service.readAllByDoctorId(doctorId, pageable);
     }
@@ -126,6 +134,7 @@ class VisitController {
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
     @GetMapping(params = {"doctorId", "isCancelled"})
+    @PreAuthorize("hasRole('DOCTOR') or hasRole('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByDoctorIdAndCancellationStatus(@RequestParam Long doctorId, @RequestParam boolean isCancelled, Pageable pageable){
         return service.readAllByDoctorIdAndCancellationStatus(doctorId, isCancelled, pageable);
     }
@@ -139,6 +148,7 @@ class VisitController {
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
     @GetMapping(params = "clientId")
+    @PreAuthorize("hasRole('CLIENT') or hasRole('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByClientId(@RequestParam Long clientId, Pageable pageable){
         return service.readAllByClientId(clientId, pageable);
     }
@@ -153,6 +163,7 @@ class VisitController {
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
     @GetMapping(params = {"clientId", "isCancelled"})
+    @PreAuthorize("hasRole('CLIENT') or hasRole('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByClientIdAndCancellationStatus(@RequestParam Long clientId, @RequestParam boolean isCancelled, Pageable pageable){
         return service.readAllByClientIdAndCancellationStatus(clientId, isCancelled, pageable);
     }
@@ -166,6 +177,7 @@ class VisitController {
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
     @GetMapping(params = "price")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByPrice(@RequestParam BigDecimal price, Pageable pageable){
         return service.readAllByPrice(price, pageable);
     }
@@ -179,6 +191,7 @@ class VisitController {
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
     @GetMapping(params = "maxPrice")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByPriceLessThan(@RequestParam BigDecimal price, Pageable pageable){
         return service.readAllByPriceLessThan(price, pageable);
     }
@@ -192,6 +205,7 @@ class VisitController {
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
     @GetMapping(params = "minPrice")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByPriceGreaterThan(@RequestParam BigDecimal price, Pageable pageable){
         return service.readAllByPriceGreaterThan(price, pageable);
     }
@@ -205,6 +219,7 @@ class VisitController {
      *         or a ResponseEntity with an error status code if the visit cannot be created
      */
     @PostMapping
+    @PreAuthorize("hasRole('CLIENT') or hasRole('ADMIN')")
     ResponseEntity<VisitDTO> createVisit(@Valid @RequestBody VisitDTO visit){
         return service.createVisit(visit);
     }
@@ -218,6 +233,7 @@ class VisitController {
      *         or a ResponseEntity with an error status code if the visit is not found
      */
     @PutMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<?> updateVisit(@PathVariable Long id, @Valid @RequestBody VisitDTO visit){
         return service.updateVisit(id, visit);
     }
@@ -230,6 +246,7 @@ class VisitController {
      *         or a ResponseEntity with an error status code if the visit is not found
      */
     @DeleteMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<?> deleteVisit(@PathVariable Long id){
         return service.deleteVisit(id);
     }

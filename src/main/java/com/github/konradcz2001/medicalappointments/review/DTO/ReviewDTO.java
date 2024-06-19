@@ -28,6 +28,9 @@ public record ReviewDTO(Long id,
                         @NotNull(message = "Doctor id must not be empty")
                         Long doctorId,
                         @NotNull(message = "Client id must not be empty")
-                        Long clientId
+                        Long clientId,
+                        String clientFirstName,
+                        String doctorFirstName,
+                        String doctorLastName
                                 ) {
 }

@@ -27,6 +27,7 @@ class EmailSenderService {
      * @param emailStructure the EmailStructure object containing the email details
      * @return ResponseEntity with status 200 (OK) indicating the email was sent successfully
      */
+    //TODO check why it takes so long to send email
     ResponseEntity<?> sendEmail(EmailStructure emailStructure) {
         SimpleMailMessage message = new SimpleMailMessage();
         message.setFrom(fromMail);

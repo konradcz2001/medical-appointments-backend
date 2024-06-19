@@ -4,6 +4,7 @@ import com.github.konradcz2001.medicalappointments.leave.DTO.LeaveDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -31,6 +32,7 @@ class LeaveController {
      * @return a ResponseEntity containing a Page of LeaveDTO objects
      */
     @GetMapping
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<LeaveDTO>> readAll(Pageable pageable){
         return service.readAll(pageable);
     }
@@ -42,6 +44,7 @@ class LeaveController {
      * @return a ResponseEntity containing the LeaveDTO object
      */
     @GetMapping("/{id}")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<LeaveDTO> readById(@PathVariable Long id){
         return service.readById(id);
     }
@@ -54,6 +57,7 @@ class LeaveController {
      * @return a ResponseEntity containing a Page of LeaveDTO objects
      */
     @GetMapping("/starts-after")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<LeaveDTO>> readAllByStartAfter(@RequestParam LocalDateTime after, Pageable pageable){
         return service.readAllByStartAfter(after, pageable);
     }
@@ -66,6 +70,7 @@ class LeaveController {
      * @return a ResponseEntity containing a Page of LeaveDTO objects
      */
     @GetMapping("/ends-after")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<LeaveDTO>> readAllByEndAfter(@RequestParam LocalDateTime after, Pageable pageable){
         return service.readAllByEndAfter(after, pageable);
     }
@@ -78,6 +83,7 @@ class LeaveController {
      * @return a ResponseEntity containing a Page of LeaveDTO objects
      */
     @GetMapping("/starts-before")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<LeaveDTO>> readAllByStartBefore(@RequestParam LocalDateTime before, Pageable pageable){
         return service.readAllByStartBefore(before, pageable);
     }
@@ -90,6 +96,7 @@ class LeaveController {
      * @return a ResponseEntity containing a Page of LeaveDTO objects
      */
     @GetMapping("/ends-before")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<LeaveDTO>> readAllByEndBefore(@RequestParam LocalDateTime before, Pageable pageable){
         return service.readAllByEndBefore(before, pageable);
     }
@@ -103,6 +110,7 @@ class LeaveController {
      * @return a ResponseEntity containing a Page of LeaveDTO objects
      */
     @GetMapping("/between")
+    @PreAuthorize("hasRole('ADMIN')")
     ResponseEntity<Page<LeaveDTO>> readAllBetween(@RequestParam LocalDateTime after, @RequestParam LocalDateTime before, Pageable pageable){
         return service.readAllBetween(after, before, pageable);
     }

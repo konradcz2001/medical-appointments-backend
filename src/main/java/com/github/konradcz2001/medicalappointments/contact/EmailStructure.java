@@ -11,7 +11,7 @@ import jakarta.validation.constraints.Size;
  * The user email must not be empty, be in email format, and have a maximum length of 100 characters.
  * The body must not be empty and have a maximum length of 1000 characters.
  */
-record EmailStructure (
+public record EmailStructure (
         @NotBlank(message = "Subject must not be empty")
         @Size(max = 100, message = "Maximum length is 100 characters")
         String subject,

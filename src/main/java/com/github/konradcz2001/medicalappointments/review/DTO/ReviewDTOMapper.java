@@ -25,7 +25,10 @@ public class ReviewDTOMapper implements DTOMapper<ReviewDTO, Review> {
                 source.getRating(),
                 source.getDescription(),
                 source.getDoctor().getId(),
-                source.getClient().getId()
+                source.getClient().getId(),
+                source.getClient().getFirstName(),
+                source.getDoctor().getFirstName(),
+                source.getDoctor().getLastName()
         );
     }
 
