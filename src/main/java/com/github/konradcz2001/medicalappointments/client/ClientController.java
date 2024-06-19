@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.*;
 
 @RestController
 @RequestMapping("/clients")
-@CrossOrigin
 class ClientController {
     private final ClientService service;
 

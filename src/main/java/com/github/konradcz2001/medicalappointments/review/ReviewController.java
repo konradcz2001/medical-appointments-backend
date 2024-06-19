@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
  */
 @RestController
 @RequestMapping("/reviews")
-@CrossOrigin
 class ReviewController {
     ReviewService service;
 

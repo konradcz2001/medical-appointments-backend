@@ -21,7 +21,6 @@ import java.util.Set;
  */
 @RestController
 @RequestMapping("/doctors")
-@CrossOrigin
 class DoctorController {
     private final DoctorService service;
 

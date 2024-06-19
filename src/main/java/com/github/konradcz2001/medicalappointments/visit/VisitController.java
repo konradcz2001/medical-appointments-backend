@@ -19,7 +19,6 @@ import java.time.LocalDateTime;
  */
 @RestController
 @RequestMapping("/visits")
-@CrossOrigin
 class VisitController {
     private final VisitService service;
 

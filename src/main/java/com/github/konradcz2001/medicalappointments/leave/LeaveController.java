@@ -17,7 +17,6 @@ import java.time.LocalDateTime;
  */
 @RestController
 @RequestMapping("/doctors/leaves")
-@CrossOrigin
 class LeaveController {
     LeaveService service;
 

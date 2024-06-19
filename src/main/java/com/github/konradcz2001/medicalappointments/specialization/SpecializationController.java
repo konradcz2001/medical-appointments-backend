@@ -15,7 +15,6 @@ import org.springframework.web.bind.annotation.*;
  */
 @RestController
 @RequestMapping("/doctors/specializations")
-@CrossOrigin
 class SpecializationController {
     private final SpecializationService service;
 
