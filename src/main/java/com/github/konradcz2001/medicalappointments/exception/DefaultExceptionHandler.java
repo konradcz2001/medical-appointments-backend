@@ -45,7 +45,8 @@ public class DefaultExceptionHandler {
     }
 
     @ExceptionHandler({WrongLeaveException.class, WrongSpecializationException.class, WrongScheduleException.class,
-            WrongReviewException.class, ConstraintViolationException.class, WrongTypeOfVisitException.class})
+            WrongReviewException.class, ConstraintViolationException.class, WrongTypeOfVisitException.class,
+            WrongVisitException.class})
     public ResponseEntity<ApiError> handleWrongDataException(RuntimeException ex, HttpServletRequest request){
         ApiError apiError = new ApiError(
                 request.getClass().getSimpleName(),

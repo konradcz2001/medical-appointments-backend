@@ -24,7 +24,7 @@ public class VisitDTOMapper implements DTOMapper<VisitDTO, Visit> {
                 source.getId(),
                 source.getDate(),
                 source.getNotes(),
-                new TypeOfVisitDTO(type.getId(), type.getType(), type.getPrice(), type.getCurrency(), type.getDuration(), type.getDoctor().getId()),
+                new TypeOfVisitDTO(type.getId(), type.getType(), type.getPrice(), type.getCurrency(), type.getDuration(), type.isActive(), type.getDoctor().getId()),
                 source.isCancelled(),
                 source.getClient().getId()
         );

@@ -5,7 +5,6 @@ import com.github.konradcz2001.medicalappointments.common.DTOMapper;
 import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import com.github.konradcz2001.medicalappointments.leave.Leave;
 import com.github.konradcz2001.medicalappointments.review.Review;
-import com.github.konradcz2001.medicalappointments.specialization.DTO.SpecializationDTO;
 import com.github.konradcz2001.medicalappointments.specialization.Specialization;
 import com.github.konradcz2001.medicalappointments.visit.type.TypeOfVisit;
 import org.springframework.stereotype.Service;
@@ -40,7 +39,7 @@ public class DoctorDTOMapper implements DTOMapper<DoctorDTO, Doctor> {
                         .collect(Collectors.toSet()),
                 source.getAddress(),
                 source.getTypesOfVisits().stream().map(type ->
-                                new DoctorTypeOfVisitDTO(type.getId(), type.getType(), type.getPrice(), type.getCurrency(), type.getDuration()))
+                                new DoctorTypeOfVisitDTO(type.getId(), type.getType(), type.getPrice(), type.getCurrency(), type.getDuration(), type.isActive()))
                         .collect(Collectors.toList()),
                 source.getSchedule()
         );
@@ -96,7 +95,8 @@ public class DoctorDTOMapper implements DTOMapper<DoctorDTO, Doctor> {
                 type.getType(),
                 type.getPrice(),
                 type.getCurrency(),
-                type.getDuration()
+                type.getDuration(),
+                type.isActive()
         );
     }
 
@@ -104,6 +104,8 @@ public class DoctorDTOMapper implements DTOMapper<DoctorDTO, Doctor> {
         target.setType(sourceDTO.type());
         target.setPrice(sourceDTO.price());
         target.setCurrency(sourceDTO.currency());
+        target.setDuration(sourceDTO.duration());
+        target.setActive(sourceDTO.isActive());
 
         return target;
     }

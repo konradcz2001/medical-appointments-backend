@@ -17,6 +17,7 @@ import java.math.BigDecimal;
  * - price: The price of the visit.
  * - currency: The currency in which the price is specified.
  * - duration: The duration of the visit in minutes.
+ * - isActive: Is TypeOfVisit active (client has an opportunity to select it).
  * - doctor: The doctor associated with this type of visit.
  * <p>
  * The class provides getters and setters for all attributes, as well as constructors for creating instances of the class.
@@ -57,6 +58,9 @@ public class TypeOfVisit {
     @NotNull(message = "Duration must not be empty")
     @Min(value = 0, message = "Minimum duration is zero")
     Integer duration;   //Duration in minutes
+
+    @Column(name = "is_active", nullable = false)
+    boolean isActive = true;
 
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)

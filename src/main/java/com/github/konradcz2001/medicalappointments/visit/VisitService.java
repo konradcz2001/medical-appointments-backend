@@ -2,7 +2,10 @@ package com.github.konradcz2001.medicalappointments.visit;
 
 import com.github.konradcz2001.medicalappointments.client.ClientRepository;
 import com.github.konradcz2001.medicalappointments.doctor.DoctorRepository;
+import com.github.konradcz2001.medicalappointments.doctor.schedule.WeekDay;
 import com.github.konradcz2001.medicalappointments.exception.exceptions.ResourceNotFoundException;
+import com.github.konradcz2001.medicalappointments.exception.exceptions.WrongVisitException;
+import com.github.konradcz2001.medicalappointments.leave.Leave;
 import com.github.konradcz2001.medicalappointments.visit.DTO.VisitDTO;
 import com.github.konradcz2001.medicalappointments.visit.DTO.VisitDTOMapper;
 import com.github.konradcz2001.medicalappointments.visit.type.TypeOfVisit;
@@ -15,6 +18,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.math.BigDecimal;
 import java.net.URI;
 import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.util.List;
 
 import static com.github.konradcz2001.medicalappointments.common.Utils.returnResponse;
 import static com.github.konradcz2001.medicalappointments.exception.MessageType.*;
@@ -39,22 +44,26 @@ class VisitService {
         this.dtoMapper = dtoMapper;
     }
 
-    /**
-     * Creates a new visit based on the provided VisitDTO.
-     *
-     * @param visitDTO The VisitDTO object containing the details of the visit.
-     * @return A ResponseEntity containing the created VisitDTO object.
-     * @throws ResourceNotFoundException if the doctor or client with the specified IDs are not found.
-     */
+
+    //TODO createVisit tests (there already are some, update)
     @Transactional
     ResponseEntity<VisitDTO> createVisit(VisitDTO visitDTO){
         Long doctorId = visitDTO.typeOfVisit().doctorId();
         Long clientId = visitDTO.clientId();
-        //TODO check if doctor is available
 
         return doctorRepository.findById(doctorId)
                 .map(doctor -> clientRepository.findById(clientId)
                             .map( client -> {
+                                    if(conflictWithLeaves(doctor.getLeaves(), visitDTO))
+                                        throw new WrongVisitException("The visit conflicts with the doctor's leave");
+                                    if(conflictWithAnotherVisit(repository.findAllByTypeOfVisit_Doctor_Id(doctorId), visitDTO))
+                                        throw new WrongVisitException("The visit conflicts with another doctor's visit");
+                                    if(conflictWithAnotherVisit(repository.findAllByClientId(clientId), visitDTO))
+                                        throw new WrongVisitException("The visit conflicts with another of your visits");
+                                    if(conflictWithSchedule(doctor.getSchedule().getListOfDays(), visitDTO))
+                                        throw new WrongVisitException("The visit conflicts with the doctor's schedule");
+
+
                                     Visit visit = new Visit();
                                     visit.setClient(client);
                                     TypeOfVisit typeOfVisit = new TypeOfVisit();
@@ -66,6 +75,75 @@ class VisitService {
                             .orElseThrow(() -> new ResourceNotFoundException(CLIENT, clientId)))
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, doctorId));
     }
+
+    /**
+     * Checks if the provided visit conflicts with any leaves taken by the doctor.
+     *
+     * @param leaves the list of leaves taken by the doctor
+     * @param visitDTO the VisitDTO object representing the visit to check for conflicts
+     * @return true if there is a conflict with any leaves, false otherwise
+     */
+    private boolean conflictWithLeaves(List<Leave> leaves, VisitDTO visitDTO){
+        LocalDateTime visitStart = visitDTO.date();
+        LocalDateTime visitEnd = visitStart.plusMinutes(visitDTO.typeOfVisit().duration());
+
+        for (Leave leave : leaves) {
+            LocalDateTime leaveStart = leave.getStartDate();
+            LocalDateTime leaveEnd = leave.getEndDate();
+
+            if (visitStart.isBefore(leaveEnd) && visitEnd.isAfter(leaveStart))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the provided visit conflicts with any other existing visits.
+     *
+     * @param visits the list of existing visits to check for conflicts
+     * @param visitDTO the VisitDTO object representing the visit to check for conflicts
+     * @return true if there is a conflict with any other visits, false otherwise
+     */
+    private boolean conflictWithAnotherVisit(List<Visit> visits, VisitDTO visitDTO){
+        LocalDateTime visitStart = visitDTO.date();
+        LocalDateTime visitEnd = visitStart.plusMinutes(visitDTO.typeOfVisit().duration());
+
+        for (Visit v : visits) {
+            LocalDateTime vStart = v.getDate();
+            LocalDateTime vEnd = vStart.plusMinutes(v.getTypeOfVisit().getDuration());
+
+            if (visitStart.isBefore(vEnd) && visitEnd.isAfter(vStart))
+                return true;
+        }
+        return false;
+    }
+
+    /**
+     * Checks if the provided visit conflicts with the schedule of the doctor on the specified days.
+     *
+     * @param days the list of WeekDay objects representing the doctor's schedule for each day of the week
+     * @param visitDTO the VisitDTO object representing the visit to check for conflicts
+     * @return true if there is a conflict with the doctor's schedule, false otherwise
+     */
+    private boolean conflictWithSchedule(List<WeekDay> days, VisitDTO visitDTO){
+        LocalDateTime visitStart = visitDTO.date();
+        LocalDateTime visitEnd = visitStart.plusMinutes(visitDTO.typeOfVisit().duration());
+
+        int visitStartDayOfTheWeekNumber = visitStart.getDayOfWeek().getValue();
+        int visitEndDayOfTheWeekNumber = visitEnd.getDayOfWeek().getValue();
+
+        LocalTime visitStartTime = visitStart.toLocalTime();
+        LocalTime visitEndTime = visitEnd.toLocalTime();
+
+        LocalTime weekDayStartTime = days.get(visitStartDayOfTheWeekNumber - 1).getStart();
+        LocalTime weekDayEndTime = days.get(visitEndDayOfTheWeekNumber - 1).getEnd();
+
+        if(weekDayStartTime == null || weekDayEndTime == null)
+            return true;
+
+        return visitStartTime.isBefore(weekDayStartTime) || visitEndTime.isAfter(weekDayEndTime);
+    }
+
 
     /**
      * Retrieves all visits with pagination.

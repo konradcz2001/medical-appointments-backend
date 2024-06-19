@@ -12,6 +12,7 @@ import java.math.BigDecimal;
  *  price: the amount of money
  *  currency: the short of currency name
  *  duration: duration of the visit in minutes
+ *  isActive: is TypeOfVisit active (client has an opportunity to select it)
  *  doctorId: the id of doctor
  */
 public record TypeOfVisitDTO(Long id,
@@ -28,6 +29,7 @@ public record TypeOfVisitDTO(Long id,
                              @NotNull(message = "Duration must not be empty")
                              @Min(value = 0, message = "Minimum duration is zero")
                              Integer duration,   //Duration in minutes
+                             boolean isActive,
                              @NotNull(message = "Doctor id must not be empty")
                              Long doctorId){
 }

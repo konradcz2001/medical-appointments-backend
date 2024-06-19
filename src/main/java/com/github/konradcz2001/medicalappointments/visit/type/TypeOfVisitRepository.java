@@ -12,4 +12,5 @@ import org.springframework.stereotype.Repository;
 @Repository
 public interface TypeOfVisitRepository extends JpaRepository<TypeOfVisit, Long> {
     Page<TypeOfVisit> findAllByDoctorId(Long id, Pageable pageable);
+    Page<TypeOfVisit> findAllByDoctorIdAndIsActive(Long id, boolean isActive, Pageable pageable);
 }

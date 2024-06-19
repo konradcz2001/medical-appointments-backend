@@ -1,9 +1,7 @@
 package com.github.konradcz2001.medicalappointments.client.DTO;
 
 import com.github.konradcz2001.medicalappointments.security.Role;
-import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 /**
@@ -22,10 +20,6 @@ public record ClientDTO(Long id,
                         @NotBlank(message = "Last name must not be empty")
                         @Size(max = 100, message = "Maximum length is 100 characters")
                         String lastName,
-//                        @NotBlank(message = "Email must not be empty")
-//                        @Size(max = 100, message = "Maximum length is 100 characters")
-//                        @Email(message = "The email must be in email format")
                         String email,
-//                        @NotNull(message = "Role must not be empty")
                         Role role) {
 }

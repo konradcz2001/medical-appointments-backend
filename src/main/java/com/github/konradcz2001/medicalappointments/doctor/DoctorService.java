@@ -9,6 +9,7 @@ import com.github.konradcz2001.medicalappointments.leave.Leave;
 import com.github.konradcz2001.medicalappointments.leave.LeaveRepository;
 import com.github.konradcz2001.medicalappointments.review.ReviewRepository;
 import com.github.konradcz2001.medicalappointments.specialization.SpecializationRepository;
+import com.github.konradcz2001.medicalappointments.visit.VisitRepository;
 import com.github.konradcz2001.medicalappointments.visit.type.TypeOfVisit;
 import com.github.konradcz2001.medicalappointments.visit.type.TypeOfVisitRepository;
 import org.springframework.data.domain.Page;
@@ -36,21 +37,25 @@ import static com.github.konradcz2001.medicalappointments.exception.MessageType.
  */
 @Service
 class DoctorService {
+    private static final int MAX_VISIT_TYPES_PER_DOCTOR  = 30;
+
     private final DoctorRepository repository;
     private final SpecializationRepository specializationRepository;
     private final ReviewRepository reviewRepository;
     private final LeaveRepository leaveRepository;
     private final TypeOfVisitRepository typeOfVisitRepository;
     private final DoctorDTOMapper dtoMapper;
+    private final VisitRepository visitRepository;
 
     DoctorService(final DoctorRepository repository, final SpecializationRepository specializationRepository,
-                  final ReviewRepository reviewRepository, final LeaveRepository leaveRepository, final TypeOfVisitRepository typeOfVisitRepository, final DoctorDTOMapper dtoMapper) {
+                  final ReviewRepository reviewRepository, final LeaveRepository leaveRepository, final TypeOfVisitRepository typeOfVisitRepository, final DoctorDTOMapper dtoMapper, final VisitRepository visitRepository) {
         this.repository = repository;
         this.specializationRepository = specializationRepository;
         this.reviewRepository = reviewRepository;
         this.leaveRepository = leaveRepository;
         this.typeOfVisitRepository = typeOfVisitRepository;
         this.dtoMapper = dtoMapper;
+        this.visitRepository = visitRepository;
     }
 
 
@@ -432,7 +437,7 @@ class DoctorService {
 
     //TODO readAllTypesOfVisits tests
     ResponseEntity<Page<DoctorTypeOfVisitDTO>> readAllTypesOfVisits(Long id, Pageable pageable) {
-        var doctors = typeOfVisitRepository.findAllByDoctorId(id, pageable)
+        var doctors = typeOfVisitRepository.findAllByDoctorIdAndIsActive(id, true, pageable)
                 .map(dtoMapper::mapToDoctorTypeOfVisitDTO);
         if(doctors.isEmpty())
             throw new EmptyPageException();
@@ -447,7 +452,7 @@ class DoctorService {
                 .map(doctor -> doctor.getTypesOfVisits().stream()
                         .filter(type -> type.getId().equals(typeOfVisitId)).findAny()
                         .map(type -> {
-                            doctor.removeTypeOfVisit(type);
+                            doctor.getTypesOfVisits().stream().filter(t -> Objects.equals(t.getId(), type.getId())).findFirst().get().setActive(false);
                             repository.save(doctor);
                             return ResponseEntity.noContent().build();
                         })
@@ -461,6 +466,9 @@ class DoctorService {
     ResponseEntity<?> addTypeOfVisit(Long id, DoctorTypeOfVisitDTO typeOfVisitDTO) {
         Doctor doctor = repository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
+
+        if(doctor.getTypesOfVisits().size() >= MAX_VISIT_TYPES_PER_DOCTOR)
+            throw new WrongTypeOfVisitException("Doctor with id = " + id + " has reached the maximum number of types of " + MAX_VISIT_TYPES_PER_DOCTOR);
 
         TypeOfVisit typeOfVisit = new TypeOfVisit();
         typeOfVisit.setDoctor(doctor);
