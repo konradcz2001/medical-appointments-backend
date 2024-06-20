@@ -39,7 +39,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
      * Leaves connected
      */
     @Query(value = " SELECT DISTINCT doctors.id, first_name, last_name, email, country, state, city, " +
-            "street, house_number, zip_code, avatar, is_verified, profile_description FROM doctors " +
+            "street, house_number, zip_code, avatar, is_verified, schedule_id, profile_description FROM doctors " +
             "JOIN leaves ON doctor_id = doctors.id " +
             "WHERE start_date > ?1 OR end_date < ?1 " +
             "ORDER BY doctors.id ",
@@ -47,7 +47,7 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     Page<Doctor> findAllAvailableByDate(LocalDateTime date, Pageable pageable);
 
     @Query(value = " SELECT DISTINCT doctors.id, first_name, last_name, email, phone_number, country, state, city, " +
-            "street, house_number, zip_code, avatar, is_verified, profile_description FROM doctors " +
+            "street, house_number, zip_code, avatar, is_verified, schedule_id, profile_description FROM doctors " +
             "JOIN leaves ON doctor_id = doctors.id " +
             "WHERE since_when > ?1 AND till_when < ?2 " +
             "ORDER BY doctors.id ",
@@ -57,10 +57,10 @@ public interface DoctorRepository extends JpaRepository<Doctor, Long> {
     /**
      * Other
      */
-    Page<Doctor> findAllByVerifiedIs(boolean isVerified, Pageable pageable);
+    Page<Doctor> findAllByIsVerified(boolean isVerified, Pageable pageable);
 
     @Query(value = " SELECT DISTINCT doctors.id, first_name, last_name, email, password, role, country, state, city, " +
-            "street, house_number, zip_code, avatar, is_verified, profile_description FROM doctors " +
+            "street, house_number, zip_code, avatar, is_verified, schedule_id, profile_description FROM doctors " +
             "JOIN doctor_specialization ON doctor_id = doctors.id " +
             "JOIN specializations ON specialization_id = specializations.id " +
             "WHERE UPPER(specialization) LIKE '%' || UPPER(?1) || '%' " +

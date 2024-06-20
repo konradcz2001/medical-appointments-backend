@@ -1,6 +1,7 @@
 package com.github.konradcz2001.medicalappointments.specialization;
 
 import com.github.konradcz2001.medicalappointments.specialization.DTO.SpecializationDTO;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -30,6 +31,9 @@ class SpecializationController {
      *         If the specializations are found, it returns a ResponseEntity with a success status code (200 OK)
      *         and a Page object containing the retrieved specialization DTOs in the response body.
      */
+    @Operation(summary = "Retrieves all specializations or by name.",
+            description = "All these parameters are not required. Swagger does not distinguish between individual endpoints. For more details, see the code."
+    )
     @GetMapping
     @PermitAll
     ResponseEntity<Page<SpecializationDTO>> readAll(Pageable pageable){
@@ -45,6 +49,7 @@ class SpecializationController {
      *         and the retrieved specialization object in the response body.
      *         If the specialization is not found, it throws a ResourceNotFoundException.
      */
+    @Operation(summary = "Retrieves a specialization by its ID.")
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<SpecializationDTO> readById(@PathVariable Integer id){
@@ -60,6 +65,7 @@ class SpecializationController {
      *         and the retrieved specialization object in the response body.
      *         If the specialization is not found, it throws a WrongSpecializationException.
      */
+    //@Operation(summary = "Retrieves a specialization by its name.")
     @GetMapping(params = "specialization")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<SpecializationDTO> readBySpecialization(@RequestParam String specialization){
@@ -71,10 +77,11 @@ class SpecializationController {
      *
      * @param specialization The specialization object to be created.
      * @return A ResponseEntity representing the result of the create operation.
-     *         If the create is successful, it returns a ResponseEntity with a success status code (201 Created)
+     *         If the creation is successful, it returns a ResponseEntity with a success status code (201 Created)
      *         and the created specialization object in the response body.
      *         If the specialization already exists, it throws a WrongSpecializationException.
      */
+    @Operation(summary = "Creates a new specialization.")
     @PostMapping
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<SpecializationDTO> createSpecialization(@Valid @RequestBody Specialization specialization){
@@ -90,6 +97,7 @@ class SpecializationController {
      *         If the update is successful, it returns a ResponseEntity with a success status code (204 No Content).
      *         If the specialization with the given ID is not found, it throws a ResourceNotFoundException.
      */
+    @Operation(summary = "Updates a specialization with the specified ID.")
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<?> updateSpecialization(@PathVariable Integer id, @Valid @RequestBody SpecializationDTO specialization){
@@ -101,9 +109,10 @@ class SpecializationController {
      *
      * @param id The ID of the specialization to be deleted.
      * @return A ResponseEntity representing the result of the delete operation.
-     *         If the delete is successful, it returns a ResponseEntity with a success status code (204 No Content).
+     *         If to delete is successful, it returns a ResponseEntity with a success status code (204 No Content).
      *         If the specialization with the given ID is not found, it throws a ResourceNotFoundException.
      */
+    @Operation(summary = "Deletes a specialization with the specified ID.")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<?> deleteSpecialization(@PathVariable Integer id){

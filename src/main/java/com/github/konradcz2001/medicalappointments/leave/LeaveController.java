@@ -1,6 +1,7 @@
 package com.github.konradcz2001.medicalappointments.leave;
 
 import com.github.konradcz2001.medicalappointments.leave.DTO.LeaveDTO;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ class LeaveController {
      * @param pageable the pagination information
      * @return a ResponseEntity containing a Page of LeaveDTO objects
      */
+    @Operation(summary = "Retrieves all leave records with pagination.")
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<LeaveDTO>> readAll(Pageable pageable){
@@ -42,6 +44,7 @@ class LeaveController {
      * @param id the ID of the leave record
      * @return a ResponseEntity containing the LeaveDTO object
      */
+    @Operation(summary = "Retrieves a leave record by its ID.")
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<LeaveDTO> readById(@PathVariable Long id){
@@ -55,6 +58,7 @@ class LeaveController {
      * @param pageable the pagination information
      * @return a ResponseEntity containing a Page of LeaveDTO objects
      */
+    @Operation(summary = "Retrieves all leave records with a start date after the specified date and pagination.")
     @GetMapping("/starts-after")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<LeaveDTO>> readAllByStartAfter(@RequestParam LocalDateTime after, Pageable pageable){
@@ -68,6 +72,7 @@ class LeaveController {
      * @param pageable the pagination information
      * @return a ResponseEntity containing a Page of LeaveDTO objects
      */
+    @Operation(summary = "Retrieves all leave records with an end date after the specified date and pagination.")
     @GetMapping("/ends-after")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<LeaveDTO>> readAllByEndAfter(@RequestParam LocalDateTime after, Pageable pageable){
@@ -81,6 +86,7 @@ class LeaveController {
      * @param pageable the pagination information
      * @return a ResponseEntity containing a Page of LeaveDTO objects
      */
+    @Operation(summary = "Retrieves all leave records with a start date before the specified date and pagination.")
     @GetMapping("/starts-before")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<LeaveDTO>> readAllByStartBefore(@RequestParam LocalDateTime before, Pageable pageable){
@@ -94,6 +100,7 @@ class LeaveController {
      * @param pageable the pagination information
      * @return a ResponseEntity containing a Page of LeaveDTO objects
      */
+    @Operation(summary = "Retrieves all leave records with an end date before the specified date and pagination.")
     @GetMapping("/ends-before")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<LeaveDTO>> readAllByEndBefore(@RequestParam LocalDateTime before, Pageable pageable){
@@ -108,6 +115,7 @@ class LeaveController {
      * @param pageable the pagination information
      * @return a ResponseEntity containing a Page of LeaveDTO objects
      */
+    @Operation(summary = "Retrieves all leave records between the specified start and end dates with pagination.")
     @GetMapping("/between")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<LeaveDTO>> readAllBetween(@RequestParam LocalDateTime after, @RequestParam LocalDateTime before, Pageable pageable){

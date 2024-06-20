@@ -49,6 +49,8 @@ public class SecurityConfig {
                         configurer
                                 //SECURITY
                                 .requestMatchers("/login/**", "/register/**").permitAll()
+                                //SWAGGER
+                                .requestMatchers("/swagger-ui.html", "/swagger-ui/**", "/v3/api-docs/**", "/swagger-resources/**", "/webjars/**").permitAll()
                                 //DOCTOR
                                 .requestMatchers(HttpMethod.GET, "/doctors").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/doctors/{id}").permitAll()

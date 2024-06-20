@@ -1,6 +1,7 @@
 package com.github.konradcz2001.medicalappointments.review;
 
 import com.github.konradcz2001.medicalappointments.review.DTO.ReviewDTO;
+import io.swagger.v3.oas.annotations.Operation;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
@@ -30,6 +31,7 @@ class ReviewController {
      * @param pageable the pagination information
      * @return a ResponseEntity containing a Page of ReviewDTO objects
      */
+    @Operation(summary = "Retrieves all reviews.")
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<ReviewDTO>> readAll(Pageable pageable){
@@ -42,6 +44,7 @@ class ReviewController {
      * @param id the ID of the review to retrieve
      * @return a ResponseEntity containing the ReviewDTO object
      */
+    @Operation(summary = "Retrieves a review by its ID.")
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<ReviewDTO> readById(@PathVariable Long id){
@@ -57,6 +60,7 @@ class ReviewController {
      * @param pageable the pagination information
      * @return a ResponseEntity containing a Page of ReviewDTO objects
      */
+    @Operation(summary = "Retrieves all reviews between the specified dates and times.")
     @GetMapping("/between")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<ReviewDTO>> readAllBetween(@RequestParam LocalDateTime after, @RequestParam LocalDateTime before, Pageable pageable){
@@ -70,6 +74,7 @@ class ReviewController {
      * @param pageable the pagination information
      * @return a ResponseEntity containing a Page of ReviewDTO objects
      */
+    @Operation(summary = "Retrieves all reviews after the specified date and time.")
     @GetMapping("/after")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<ReviewDTO>> readAllAfter(@RequestParam LocalDateTime after, Pageable pageable){
@@ -83,6 +88,7 @@ class ReviewController {
      * @param pageable the pagination information
      * @return a ResponseEntity containing a Page of ReviewDTO objects
      */
+    @Operation(summary = "Retrieves all reviews before the specified date and time.")
     @GetMapping("/before")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<ReviewDTO>> readAllBefore(@RequestParam LocalDateTime before, Pageable pageable){
@@ -96,6 +102,7 @@ class ReviewController {
      * @param pageable the pagination information
      * @return a ResponseEntity containing a Page of ReviewDTO objects
      */
+    @Operation(summary = "Retrieves all reviews with the specified rating.")
     @GetMapping("/rating")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<ReviewDTO>> readAllByRating(@RequestParam Rating rating, Pageable pageable){
@@ -109,6 +116,7 @@ class ReviewController {
      * @param pageable the pagination information
      * @return a ResponseEntity containing a Page of ReviewDTO objects
      */
+    @Operation(summary = "Retrieves all reviews with a rating less than the specified rating.")
     @GetMapping("/rating-less-than")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<ReviewDTO>> readAllByRatingLessThan(@RequestParam Rating rating, Pageable pageable){
@@ -122,6 +130,7 @@ class ReviewController {
      * @param pageable the pagination information
      * @return a ResponseEntity containing a Page of ReviewDTO objects
      */
+    @Operation(summary = "Retrieves all reviews with a rating greater than the specified rating.")
     @GetMapping("/rating-greater-than")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<ReviewDTO>> readAllByRatingGreaterThan(@RequestParam Rating rating, Pageable pageable){

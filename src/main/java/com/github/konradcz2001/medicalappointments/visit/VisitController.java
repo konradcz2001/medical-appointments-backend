@@ -1,6 +1,7 @@
 package com.github.konradcz2001.medicalappointments.visit;
 
 import com.github.konradcz2001.medicalappointments.visit.DTO.VisitDTO;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -33,6 +34,10 @@ class VisitController {
      * @return a ResponseEntity containing a Page of VisitDTO objects with a success status code if the visits are retrieved successfully,
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
+    @Operation(
+            summary = "Retrieves all visits with pagination and parameter.",
+            description = "All these parameters are not required. Swagger does not distinguish between individual endpoints. For more details, see the code."
+    )
     @GetMapping
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAll(Pageable pageable){
@@ -46,6 +51,7 @@ class VisitController {
      * @return a ResponseEntity containing the VisitDTO object with a success status code if the visit is retrieved successfully,
      *         or a ResponseEntity with an error status code if the visit cannot be retrieved
      */
+    @Operation(summary = "Retrieves a visit with the specified ID.")
     @GetMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<VisitDTO> readById(@PathVariable Long id){
@@ -60,6 +66,7 @@ class VisitController {
      * @return a ResponseEntity containing a Page of VisitDTO objects with a success status code if the visits are retrieved successfully,
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
+    //@Operation(summary = "Retrieves all visits with a specific type of visit.")
     @GetMapping(params = "type")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByTypeOfVisit(@RequestParam String type, Pageable pageable){
@@ -74,6 +81,7 @@ class VisitController {
      * @return a ResponseEntity containing a Page of VisitDTO objects with a success status code if the visits are retrieved successfully,
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
+    //@Operation(summary = "Retrieves all visits with a date of visit after the specified date.")
     @GetMapping(params = "after")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByDateOfVisitAfter(@RequestParam LocalDateTime after, Pageable pageable){
@@ -88,6 +96,7 @@ class VisitController {
      * @return a ResponseEntity containing a Page of VisitDTO objects with a success status code if the visits are retrieved successfully,
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
+    //@Operation(summary = "Retrieves all visits with a date of visit before the specified date.")
     @GetMapping(params = "before")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByDateOfVisitBefore(@RequestParam LocalDateTime before, Pageable pageable){
@@ -103,6 +112,7 @@ class VisitController {
      * @return a ResponseEntity containing a Page of VisitDTO objects with a success status code if the visits are retrieved successfully,
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
+    @Operation(summary = "Retrieves all visits with a date of visit between the specified after and before dates.")
     @GetMapping("/between")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByDateOfVisitBetween(@RequestParam LocalDateTime after, @RequestParam LocalDateTime before, Pageable pageable){
@@ -117,6 +127,7 @@ class VisitController {
      * @return a ResponseEntity containing a Page of VisitDTO objects with a success status code if the visits are retrieved successfully,
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
+    //@Operation(summary = "Retrieves all visits with a doctor ID matching the specified ID.")
     @GetMapping(params = "doctorId")
     @PreAuthorize("hasAuthority('DOCTOR') or hasAuthority('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByDoctorId(@RequestParam Long doctorId, Pageable pageable){
@@ -132,6 +143,7 @@ class VisitController {
      * @return a ResponseEntity containing a Page of VisitDTO objects with a success status code if the visits are retrieved successfully,
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
+    //@Operation(summary = "Retrieves all visits with a doctor ID matching the specified ID and a cancellation status matching the specified status.")
     @GetMapping(params = {"doctorId", "isCancelled"})
     @PreAuthorize("hasAuthority('DOCTOR') or hasAuthority('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByDoctorIdAndCancellationStatus(@RequestParam Long doctorId, @RequestParam boolean isCancelled, Pageable pageable){
@@ -146,6 +158,7 @@ class VisitController {
      * @return a ResponseEntity containing a Page of VisitDTO objects with a success status code if the visits are retrieved successfully,
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
+    //@Operation(summary = "Retrieves all visits associated with the specified client ID.")
     @GetMapping(params = "clientId")
     @PreAuthorize("hasAuthority('CLIENT') or hasAuthority('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByClientId(@RequestParam Long clientId, Pageable pageable){
@@ -161,6 +174,7 @@ class VisitController {
      * @return a ResponseEntity containing a Page of VisitDTO objects with a success status code if the visits are retrieved successfully,
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
+    //@Operation(summary = "Retrieves all visits associated with the specified client ID and cancellation status.")
     @GetMapping(params = {"clientId", "isCancelled"})
     @PreAuthorize("hasAuthority('CLIENT') or hasAuthority('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByClientIdAndCancellationStatus(@RequestParam Long clientId, @RequestParam boolean isCancelled, Pageable pageable){
@@ -175,6 +189,7 @@ class VisitController {
      * @return a ResponseEntity containing a Page of VisitDTO objects with a success status code if the visits are retrieved successfully,
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
+    //@Operation(summary = "Retrieves all visits with the specified price.")
     @GetMapping(params = "price")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByPrice(@RequestParam BigDecimal price, Pageable pageable){
@@ -189,6 +204,7 @@ class VisitController {
      * @return a ResponseEntity containing a Page of VisitDTO objects with a success status code if the visits are retrieved successfully,
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
+    //@Operation(summary = "Retrieves all visits with a price less than the specified price.")
     @GetMapping(params = "maxPrice")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByPriceLessThan(@RequestParam BigDecimal price, Pageable pageable){
@@ -203,6 +219,7 @@ class VisitController {
      * @return a ResponseEntity containing a Page of VisitDTO objects with a success status code if the visits are retrieved successfully,
      *         or a ResponseEntity with an error status code if the visits cannot be retrieved
      */
+    //@Operation(summary = "Retrieves all visits with a price greater than the specified price.")
     @GetMapping(params = "minPrice")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<Page<VisitDTO>> readAllByPriceGreaterThan(@RequestParam BigDecimal price, Pageable pageable){
@@ -217,6 +234,7 @@ class VisitController {
      * @return a ResponseEntity with a success status code and the created VisitDTO object if the visit is created successfully,
      *         or a ResponseEntity with an error status code if the visit cannot be created
      */
+    @Operation(summary = "Creates a new visit.")
     @PostMapping
     @PreAuthorize("hasAuthority('CLIENT') or hasAuthority('ADMIN')")
     ResponseEntity<VisitDTO> createVisit(@Valid @RequestBody VisitDTO visit){
@@ -231,6 +249,7 @@ class VisitController {
      * @return a ResponseEntity with a success status code if the visit is updated successfully,
      *         or a ResponseEntity with an error status code if the visit is not found
      */
+    @Operation(summary = "Updates a visit with the specified ID.")
     @PutMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<?> updateVisit(@PathVariable Long id, @Valid @RequestBody VisitDTO visit){
@@ -244,6 +263,7 @@ class VisitController {
      * @return a ResponseEntity with a success status code if the visit is deleted successfully,
      *         or a ResponseEntity with an error status code if the visit is not found
      */
+    @Operation(summary = "Deletes a visit with the specified ID.")
     @DeleteMapping("/{id}")
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<?> deleteVisit(@PathVariable Long id){
@@ -251,6 +271,14 @@ class VisitController {
     }
 
 
+    /**
+     * Cancels a visit with the specified ID by setting the 'cancelled' flag to true.
+     *
+     * @param id the ID of the visit to cancel
+     * @return a ResponseEntity with no content if the visit is successfully canceled,
+     *         or a ResponseEntity with an error status code if the visit is not found
+     */
+    @Operation(summary = "Cancels a visit with the specified ID by setting the 'cancelled' flag to true.")
     @PatchMapping("/{id}")
     ResponseEntity<?> cancelVisit(@PathVariable Long id){
         return service.cancelVisit(id);

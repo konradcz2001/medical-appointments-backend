@@ -6,6 +6,7 @@ import jakarta.validation.ConstraintViolationException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.InsufficientAuthenticationException;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -15,19 +16,14 @@ import java.time.LocalDateTime;
 import static org.springframework.http.HttpStatus.*;
 
 /**
- * This code snippet represents a class named DefaultExceptionHandler.
- * It is a controller advice class that handles various exceptions and generates appropriate API error responses.
- * The class has several exception handler methods annotated with @ExceptionHandler.
- * - handleNotFoundException method handles ResourceNotFoundException and EmptyPageException, and returns a ResponseEntity with an ApiError object containing the error details.
- * - handleWrongDataException method handles WrongLeaveException, WrongSpecializationException, WrongReviewException, and ConstraintViolationException, and returns a ResponseEntity with an ApiError object containing the error details.
- * - handleAuthenticationException method handles InsufficientAuthenticationException, and returns a ResponseEntity with an ApiError object containing the error details.
- * - handleAuthorizationException method handles BadCredentialsException, and returns a ResponseEntity with an ApiError object containing the error details.
- * - handleException method handles any other exception, and returns a ResponseEntity with an ApiError object containing the error details.
- * The ApiError class is a record class that represents an API error and provides a convenient way to encapsulate the error details.
- * The class has fields for path, message, status, and localDateTime, and is designed to be used as an immutable data holder.
- * The class also has a constructor that sets the field values, and the fields are accessed using getter methods.
- * The HttpStatus class from the org.springframework.http package is used to define the HTTP status codes for the error responses.
- * The LocalDateTime class from the java.time package is used to get the current local date and time when an error occurs.
+ * The DefaultExceptionHandler class is a controller advice class that handles various exceptions by providing custom responses.
+ * It contains methods annotated with @ExceptionHandler to handle specific exceptions and return ResponseEntity<ApiError>.
+ * The class provides exception handling for ResourceNotFoundException, EmptyPageException, WrongLeaveException, WrongSpecializationException,
+ * WrongScheduleException, WrongReviewException, ConstraintViolationException, WrongTypeOfVisitException, WrongVisitException,
+ * InsufficientAuthenticationException, AuthenticationException, DuplicateEmailException, WrongUserException, BadCredentialsException,
+ * and MethodArgumentNotValidException. It also has a generic exception handler for any other type of Exception.
+ * Each exception handler method constructs an ApiError object with details such as class name, request URI, error message, HTTP status code,
+ * and local date and time, and returns a ResponseEntity with the ApiError object and corresponding HTTP status.
  */
 @ControllerAdvice
 public class DefaultExceptionHandler {
@@ -58,8 +54,9 @@ public class DefaultExceptionHandler {
         return new ResponseEntity<>(apiError, BAD_REQUEST);
     }
 
-    @ExceptionHandler(InsufficientAuthenticationException.class)
-    public ResponseEntity<ApiError> handleAuthenticationException(InsufficientAuthenticationException ex, HttpServletRequest request){
+    @ExceptionHandler({InsufficientAuthenticationException.class, AuthenticationException.class,
+            DuplicateEmailException.class, WrongUserException.class})
+    public ResponseEntity<ApiError> handleAuthenticationException(AuthenticationException ex, HttpServletRequest request){
         ApiError apiError = new ApiError(
                 request.getClass().getSimpleName(),
                 request.getRequestURI(),
@@ -70,7 +67,7 @@ public class DefaultExceptionHandler {
         return new ResponseEntity<>(apiError, FORBIDDEN);
     }
 
-    @ExceptionHandler({BadCredentialsException.class, WrongRoleException.class, DuplicateEmailException.class})
+    @ExceptionHandler({BadCredentialsException.class, WrongRoleException.class})
     public ResponseEntity<ApiError> handleAuthorizationException(BadCredentialsException ex, HttpServletRequest request){
         ApiError apiError = new ApiError(
                 request.getClass().getSimpleName(),

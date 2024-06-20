@@ -7,6 +7,7 @@ import com.github.konradcz2001.medicalappointments.doctor.Doctor;
 import com.github.konradcz2001.medicalappointments.doctor.DoctorRepository;
 import com.github.konradcz2001.medicalappointments.exception.exceptions.DuplicateEmailException;
 import com.github.konradcz2001.medicalappointments.exception.exceptions.WrongRoleException;
+import com.github.konradcz2001.medicalappointments.exception.exceptions.WrongUserException;
 import com.github.konradcz2001.medicalappointments.security.DTO.UserRegisterDTO;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
@@ -77,7 +78,7 @@ public class AuthenticationService {
             return new AuthenticationResponse(token);
         }
 
-        throw new WrongRoleException();//TODO other exception
+        throw new WrongUserException();
     }
 
     private User createUser(UserRegisterDTO request, User user) {
