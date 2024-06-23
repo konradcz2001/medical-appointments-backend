@@ -94,7 +94,7 @@ class DoctorController {
      */
     //@Operation(summary = "Retrieves a page of doctors based on the specified specialization.")
     @GetMapping(params = "specialization")
-    @PreAuthorize("hasAuthority('ADMIN')")
+    @PermitAll
     ResponseEntity<Page<DoctorDTO>> readAllBySpecialization(@RequestParam String specialization, Pageable pageable){
         return service.readAllBySpecialization(specialization, pageable);
     }
