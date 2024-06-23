@@ -16,7 +16,7 @@ RUN mvn package -DskipTests
 FROM openjdk:17-jdk-alpine
 WORKDIR /app
 COPY --from=build /app/target/medical-appointments-backend-0.0.1-SNAPSHOT.jar app.jar
-COPY src/main/resources/keystore.p12 /app/keystore.p12
+#COPY src/main/resources/keystore.p12 /app/keystore.p12
 
 # Expose the port the application runs on
 EXPOSE 443
