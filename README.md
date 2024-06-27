@@ -11,6 +11,8 @@ You can see frontend GitHub Repository [here](https://github.com/konradcz2001/me
 - [API Documentation](#api-documentation)
 - [Hosting](#hosting)
 - [Sample Login Data](#sample-login-data)
+- [Visual Examples](#visual-examples)
+- [Class Diagrams](#class-diagrams)
 - [Setup Instructions](#setup-instructions)
 - [Contributing](#contributing)
 - [License](#license)
@@ -38,9 +40,12 @@ The Medical Appointments Backend is a Spring Boot application that serves as the
 
 ## API Documentation
 
-The API documentation is available via Swagger. You can access it <a href="https://api.medical-appointments.pl/swagger-ui/index.html" target="_blank">here</a>.
+The API documentation is available via Swagger. You can access it [here](https://api.medical-appointments.pl/swagger-ui/index.html).
 <br><br>For some operations you must log in and provide a token. You can log in with [Sample Login Data](#sample-login-data).
-<br><br>Swagger cannot distinguish endpoints with the same path and http method, so some GET endpoints are combined into one with all parameters required. For more details, see the code.
+
+![Support via Gif](readme_assets/api.gif)
+
+Swagger cannot distinguish endpoints with the same path and http method, so some GET endpoints are combined into one with all parameters required. For more details, see the code.
 
 ## Hosting
 You can access the application via the links:
@@ -63,6 +68,49 @@ Here are some sample login credentials that you can use to test the application:
 - **Admin User**
    - Email: `admin@admin`
    - Password: `admin`
+
+## Visual Examples
+#### Doctor searching:
+![Support via Gif](readme_assets/searching.gif)
+#### Booking an appointment:
+![Support via Gif](readme_assets/booking_appointment.gif)
+#### Updating profile data:
+![Support via Gif](readme_assets/profile_management.gif)
+#### Doctor's schedule update:
+![Support via Gif](readme_assets/schedule_update.gif)
+#### Doctor's type of visit update:
+![Support via Gif](readme_assets/type_of_visit_update.gif)
+#### Doctor's leave update:
+![Support via Gif](readme_assets/leave_update.gif)
+#### Doctor's specialization update and visit cancellation:
+![Support via Gif](readme_assets/specialization_update_visit_cancel.gif)
+#### Sending a inquiry:
+![Support via Gif](readme_assets/contact.gif)
+#### In mailbox:
+![Support via Png](readme_assets/gmail.png)
+
+## Class Diagrams
+
+#### Client Package:
+![Support via Png](readme_assets/class_diagrams/client.png)
+#### Common Package:
+![Support via Png](readme_assets/class_diagrams/common.png)
+#### Contact Package:
+![Support via Png](readme_assets/class_diagrams/contact.png)
+#### Doctor Package:
+![Support via Png](readme_assets/class_diagrams/doctor.png)
+#### Exception Package:
+![Support via Png](readme_assets/class_diagrams/exception.png)
+#### Leave Package:
+![Support via Png](readme_assets/class_diagrams/leave.png)
+#### Review Package:
+![Support via Png](readme_assets/class_diagrams/review.png)
+#### Security Package:
+![Support via Png](readme_assets/class_diagrams/security.png)
+#### Specialization Package:
+![Support via Png](readme_assets/class_diagrams/specialization.png)
+#### Visit Package:
+![Support via Png](readme_assets/class_diagrams/visit.png)
 
 ## Setup Instructions
 
