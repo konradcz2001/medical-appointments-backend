@@ -1,6 +1,6 @@
 # Medical Appointments Backend
 
-This is the backend service for the [Medical Appointments](https://medical-appointments.pl) application. It provides APIs for managing medical appointments, doctors, clients, and other related entities.
+This is the backend service for the <a href="https://medical-appointments.pl" target="_blank">Medical Appointments</a> application. It provides APIs for managing medical appointments, doctors, clients, and other related entities.
 
 ## Table of Contents
 
@@ -36,13 +36,13 @@ The Medical Appointments Backend is a Spring Boot application that serves as the
 
 ## API Documentation
 
-The API documentation is available via Swagger. You can access it [here](https://api.medical-appointments.pl/swagger-ui/index.html).
+The API documentation is available via Swagger. You can access it <a href="https://api.medical-appointments.pl/swagger-ui/index.html" target="_blank">here</a>.
 <br>For some operations you must log in and provide a token.
 
 ## Hosting
 You can access the application via the links:
-###### The entire application with frontend:<br> https://medical-appointments.pl/
-###### Swagger documentation for backend:<br> https://api.medical-appointments.pl/swagger-ui/index.html
+###### The entire application with frontend:<br> <a href="https://medical-appointments.pl" target="_blank">https://medical-appointments.pl</a>
+###### Swagger documentation for backend:<br> <a href="https://api.medical-appointments.pl/swagger-ui/index.html" target="_blank">https://api.medical-appointments.pl/swagger-ui/index.html</a>
 
 
 ## Setup Instructions
