@@ -1,27 +1,32 @@
-# Medical Appointments Backend
+<img align="right" src="./readme_assets/logo192.png">
 
-This is the backend service for the [Medical Appointments](https://medical-appointments.pl) application. It provides APIs for managing medical appointments, doctors, clients, and other related entities.
-You can see frontend GitHub Repository [here](https://github.com/konradcz2001/medical-appointments-frontend).
+# Medical Appointments Backend 
+
+This is the backend service for the [Medical Appointments](https://medical-appointments.pl) application. 
+<br>You can see frontend GitHub Repository [here](https://github.com/konradcz2001/medical-appointments-frontend).
 
 ## Table of Contents
 
-- [Project Description](#project-description)
-- [Features](#features)
-- [Technologies Used](#technologies-used)
-- [API Documentation](#api-documentation)
-- [Hosting](#hosting)
-- [Sample Login Data](#sample-login-data)
-- [Visual Examples](#visual-examples)
-- [Class Diagrams](#class-diagrams)
-- [Setup Instructions](#setup-instructions)
-- [Contributing](#contributing)
-- [License](#license)
+- [Project Description](#page_facing_up-project-description)
+- [Features](#sparkles-features)
+- [Technologies Used](#hammer_and_wrench-technologies-used-leftwards_arrow_with_hook)
+- [API Documentation](#books-api-documentation-leftwards_arrow_with_hook)
+- [Hosting](#globe_with_meridians-hosting-leftwards_arrow_with_hook)
+- [Sample Login Data](#closed_lock_with_key-sample-login-data-leftwards_arrow_with_hook)
+- [Visual Examples](#movie_camera-visual-examples-leftwards_arrow_with_hook)
+- [Class Diagrams](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
+- [Setup Instructions](#gear-setup-instructions-leftwards_arrow_with_hook)
+- [Contributing](#handshake-contributing-leftwards_arrow_with_hook)
+- [License](#scroll-license-leftwards_arrow_with_hook)
 
-## Project Description
+## :page_facing_up: Project Description
 
-The Medical Appointments Backend is a Spring Boot application that serves as the backend for managing medical appointments. It includes functionalities for user authentication, doctor scheduling, client management, and more.
+The Medical Appointments Backend is a Spring Boot application. It provides APIs for managing medical appointments. It includes functionalities for user authentication, doctor scheduling, client management, and more.
+It provides APIs for managing . 
 
-## Features
+The backend is designed to support seamless integration with a frontend application, ensuring a smooth and efficient user experience. Additionally, it includes features such as data validation, error handling, and security measures to protect sensitive information.
+
+## :sparkles: Features
 
 - User authentication and authorization using JWT.
 - CRUD operations for doctors, clients, appointments, and related data.
@@ -29,7 +34,7 @@ The Medical Appointments Backend is a Spring Boot application that serves as the
 - Integration with Swagger for API documentation.
 - Flyway migrations populates the database with generated sample data for presentation purposes.
 
-## Technologies Used
+## :hammer_and_wrench: Technologies Used [:leftwards_arrow_with_hook:](#table-of-contents)
 
 - Java
 - Spring Boot
@@ -38,7 +43,7 @@ The Medical Appointments Backend is a Spring Boot application that serves as the
 - Swagger/OpenAPI
 - Flyway
 
-## API Documentation
+## :books: API Documentation [:leftwards_arrow_with_hook:](#table-of-contents)
 
 The API documentation is available via Swagger. You can access it [here](https://api.medical-appointments.pl/swagger-ui/index.html).
 <br><br>For some operations you must log in and provide a token. You can log in with [Sample Login Data](#sample-login-data).
@@ -47,12 +52,12 @@ The API documentation is available via Swagger. You can access it [here](https:/
 
 Swagger cannot distinguish endpoints with the same path and http method, so some GET endpoints are combined into one with all parameters required. For more details, see the code.
 
-## Hosting
+## :globe_with_meridians: Hosting [:leftwards_arrow_with_hook:](#table-of-contents)
 You can access the application via the links:
 ##### The entire application with frontend:<br> https://medical-appointments.pl
 ##### Swagger documentation for backend:<br> https://api.medical-appointments.pl/swagger-ui/index.html
 
-## Sample Login Data
+## :closed_lock_with_key: Sample Login Data [:leftwards_arrow_with_hook:](#table-of-contents)
 
 Here are some sample login credentials that you can use to test the application:
 
@@ -69,50 +74,91 @@ Here are some sample login credentials that you can use to test the application:
    - Email: `admin@admin`
    - Password: `admin`
 
-## Visual Examples
-#### Doctor searching:
+## :movie_camera: Visual Examples [:leftwards_arrow_with_hook:](#table-of-contents)
+
+- [Doctor searching](#doctor-searching)
+- [Booking an appointment](#booking-an-appointment-leftwards_arrow_with_hook)
+- [Updating profile data](#updating-profile-data-leftwards_arrow_with_hook)
+- [Doctor's schedule update](#doctors-schedule-update-leftwards_arrow_with_hook)
+- [Doctor's type of visit update](#doctors-type-of-visit-update-leftwards_arrow_with_hook)
+- [Doctor's leave update](#doctors-leave-update-leftwards_arrow_with_hook)
+- [Doctor's specialization update and visit cancellation](#doctors-specialization-update-and-visit-cancellation-leftwards_arrow_with_hook)
+- [Sending an inquiry](#sending-an-inquiry-leftwards_arrow_with_hook)
+- [In mailbox](#in-mailbox-leftwards_arrow_with_hook)
+
+### Doctor searching
 ![Support via Gif](readme_assets/searching.gif)
-#### Booking an appointment:
+
+### Booking an appointment [:leftwards_arrow_with_hook:](#movie_camera-visual-examples-leftwards_arrow_with_hook)
 ![Support via Gif](readme_assets/booking_appointment.gif)
-#### Updating profile data:
+
+### Updating profile data [:leftwards_arrow_with_hook:](#movie_camera-visual-examples-leftwards_arrow_with_hook)
 ![Support via Gif](readme_assets/profile_management.gif)
-#### Doctor's schedule update:
+
+### Doctor's schedule update [:leftwards_arrow_with_hook:](#movie_camera-visual-examples-leftwards_arrow_with_hook)
 ![Support via Gif](readme_assets/schedule_update.gif)
-#### Doctor's type of visit update:
+
+### Doctor's type of visit update [:leftwards_arrow_with_hook:](#movie_camera-visual-examples-leftwards_arrow_with_hook)
 ![Support via Gif](readme_assets/type_of_visit_update.gif)
-#### Doctor's leave update:
+
+### Doctor's leave update [:leftwards_arrow_with_hook:](#movie_camera-visual-examples-leftwards_arrow_with_hook)
 ![Support via Gif](readme_assets/leave_update.gif)
-#### Doctor's specialization update and visit cancellation:
+
+### Doctor's specialization update and visit cancellation [:leftwards_arrow_with_hook:](#movie_camera-visual-examples-leftwards_arrow_with_hook)
 ![Support via Gif](readme_assets/specialization_update_visit_cancel.gif)
-#### Sending a inquiry:
+
+### Sending an inquiry [:leftwards_arrow_with_hook:](#movie_camera-visual-examples-leftwards_arrow_with_hook)
 ![Support via Gif](readme_assets/contact.gif)
-#### In mailbox:
+
+### In mailbox [:leftwards_arrow_with_hook:](#movie_camera-visual-examples-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/gmail.png)
 
-## Class Diagrams
 
-#### Client Package:
+## :bar_chart: Class Diagrams [:leftwards_arrow_with_hook:](#table-of-contents)
+
+- [Client Package](#client-package)
+- [Common Package](#common-package-leftwards_arrow_with_hook)
+- [Contact Package](#contact-package-leftwards_arrow_with_hook)
+- [Doctor Package](#doctor-package-leftwards_arrow_with_hook)
+- [Exception Package](#exception-package-leftwards_arrow_with_hook)
+- [Leave Package](#leave-package-leftwards_arrow_with_hook)
+- [Review Package](#review-package-leftwards_arrow_with_hook)
+- [Security Package](#security-package-leftwards_arrow_with_hook)
+- [Specialization Package](#specialization-package-leftwards_arrow_with_hook)
+- [Visit Package](#visit-package-leftwards_arrow_with_hook)
+
+### Client Package:
 ![Support via Png](readme_assets/class_diagrams/client.png)
-#### Common Package:
+
+### Common Package [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/class_diagrams/common.png)
-#### Contact Package:
+
+### Contact Package [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/class_diagrams/contact.png)
-#### Doctor Package:
+
+### Doctor Package [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/class_diagrams/doctor.png)
-#### Exception Package:
+
+### Exception Package [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/class_diagrams/exception.png)
-#### Leave Package:
+
+### Leave Package [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/class_diagrams/leave.png)
-#### Review Package:
+
+### Review Package [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/class_diagrams/review.png)
-#### Security Package:
+
+### Security Package [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/class_diagrams/security.png)
-#### Specialization Package:
+
+### Specialization Package [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/class_diagrams/specialization.png)
-#### Visit Package:
+
+### Visit Package [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/class_diagrams/visit.png)
 
-## Setup Instructions
+
+## :gear: Setup Instructions [:leftwards_arrow_with_hook:](#table-of-contents)
 
 #### Prerequisites
 
@@ -167,10 +213,10 @@ To run the tests, use the following command:
 mvn test
 ```
 
-## Contributing
+## :handshake: Contributing [:leftwards_arrow_with_hook:](#table-of-contents)
 Contributions are welcome! Please fork the repository and create a pull request with your changes. You can also contact me: konradcz2001@gmail.com
 
-## License
+## :scroll: License [:leftwards_arrow_with_hook:](#table-of-contents)
 This project is licensed under the [MIT License](LICENSE).<br><br>
 
 
