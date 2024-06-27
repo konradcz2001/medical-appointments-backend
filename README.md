@@ -46,7 +46,7 @@ The backend is designed to support seamless integration with a frontend applicat
 ## :books: API Documentation [:leftwards_arrow_with_hook:](#table-of-contents)
 
 The API documentation is available via Swagger. You can access it [here](https://api.medical-appointments.pl/swagger-ui/index.html).
-<br><br>For some operations you must log in and provide a token. You can log in with [Sample Login Data](#sample-login-data).
+<br><br>For some operations you must log in and provide a token. You can log in with [Sample Login Data](#closed_lock_with_key-sample-login-data-leftwards_arrow_with_hook).
 
 ![Support via Gif](readme_assets/api.gif)
 
