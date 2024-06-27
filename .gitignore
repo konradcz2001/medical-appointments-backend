@@ -8,8 +8,7 @@ db.trace.db
 .env
 application-dev.properties
 application-prod.properties
-keystore.p12
-init.sql
+src/main/resources/keystore.p12
 
 ### STS ###
 .apt_generated

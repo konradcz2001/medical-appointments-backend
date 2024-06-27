@@ -38,7 +38,7 @@ public class SecurityConfig {
     }
 
     @Value("${cross.origin.site.url}")
-    private String crossOriginSiteUrl;
+    private List<String> crossOriginSiteUrl;
 
     @Bean
     public SecurityFilterChain configure(HttpSecurity http) throws Exception {
@@ -87,7 +87,7 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         CorsConfiguration config = new CorsConfiguration();
         config.setAllowCredentials(true);
-        config.setAllowedOrigins(List.of(crossOriginSiteUrl));
+        config.setAllowedOrigins(crossOriginSiteUrl);
         config.setAllowedHeaders(List.of("Authorization", "Content-Type"));
         config.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "PATCH"));
         config.setExposedHeaders(List.of("Authorization"));
