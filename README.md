@@ -9,6 +9,7 @@ This is the backend service for the <a href="https://medical-appointments.pl" ta
 - [Technologies Used](#technologies-used)
 - [API Documentation](#api-documentation)
 - [Hosting](#hosting)
+- [Sample Login Data](#sample-login-data)
 - [Setup Instructions](#setup-instructions)
 - [Contributing](#contributing)
 - [License](#license)
@@ -44,6 +45,22 @@ You can access the application via the links:
 ###### The entire application with frontend:<br> <a href="https://medical-appointments.pl" target="_blank">https://medical-appointments.pl</a>
 ###### Swagger documentation for backend:<br> <a href="https://api.medical-appointments.pl/swagger-ui/index.html" target="_blank">https://api.medical-appointments.pl/swagger-ui/index.html</a>
 
+## Sample Login Data
+
+Here are some sample login credentials that you can use to test the application:
+
+- **Doctor User**
+   - Email: `doctor@doctor`
+   - Password: `Doctor!123`
+<br><br>
+- **Client User**
+   - Email: `client@client`
+   - Password: `Client!123`
+     <br><br>
+
+- **Admin User**
+   - Email: `admin@admin`
+   - Password: `admin`
 
 ## Setup Instructions
 
