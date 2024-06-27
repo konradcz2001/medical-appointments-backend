@@ -1,6 +1,7 @@
 # Medical Appointments Backend
 
-This is the backend service for the <a href="https://medical-appointments.pl" target="_blank">Medical Appointments</a> application. It provides APIs for managing medical appointments, doctors, clients, and other related entities.
+This is the backend service for the [Medical Appointments](https://medical-appointments.pl) application. It provides APIs for managing medical appointments, doctors, clients, and other related entities.
+You can see frontend GitHub Repository [here](https://github.com/konradcz2001/medical-appointments-frontend).
 
 ## Table of Contents
 
@@ -38,12 +39,13 @@ The Medical Appointments Backend is a Spring Boot application that serves as the
 ## API Documentation
 
 The API documentation is available via Swagger. You can access it <a href="https://api.medical-appointments.pl/swagger-ui/index.html" target="_blank">here</a>.
-<br>For some operations you must log in and provide a token.
+<br><br>For some operations you must log in and provide a token. You can log in with [Sample Login Data](#sample-login-data).
+<br><br>Swagger cannot distinguish endpoints with the same path and http method, so some GET endpoints are combined into one with all parameters required. For more details, see the code.
 
 ## Hosting
 You can access the application via the links:
-###### The entire application with frontend:<br> <a href="https://medical-appointments.pl" target="_blank">https://medical-appointments.pl</a>
-###### Swagger documentation for backend:<br> <a href="https://api.medical-appointments.pl/swagger-ui/index.html" target="_blank">https://api.medical-appointments.pl/swagger-ui/index.html</a>
+##### The entire application with frontend:<br> https://medical-appointments.pl
+##### Swagger documentation for backend:<br> https://api.medical-appointments.pl/swagger-ui/index.html
 
 ## Sample Login Data
 
@@ -64,13 +66,13 @@ Here are some sample login credentials that you can use to test the application:
 
 ## Setup Instructions
 
-### Prerequisites
+#### Prerequisites
 
 - Java 17 or higher
 - Maven
 - PostgreSQL
 
-### Installation
+#### Installation
 
 1. Clone the repository:
     ```bash
@@ -106,11 +108,11 @@ Here are some sample login credentials that you can use to test the application:
     mvn spring-boot:run
     ```
 
-### Usage
+#### Usage
 
 Once the application is running, you can access the APIs at `http://localhost:8080`.
 
-### Testing
+#### Testing
 
 To run the tests, use the following command:
 ```bash
