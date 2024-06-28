@@ -127,34 +127,34 @@ Here are some sample login credentials that you can use to test the application:
 - [Specialization Package](#specialization-package-leftwards_arrow_with_hook)
 - [Visit Package](#visit-package-leftwards_arrow_with_hook)
 
-### Client Package:
+### [Client Package](src/main/java/com/github/konradcz2001/medicalappointments/client)
 ![Support via Png](readme_assets/class_diagrams/client.png)
 
-### Common Package [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
+### [Common Package](src/main/java/com/github/konradcz2001/medicalappointments/common) [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/class_diagrams/common.png)
 
-### Contact Package [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
+### [Contact Package](src/main/java/com/github/konradcz2001/medicalappointments/contact) [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/class_diagrams/contact.png)
 
-### Doctor Package [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
+### [Doctor Package](src/main/java/com/github/konradcz2001/medicalappointments/doctor) [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/class_diagrams/doctor.png)
 
-### Exception Package [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
+### [Exception Package](src/main/java/com/github/konradcz2001/medicalappointments/exception) [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/class_diagrams/exception.png)
 
-### Leave Package [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
+### [Leave Package](src/main/java/com/github/konradcz2001/medicalappointments/leave) [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/class_diagrams/leave.png)
 
-### Review Package [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
+### [Review Package](src/main/java/com/github/konradcz2001/medicalappointments/review) [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/class_diagrams/review.png)
 
-### Security Package [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
+### [Security Package](src/main/java/com/github/konradcz2001/medicalappointments/security) [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/class_diagrams/security.png)
 
-### Specialization Package [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
+### [Specialization Package](src/main/java/com/github/konradcz2001/medicalappointments/specialization) [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/class_diagrams/specialization.png)
 
-### Visit Package [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
+### [Visit Package](src/main/java/com/github/konradcz2001/medicalappointments/visit) [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/class_diagrams/visit.png)
 
 
@@ -212,6 +212,7 @@ To run the tests, use the following command:
 ```bash
 mvn test
 ```
+See all tests [here](src/test/java/com/github/konradcz2001/medicalappointments).
 
 ## :handshake: Contributing [:leftwards_arrow_with_hook:](#table-of-contents)
 Contributions are welcome! Please fork the repository and create a pull request with your changes. You can also contact me: konradcz2001@gmail.com
