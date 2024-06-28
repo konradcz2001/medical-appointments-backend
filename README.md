@@ -1,4 +1,4 @@
-<img align="right" src="./readme_assets/logo192.png">
+<img align="right" src="./readme_assets/logo192.png" style="pointer-events: none;">
 
 # Medical Appointments Backend 
 
