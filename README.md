@@ -1,9 +1,19 @@
 <a href="#"><img align="right" src="./readme_assets/logo192.png" ></a>
 
+
+
+
+
 # Medical Appointments Backend 
 
 This is the backend service for the [Medical Appointments](https://medical-appointments.pl) application. 
 <br>You can see frontend GitHub Repository [here](https://github.com/konradcz2001/medical-appointments-frontend).
+
+
+
+
+
+
 
 ## Table of Contents
 
@@ -17,7 +27,15 @@ This is the backend service for the [Medical Appointments](https://medical-appoi
 - [Class Diagrams](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 - [Setup Instructions](#gear-setup-instructions-leftwards_arrow_with_hook)
 - [Contributing](#handshake-contributing-leftwards_arrow_with_hook)
-- [License](#scroll-license-leftwards_arrow_with_hook)
+
+[//]: # "- [License](#scroll-license-leftwards_arrow_with_hook)"
+
+
+
+
+
+
+
 
 ## :page_facing_up: Project Description
 
@@ -26,6 +44,13 @@ It provides APIs for managing .
 
 The backend is designed to support seamless integration with a frontend application, ensuring a smooth and efficient user experience. Additionally, it includes features such as data validation, error handling, and security measures to protect sensitive information.
 
+
+
+
+
+
+
+
 ## :sparkles: Features
 
 - User authentication and authorization using JWT.
@@ -33,6 +58,13 @@ The backend is designed to support seamless integration with a frontend applicat
 - Scheduling and managing doctor appointments.
 - Integration with Swagger for API documentation.
 - Flyway migrations populates the database with generated sample data for presentation purposes.
+
+
+
+
+
+
+
 
 ## :hammer_and_wrench: Technologies Used [:leftwards_arrow_with_hook:](#table-of-contents)
 
@@ -43,6 +75,13 @@ The backend is designed to support seamless integration with a frontend applicat
 - Swagger/OpenAPI
 - Flyway
 
+
+
+
+
+
+
+
 ## :books: API Documentation [:leftwards_arrow_with_hook:](#table-of-contents)
 
 The API documentation is available via Swagger. You can access it [here](https://api.medical-appointments.pl/swagger-ui/index.html).
@@ -52,10 +91,25 @@ The API documentation is available via Swagger. You can access it [here](https:/
 
 Swagger cannot distinguish endpoints with the same path and http method, so some GET endpoints are combined into one with all parameters required. For more details, see the code.
 
+
+
+
+
+
+
+
 ## :globe_with_meridians: Hosting [:leftwards_arrow_with_hook:](#table-of-contents)
 You can access the application via the links:
 ##### The entire application with frontend:<br> https://medical-appointments.pl
 ##### Swagger documentation for backend:<br> https://api.medical-appointments.pl/swagger-ui/index.html
+
+
+
+
+
+
+
+
 
 ## :closed_lock_with_key: Sample Login Data [:leftwards_arrow_with_hook:](#table-of-contents)
 
@@ -73,6 +127,16 @@ Here are some sample login credentials that you can use to test the application:
 - **Admin User**
    - Email: `admin@admin`
    - Password: `admin`
+
+
+
+
+
+
+
+
+
+
 
 ## :movie_camera: Visual Examples [:leftwards_arrow_with_hook:](#table-of-contents)
 
@@ -114,7 +178,17 @@ Here are some sample login credentials that you can use to test the application:
 ![Support via Png](readme_assets/gmail.png)
 
 
+
+
+
+
+
+
+
+
+
 ## :bar_chart: Class Diagrams [:leftwards_arrow_with_hook:](#table-of-contents)
+Open the image in a new tab to see details.
 
 - [Client Package](#client-package)
 - [Common Package](#common-package-leftwards_arrow_with_hook)
@@ -156,6 +230,14 @@ Here are some sample login credentials that you can use to test the application:
 
 ### [Visit Package](src/main/java/com/github/konradcz2001/medicalappointments/visit) [:leftwards_arrow_with_hook:](#bar_chart-class-diagrams-leftwards_arrow_with_hook)
 ![Support via Png](readme_assets/class_diagrams/visit.png)
+
+
+
+
+
+
+
+
 
 
 ## :gear: Setup Instructions [:leftwards_arrow_with_hook:](#table-of-contents)
@@ -214,10 +296,34 @@ mvn test
 ```
 See all tests [here](src/test/java/com/github/konradcz2001/medicalappointments).
 
+
+
+
+
+
+
+
+
+
+
 ## :handshake: Contributing [:leftwards_arrow_with_hook:](#table-of-contents)
 Contributions are welcome! Please fork the repository and create a pull request with your changes. You can also contact me: konradcz2001@gmail.com
 
+
+
+
+
+
+
+
+
+
+[//]: # "
 ## :scroll: License [:leftwards_arrow_with_hook:](#table-of-contents)
-This project is licensed under the [MIT License](LICENSE).<br><br>
+This project is licensed under the [MIT License](LICENSE).
+"
 
 
+
+
+<br><br>
