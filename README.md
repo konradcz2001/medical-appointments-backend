@@ -318,10 +318,8 @@ Contributions are welcome! Please fork the repository and create a pull request 
 
 
 
-[//]: # "
-## :scroll: License [:leftwards_arrow_with_hook:](#table-of-contents)
-This project is licensed under the [MIT License](LICENSE).
-"
+[//]: # "## :scroll: License [:leftwards_arrow_with_hook:](#table-of-contents)"
+[//]: # "This project is licensed under the [MIT License](LICENSE)."
 
 
 
