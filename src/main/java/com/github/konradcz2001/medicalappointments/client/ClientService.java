@@ -220,7 +220,7 @@ class ClientService {
     }
 
     /**
-     * Deletes a client account after verifying their current password.
+     * Deletes a client's account after verifying their current password.
      *
      * @param id the ID of the client
      * @param password the current password for verification

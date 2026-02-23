@@ -8,6 +8,7 @@ import com.github.konradcz2001.medicalappointments.exception.exceptions.*;
 import com.github.konradcz2001.medicalappointments.leave.Leave;
 import com.github.konradcz2001.medicalappointments.leave.LeaveRepository;
 import com.github.konradcz2001.medicalappointments.review.ReviewRepository;
+import com.github.konradcz2001.medicalappointments.security.DTO.ChangePasswordDTO;
 import com.github.konradcz2001.medicalappointments.specialization.SpecializationRepository;
 import com.github.konradcz2001.medicalappointments.visit.type.TypeOfVisit;
 import com.github.konradcz2001.medicalappointments.visit.type.TypeOfVisitRepository;
@@ -15,6 +16,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,15 +46,17 @@ class DoctorService {
     private final LeaveRepository leaveRepository;
     private final TypeOfVisitRepository typeOfVisitRepository;
     private final DoctorDTOMapper dtoMapper;
+    private final PasswordEncoder passwordEncoder;
 
     DoctorService(final DoctorRepository repository, final SpecializationRepository specializationRepository,
-                  final ReviewRepository reviewRepository, final LeaveRepository leaveRepository, final TypeOfVisitRepository typeOfVisitRepository, final DoctorDTOMapper dtoMapper) {
+                  final ReviewRepository reviewRepository, final LeaveRepository leaveRepository, final TypeOfVisitRepository typeOfVisitRepository, final DoctorDTOMapper dtoMapper, final PasswordEncoder passwordEncoder) {
         this.repository = repository;
         this.specializationRepository = specializationRepository;
         this.reviewRepository = reviewRepository;
         this.leaveRepository = leaveRepository;
         this.typeOfVisitRepository = typeOfVisitRepository;
         this.dtoMapper = dtoMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -125,6 +129,51 @@ class DoctorService {
     ResponseEntity<?> deleteDoctor(Long id){
         return repository.findById(id)
                 .map(doctor -> {
+                    repository.deleteById(id);
+                    return ResponseEntity.noContent().build();
+                })
+                .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
+    }
+
+    /**
+     * Changes the password for a doctor.
+     *
+     * @param id the ID of the doctor
+     * @param dto the DTO containing the current and new passwords
+     * @return a ResponseEntity with a status of 204 No Content
+     * @throws IllegalArgumentException if the current password does not match
+     * @throws ResourceNotFoundException if the doctor is not found
+     */
+    @Transactional
+    ResponseEntity<?> changePassword(Long id, ChangePasswordDTO dto) {
+        return repository.findById(id)
+                .map(doctor -> {
+                    if (!passwordEncoder.matches(dto.currentPassword(), doctor.getPassword())) {
+                        throw new IllegalArgumentException("Invalid current password");
+                    }
+                    doctor.setPassword(passwordEncoder.encode(dto.newPassword()));
+                    repository.save(doctor);
+                    return ResponseEntity.noContent().build();
+                })
+                .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, id));
+    }
+
+    /**
+     * Deletes a doctor's account after verifying their current password.
+     *
+     * @param id the ID of the doctor
+     * @param password the current password for verification
+     * @return a ResponseEntity with a status of 204 No Content
+     * @throws IllegalArgumentException if the password does not match
+     * @throws ResourceNotFoundException if the doctor is not found
+     */
+    @Transactional
+    ResponseEntity<?> deleteAccount(Long id, String password) {
+        return repository.findById(id)
+                .map(doctor -> {
+                    if (!passwordEncoder.matches(password, doctor.getPassword())) {
+                        throw new IllegalArgumentException("Invalid password");
+                    }
                     repository.deleteById(id);
                     return ResponseEntity.noContent().build();
                 })
@@ -213,9 +262,9 @@ class DoctorService {
                 .map(doctor -> doctor.getSpecializations().stream()
                         .filter(spec -> spec.getId().equals(specializationId)).findAny()
                         .map(spec ->{
-                              doctor.removeSpecialization(spec);
-                              repository.save(doctor);
-                              return ResponseEntity.noContent().build();
+                            doctor.removeSpecialization(spec);
+                            repository.save(doctor);
+                            return ResponseEntity.noContent().build();
                         })
                         .orElseThrow(() -> new WrongSpecializationException("Doctor with id = " + doctorId + " does not have the specified specialization with id = " + specializationId)))
                 .orElseThrow(() -> new ResourceNotFoundException(DOCTOR, doctorId));
@@ -379,7 +428,7 @@ class DoctorService {
      * @return A ResponseEntity containing a Page of DoctorDTO objects matching the search criteria.
      * @throws EmptyPageException if the search word is empty or no results are found.
      */
-     ResponseEntity<Page<DoctorDTO>> searchDoctors(String word, String specialization, Pageable pageable) {
+    ResponseEntity<Page<DoctorDTO>> searchDoctors(String word, String specialization, Pageable pageable) {
         String[] parts = word.split(" ");
         List<String> stringsList = Arrays.stream(parts)
                 .filter(part -> !part.isEmpty())
