@@ -2,6 +2,7 @@ package com.github.konradcz2001.medicalappointments.doctor;
 
 import com.github.konradcz2001.medicalappointments.doctor.DTO.*;
 import com.github.konradcz2001.medicalappointments.doctor.schedule.Schedule;
+import com.github.konradcz2001.medicalappointments.security.DTO.ChangePasswordDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.annotation.security.PermitAll;
 import jakarta.validation.Valid;
@@ -132,8 +133,8 @@ class DoctorController {
      * @param id       The ID of the doctor to update.
      * @param toUpdate The updated information of the doctor.
      * @return A ResponseEntity representing the result of the update operation.
-     *         If the doctor is successfully updated, returns a ResponseEntity with no content (HTTP status code 204).
-     *         If the doctor with the specified ID is not found, throws a ResourceNotFoundException.
+     * If the doctor is successfully updated, returns a ResponseEntity with no content (HTTP status code 204).
+     * If the doctor with the specified ID is not found, throws a ResourceNotFoundException.
      */
     @Operation(summary = "Updates a doctor with the specified ID.")
     @PutMapping("/{id}")
@@ -154,6 +155,34 @@ class DoctorController {
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<?> deleteDoctor(@PathVariable Long id){
         return service.deleteDoctor(id);
+    }
+
+    /**
+     * Changes the password for a doctor.
+     *
+     * @param id the ID of the doctor
+     * @param dto the ChangePasswordDTO containing the current and new passwords
+     * @return a ResponseEntity indicating the success or failure of the operation
+     */
+    @Operation(summary = "Changes the password for a doctor.")
+    @PatchMapping("/{id}/password")
+    @PreAuthorize("hasAuthority('DOCTOR') or hasAuthority('ADMIN')")
+    ResponseEntity<?> changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordDTO dto) {
+        return service.changePassword(id, dto);
+    }
+
+    /**
+     * Deletes a doctor account requiring password verification.
+     *
+     * @param id the ID of the doctor
+     * @param password the current password for verification
+     * @return a ResponseEntity indicating the success or failure of the operation
+     */
+    @Operation(summary = "Deletes a doctor account requiring password verification.")
+    @DeleteMapping("/{id}/account")
+    @PreAuthorize("hasAuthority('DOCTOR') or hasAuthority('ADMIN')")
+    ResponseEntity<?> deleteAccount(@PathVariable Long id, @RequestParam String password) {
+        return service.deleteAccount(id, password);
     }
 
     /**

@@ -3,6 +3,7 @@ package com.github.konradcz2001.medicalappointments.client;
 import com.github.konradcz2001.medicalappointments.client.DTO.ClientDTO;
 import com.github.konradcz2001.medicalappointments.client.DTO.ClientReviewDTO;
 import com.github.konradcz2001.medicalappointments.review.DTO.ReviewDTO;
+import com.github.konradcz2001.medicalappointments.security.DTO.ChangePasswordDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 import org.springframework.data.domain.Page;
@@ -120,6 +121,34 @@ class ClientController {
     @PreAuthorize("hasAuthority('ADMIN')")
     ResponseEntity<?> deleteClient(@PathVariable Long id){
         return service.deleteClient(id);
+    }
+
+    /**
+     * Changes the password for a client.
+     *
+     * @param id the ID of the client
+     * @param dto the ChangePasswordDTO containing the current and new passwords
+     * @return a ResponseEntity indicating the success or failure of the operation
+     */
+    @Operation(summary = "Changes the password for a client.")
+    @PatchMapping("/{id}/password")
+    @PreAuthorize("hasAuthority('CLIENT') or hasAuthority('ADMIN')")
+    ResponseEntity<?> changePassword(@PathVariable Long id, @Valid @RequestBody ChangePasswordDTO dto) {
+        return service.changePassword(id, dto);
+    }
+
+    /**
+     * Deletes a client account requiring password verification.
+     *
+     * @param id the ID of the client
+     * @param password the current password for verification
+     * @return a ResponseEntity indicating the success or failure of the operation
+     */
+    @Operation(summary = "Deletes a client account requiring password verification.")
+    @DeleteMapping("/{id}/account")
+    @PreAuthorize("hasAuthority('CLIENT') or hasAuthority('ADMIN')")
+    ResponseEntity<?> deleteAccount(@PathVariable Long id, @RequestParam String password) {
+        return service.deleteAccount(id, password);
     }
 
     /**
