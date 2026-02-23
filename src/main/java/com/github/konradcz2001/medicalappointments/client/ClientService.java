@@ -12,9 +12,11 @@ import com.github.konradcz2001.medicalappointments.review.DTO.ReviewDTO;
 import com.github.konradcz2001.medicalappointments.review.DTO.ReviewDTOMapper;
 import com.github.konradcz2001.medicalappointments.review.Review;
 import com.github.konradcz2001.medicalappointments.review.ReviewRepository;
+import com.github.konradcz2001.medicalappointments.security.DTO.ChangePasswordDTO;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -46,14 +48,16 @@ class ClientService {
     private final ClientDTOMapper dtoMapper;
     private final DoctorRepository doctorRepository;
     private final ReviewDTOMapper reviewDTOMapper;
+    private final PasswordEncoder passwordEncoder;
 
 
-    ClientService(ClientRepository repository, ReviewRepository reviewRepository, ClientDTOMapper dtoMapper, DoctorRepository doctorRepository, ReviewDTOMapper reviewDTOMapper) {
+    ClientService(ClientRepository repository, ReviewRepository reviewRepository, ClientDTOMapper dtoMapper, DoctorRepository doctorRepository, ReviewDTOMapper reviewDTOMapper, PasswordEncoder passwordEncoder) {
         this.repository = repository;
         this.reviewRepository = reviewRepository;
         this.dtoMapper = dtoMapper;
         this.doctorRepository = doctorRepository;
         this.reviewDTOMapper = reviewDTOMapper;
+        this.passwordEncoder = passwordEncoder;
     }
 
 
@@ -193,6 +197,51 @@ class ClientService {
     }
 
     /**
+     * Changes the password for a client.
+     *
+     * @param id the ID of the client
+     * @param dto the DTO containing the current and new passwords
+     * @return a ResponseEntity with a status of 204 No Content
+     * @throws IllegalArgumentException if the current password does not match
+     * @throws ResourceNotFoundException if the client is not found
+     */
+    @Transactional
+    ResponseEntity<?> changePassword(Long id, ChangePasswordDTO dto) {
+        return repository.findById(id)
+                .map(client -> {
+                    if (!passwordEncoder.matches(dto.currentPassword(), client.getPassword())) {
+                        throw new IllegalArgumentException("Invalid current password");
+                    }
+                    client.setPassword(passwordEncoder.encode(dto.newPassword()));
+                    repository.save(client);
+                    return ResponseEntity.noContent().build();
+                })
+                .orElseThrow(() -> new ResourceNotFoundException(CLIENT, id));
+    }
+
+    /**
+     * Deletes a client account after verifying their current password.
+     *
+     * @param id the ID of the client
+     * @param password the current password for verification
+     * @return a ResponseEntity with a status of 204 No Content
+     * @throws IllegalArgumentException if the password does not match
+     * @throws ResourceNotFoundException if the client is not found
+     */
+    @Transactional
+    ResponseEntity<?> deleteAccount(Long id, String password) {
+        return repository.findById(id)
+                .map(client -> {
+                    if (!passwordEncoder.matches(password, client.getPassword())) {
+                        throw new IllegalArgumentException("Invalid password");
+                    }
+                    repository.deleteById(id);
+                    return ResponseEntity.noContent().build();
+                })
+                .orElseThrow(() -> new ResourceNotFoundException(CLIENT, id));
+    }
+
+    /**
      * Adds a review for a client.
      * <p>
      * This method adds a review for a client identified by the given client ID. The review is created based on the provided
@@ -255,11 +304,11 @@ class ClientService {
     ResponseEntity<?> updateReview(Long clientId, ReviewDTO toUpdate){
         return repository.findById(clientId)
                 .map(client -> client.getReviews().stream()
-                                .filter(review -> review.getId().equals(toUpdate.id())).findAny()
-                                .map(review -> {
-                                            reviewRepository.save(reviewDTOMapper.mapFromDTO(toUpdate, review));
-                                            return ResponseEntity.noContent().build();
-                                }).orElseThrow(() -> new WrongReviewException("Client with id = " + clientId + " does not have a review with id = " + toUpdate.id())))
+                        .filter(review -> review.getId().equals(toUpdate.id())).findAny()
+                        .map(review -> {
+                            reviewRepository.save(reviewDTOMapper.mapFromDTO(toUpdate, review));
+                            return ResponseEntity.noContent().build();
+                        }).orElseThrow(() -> new WrongReviewException("Client with id = " + clientId + " does not have a review with id = " + toUpdate.id())))
                 .orElseThrow(() -> new ResourceNotFoundException(CLIENT, clientId));
     }
 
